@@ -10,7 +10,7 @@
     <title>Sales Buddy | SBI General</title>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
@@ -53,11 +53,14 @@
     <!-- APP HEADER -->
     <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center">
         <div class="px-4 w-full flex justify-between items-center">
+            
+            <!-- PERFECTED LOGO SECTION -->
             <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('homeView')">
-                <div class="w-8 h-8 border border-gray-200 flex items-center justify-center p-1 bg-white">
-                    <img src="./image_1.png" alt="SBI" class="max-w-full max-h-full object-contain" onerror="this.outerHTML='<i class=\'fas fa-shield-alt text-sbiBlue\'></i>'" />
+                <div class="w-10 h-10 border border-gray-200 rounded-md flex items-center justify-center p-1.5 bg-white shadow-sm">
+                    <img src="./image_1.png" alt="SBI Logo" class="w-full h-full object-contain" onerror="this.outerHTML='<i class=\'fas fa-shield-alt text-sbiPurple text-lg\'></i>'" />
                 </div>
-                <span class="font-bold text-sbiPurple text-sm leading-tight border-l-2 border-gray-200 pl-3">Sales<br>Buddy</span>
+                <div class="h-8 border-l border-gray-300"></div>
+                <span class="font-extrabold text-sbiPurple text-[15px] leading-[1.1] tracking-wide">Sales<br>Buddy</span>
             </div>
             
             <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-[#f27421] active:bg-orange-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow flex items-center gap-2 transition-colors tracking-wide">
@@ -72,16 +75,15 @@
         <!-- 1. DASHBOARD (HOME VIEW) -->
         <div id="homeView" class="app-view flex flex-col flex-grow transition-opacity duration-300">
             
-            <!-- PERSONALIZED PHOTO BANNER (No Text) -->
-            <div class="px-5 pt-5">
-                <div class="w-full h-40 rounded-2xl overflow-hidden relative shadow-sm bg-gray-200 border border-gray-200">
-                    <img src="./banner.png" alt="Welcome Banner" class="w-full h-full object-cover object-center" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';"/>
-                </div>
+            <!-- PERSONALIZED PHOTO BANNER (Perfect Scaling) -->
+            <div class="px-5 pt-5 pb-2">
+                <!-- Ensure your image is named 'banner.png'. w-full & h-auto preserves exact image quality and aspect ratio -->
+                <img src="./banner.png" alt="Welcome Banner" class="w-full h-auto rounded-2xl shadow-sm border border-gray-100" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';"/>
             </div>
 
             <div class="px-5 flex-grow">
-                <div class="mb-5 mt-6">
-                    <h1 class="text-3xl font-bold text-sbiDark tracking-tight">Welcome back!</h1>
+                <div class="mb-5 mt-4">
+                    <h1 class="text-[28px] font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
                 </div>
 
                 <div class="flex flex-col gap-3">
