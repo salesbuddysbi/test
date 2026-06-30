@@ -52,15 +52,13 @@
 
     <!-- APP HEADER -->
     <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center">
-        <div class="px-4 w-full flex justify-between items-center">
+        <!-- Desktop max-width limit for nav -->
+        <div class="px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
-            <!-- PERFECTED LOGO SECTION -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('homeView')">
-                <div class="w-10 h-10 border border-gray-200 rounded-md flex items-center justify-center p-1.5 bg-white shadow-sm">
-                    <img src="./image_1.png" alt="SBI Logo" class="w-full h-full object-contain" onerror="this.outerHTML='<i class=\'fas fa-shield-alt text-sbiPurple text-lg\'></i>'" />
-                </div>
-                <div class="h-8 border-l border-gray-300"></div>
-                <span class="font-extrabold text-sbiPurple text-[15px] leading-[1.1] tracking-wide">Sales<br>Buddy</span>
+            <!-- TYPOGRAPHY LOGO -->
+            <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
+                <span class="font-extrabold text-sbiPurple text-xl leading-none tracking-tight">Sales Buddy</span>
+                <span class="font-bold text-gray-400 text-[9px] uppercase tracking-[0.2em] mt-0.5">One Touch Point</span>
             </div>
             
             <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-[#f27421] active:bg-orange-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow flex items-center gap-2 transition-colors tracking-wide">
@@ -73,55 +71,52 @@
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
         <!-- 1. DASHBOARD (HOME VIEW) -->
-        <div id="homeView" class="app-view flex flex-col flex-grow transition-opacity duration-300">
-            
-            <!-- PERSONALIZED PHOTO BANNER (Perfect Scaling) -->
-            <div class="px-5 pt-5 pb-2">
-                <!-- Ensure your image is named 'banner.png'. w-full & h-auto preserves exact image quality and aspect ratio -->
-                <img src="./banner.png" alt="Welcome Banner" class="w-full h-auto rounded-2xl shadow-sm border border-gray-100" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';"/>
-            </div>
+        <div id="homeView" class="app-view flex flex-col flex-grow transition-opacity duration-300 w-full max-w-3xl mx-auto">
 
-            <div class="px-5 flex-grow">
-                <div class="mb-5 mt-4">
-                    <h1 class="text-[28px] font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
+            <div class="px-5 flex-grow mt-6">
+                
+                <!-- GREETING & PROFESSIONAL CONTEXT -->
+                <div class="mb-6">
+                    <h1 class="text-[26px] font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
+                    <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Wishing you a wonderful day! Please choose an option below to continue.</p>
                 </div>
 
                 <div class="flex flex-col gap-3">
-                    <div class="glass-card p-4 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-sbiBlue flex items-center gap-4" onclick="navigateTo('quotePageView')">
-                        <div class="w-12 h-12 bg-blue-50 text-sbiBlue rounded-full flex items-center justify-center text-xl flex-shrink-0"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="glass-card p-3.5 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-sbiBlue flex items-center gap-3.5" onclick="navigateTo('quotePageView')">
+                        <div class="w-11 h-11 bg-blue-50 text-sbiBlue rounded-full flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-file-invoice-dollar"></i></div>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900 leading-tight">Quick Quote</h3>
+                            <h3 class="text-[15px] font-bold text-gray-900 leading-tight">Quick Quote</h3>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                        <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                     </div>
                     
-                    <div class="glass-card p-4 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-sbiPurple flex items-center gap-4" onclick="openCalculator('emi_calculator.html', 'homeView')">
-                        <div class="w-12 h-12 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-xl flex-shrink-0"><i class="fas fa-calculator"></i></div>
+                    <div class="glass-card p-3.5 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-sbiPurple flex items-center gap-3.5" onclick="openCalculator('emi_calculator.html', 'homeView')">
+                        <div class="w-11 h-11 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-calculator"></i></div>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900 leading-tight">EMI Calculator</h3>
+                            <h3 class="text-[15px] font-bold text-gray-900 leading-tight">EMI Calculator</h3>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                        <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                     </div>
 
-                    <div class="glass-card p-4 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-green-500 flex items-center gap-4" onclick="initCashlessView()">
-                        <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-xl flex-shrink-0"><i class="fas fa-hospital-user"></i></div>
+                    <div class="glass-card p-3.5 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-green-500 flex items-center gap-3.5" onclick="initCashlessView()">
+                        <div class="w-11 h-11 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-hospital-user"></i></div>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900 leading-tight">Cashless Hospital</h3>
+                            <h3 class="text-[15px] font-bold text-gray-900 leading-tight">Cashless Hospital</h3>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                        <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                     </div>
                     
-                    <div class="glass-card p-4 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-orange-500 flex items-center gap-4" onclick="navigateTo('downloadsPageView')">
-                        <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl flex-shrink-0"><i class="fas fa-download"></i></div>
+                    <div class="glass-card p-3.5 rounded-2xl active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-orange-500 flex items-center gap-3.5" onclick="navigateTo('downloadsPageView')">
+                        <div class="w-11 h-11 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-download"></i></div>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900 leading-tight">Downloads</h3>
+                            <h3 class="text-[15px] font-bold text-gray-900 leading-tight">Downloads</h3>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                        <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                     </div>
                 </div>
             </div>
 
-            <footer class="mt-8 bg-footerDark pt-4 pb-5 px-5 w-full">
+            <footer class="mt-8 bg-footerDark pt-4 pb-5 px-5 w-full rounded-t-2xl">
                 <div class="w-full max-w-md mx-auto">
                     <h3 class="text-sbiBlue font-semibold text-sm mb-3">Customer App</h3>
                     <div class="grid grid-cols-2 gap-3 mb-3">
@@ -140,7 +135,7 @@
                             </div>
                         </a>
                     </div>
-                    <button onclick="shareOnWhatsApp('Download the official SBI General Customer App...')" class="w-full bg-transparent border border-gray-600 text-gray-300 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 active:bg-white/10 transition-colors">
+                    <button onclick="shareCustomerAppWA()" class="w-full bg-transparent border border-gray-600 text-gray-300 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 active:bg-white/10 transition-colors">
                         <i class="fab fa-whatsapp text-lg"></i> Share App Links via WhatsApp
                     </button>
                 </div>
@@ -148,37 +143,37 @@
         </div>
 
         <!-- 2. QUOTE PAGE VIEW -->
-        <div id="quotePageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300">
-            <button onclick="navigateTo('homeView')" class="mb-6 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max">
+        <div id="quotePageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
+            <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max">
                 <i class="fas fa-arrow-left"></i> Back
             </button>
-            <div class="mb-6">
+            <div class="mb-5">
                 <h2 class="text-2xl font-bold text-sbiDark mb-1">Select Product</h2>
             </div>
             
             <div class="flex flex-col gap-3">
-                <div onclick="openCalculator('super_health.html', 'quotePageView')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:bg-blue-50 transition-colors border-l-4 border-l-sbiBlue flex items-center gap-4 cursor-pointer">
-                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-shield-alt text-xl text-sbiBlue"></i></div>
-                    <h3 class="text-base font-bold text-sbiDark">Super Health</h3>
-                    <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                <div onclick="openCalculator('super_health.html', 'quotePageView')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 active:bg-blue-50 transition-colors border-l-4 border-l-sbiBlue flex items-center gap-3.5 cursor-pointer">
+                    <div class="w-11 h-11 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-shield-alt text-lg text-sbiBlue"></i></div>
+                    <h3 class="text-[15px] font-bold text-sbiDark">Super Health</h3>
+                    <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                 </div>
                 
-                <div onclick="openCalculator('health_alpha.html', 'quotePageView')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:bg-purple-50 transition-colors border-l-4 border-l-sbiPurple flex items-center gap-4 cursor-pointer">
-                    <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-heartbeat text-xl text-sbiPurple"></i></div>
-                    <h3 class="text-base font-bold text-sbiDark">Health Alpha - Select</h3>
-                    <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                <div onclick="openCalculator('health_alpha.html', 'quotePageView')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 active:bg-purple-50 transition-colors border-l-4 border-l-sbiPurple flex items-center gap-3.5 cursor-pointer">
+                    <div class="w-11 h-11 bg-purple-50 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-heartbeat text-lg text-sbiPurple"></i></div>
+                    <h3 class="text-[15px] font-bold text-sbiDark">Health Alpha - Select</h3>
+                    <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                 </div>
 
-                <div onclick="openCalculator('super_top_up.html', 'quotePageView')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:bg-teal-50 transition-colors border-l-4 border-l-teal-500 flex items-center gap-4 cursor-pointer">
-                    <div class="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-layer-group text-xl text-teal-500"></i></div>
-                    <h3 class="text-base font-bold text-sbiDark">Super Top-Up</h3>
-                    <i class="fas fa-chevron-right text-gray-300 ml-auto"></i>
+                <div onclick="openCalculator('super_top_up.html', 'quotePageView')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 active:bg-teal-50 transition-colors border-l-4 border-l-teal-500 flex items-center gap-3.5 cursor-pointer">
+                    <div class="w-11 h-11 bg-teal-50 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-layer-group text-lg text-teal-500"></i></div>
+                    <h3 class="text-[15px] font-bold text-sbiDark">Super Top-Up</h3>
+                    <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                 </div>
             </div>
         </div>
 
         <!-- 3. CASHLESS HOSPITAL VIEW -->
-        <div id="cashlessView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 flex flex-col h-full">
+        <div id="cashlessView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 flex flex-col h-full w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-4 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max shrink-0">
                 <i class="fas fa-arrow-left"></i> Back
             </button>
@@ -260,7 +255,7 @@
         
         <!-- 4. IFRAME CALCULATOR VIEW -->
         <div id="calculatorView" class="app-view hidden flex-grow flex flex-col bg-white transition-opacity duration-300">
-            <div class="w-full bg-white border-b border-gray-100 shadow-sm z-10 px-4 py-2 flex items-center">
+            <div class="w-full max-w-3xl mx-auto bg-white border-b border-gray-100 shadow-sm z-10 px-4 py-2 flex items-center">
                 <button onclick="navigateTo(currentCalcBackTarget)" class="text-gray-700 active:text-sbiBlue font-medium flex items-center gap-2 p-2 -ml-2 rounded-lg">
                     <i class="fas fa-arrow-left"></i> <span id="calcBackBtnText" class="text-sm">Back</span>
                 </button>
@@ -272,23 +267,23 @@
         </div>
 
         <!-- 5. DOWNLOADS CATEGORY VIEW -->
-        <div id="downloadsPageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300">
-            <button onclick="navigateTo('homeView')" class="mb-6 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Back</button>
-            <div class="mb-6"><h2 class="text-2xl font-bold text-sbiDark mb-1">Downloads</h2></div>
+        <div id="downloadsPageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
+            <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="mb-5"><h2 class="text-2xl font-bold text-sbiDark mb-1">Downloads</h2></div>
             <div class="flex flex-col gap-3 pb-8">
-                <button onclick="openDownloadCategory('Brochures', 'brochure')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 text-left border-l-4 border-l-sbiBlue"><i class="fas fa-book-open text-sbiBlue"></i> <h3 class="font-bold">Brochures</h3></button>
-                <button onclick="openDownloadCategory('Proposal Forms', 'proposal')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 text-left border-l-4 border-l-sbiPurple"><i class="fas fa-file-signature text-sbiPurple"></i> <h3 class="font-bold">Proposal Forms</h3></button>
-                <button onclick="openDownloadCategory('Policy Wordings', 'policy')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 text-left border-l-4 border-l-green-500"><i class="fas fa-file-contract text-green-500"></i> <h3 class="font-bold">Policy Wordings</h3></button>
-                <button onclick="openDownloadCategory('Claim Forms', 'claim')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 text-left border-l-4 border-l-red-500"><i class="fas fa-file-medical text-red-500"></i> <h3 class="font-bold">Claim Forms</h3></button>
-                <button onclick="openDownloadCategory('Other Forms', 'other')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 text-left border-l-4 border-l-orange-500"><i class="fas fa-folder-open text-orange-500"></i> <h3 class="font-bold">Other Forms</h3></button>
-                <button onclick="openDownloadCategory('Important Lists', 'list')" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 text-left border-l-4 border-l-teal-500"><i class="fas fa-list-check text-teal-500"></i> <h3 class="font-bold">Important Lists</h3></button>
+                <button onclick="openDownloadCategory('Brochures', 'brochure')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-sbiBlue"><i class="fas fa-book-open text-sbiBlue text-lg"></i> <h3 class="font-bold text-[15px]">Brochures</h3></button>
+                <button onclick="openDownloadCategory('Proposal Forms', 'proposal')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-sbiPurple"><i class="fas fa-file-signature text-sbiPurple text-lg"></i> <h3 class="font-bold text-[15px]">Proposal Forms</h3></button>
+                <button onclick="openDownloadCategory('Policy Wordings', 'policy')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-green-500"><i class="fas fa-file-contract text-green-500 text-lg"></i> <h3 class="font-bold text-[15px]">Policy Wordings</h3></button>
+                <button onclick="openDownloadCategory('Claim Forms', 'claim')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-red-500"><i class="fas fa-file-medical text-red-500 text-lg"></i> <h3 class="font-bold text-[15px]">Claim Forms</h3></button>
+                <button onclick="openDownloadCategory('Other Forms', 'other')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-orange-500"><i class="fas fa-folder-open text-orange-500 text-lg"></i> <h3 class="font-bold text-[15px]">Other Forms</h3></button>
+                <button onclick="openDownloadCategory('Important Lists', 'list')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-teal-500"><i class="fas fa-list-check text-teal-500 text-lg"></i> <h3 class="font-bold text-[15px]">Important Lists</h3></button>
             </div>
         </div>
 
         <!-- 6. DOWNLOADS LIST VIEW -->
-        <div id="downloadsListView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300">
-            <button onclick="navigateTo('downloadsPageView')" class="mb-6 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Folders</button>
-            <div class="mb-6"><h2 id="downloadCategoryTitle" class="text-2xl font-bold text-sbiDark">Category</h2></div>
+        <div id="downloadsListView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
+            <button onclick="navigateTo('downloadsPageView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Folders</button>
+            <div class="mb-5"><h2 id="downloadCategoryTitle" class="text-2xl font-bold text-sbiDark">Category</h2></div>
             <div id="downloadFilesContainer" class="flex flex-col gap-3 pb-10"></div>
         </div>
     </main>
@@ -362,6 +357,12 @@
             const shareText = `Hello! Please find the official ${categoryName} for ${productName} here:\n\n${fileUrl}`;
             if (navigator.share) await navigator.share({ title: productName, text: shareText });
             else shareOnWhatsApp(shareText);
+        }
+        
+        // --- CUSTOMER APP LINK SHARE ---
+        function shareCustomerAppWA() {
+            const waText = `Download the official SBI General Customer App to manage your policies easily.\n\niOS: https://apps.apple.com/in/app/sbi-general-insurance/id1495616048\n\nAndroid: https://play.google.com/store/apps/details?id=com.sbig.insurance&hl=en_IN`;
+            shareOnWhatsApp(waText);
         }
 
         // --- CASHLESS HOSPITAL DYNAMIC MODULE ---
