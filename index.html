@@ -339,6 +339,7 @@
                 const fileUrl = baseUrl.endsWith('/') ? baseUrl + fileName : baseUrl + '/' + fileName;
                 const iconDisplay = item.icon ? `<div class="text-xl">${item.icon}</div>` : `<i class="fas fa-file-pdf text-red-500 text-lg"></i>`;
 
+                // Passed fileName dynamically into the native share function
                 container.innerHTML += `
                     <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
@@ -347,16 +348,40 @@
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
                             <a href="./${fileName}" download class="w-9 h-9 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center"><i class="fas fa-download text-xs"></i></a>
-                            <button onclick="shareFileNative('${item.name}', '${catName}', '${fileUrl}')" class="w-9 h-9 bg-green-50 text-green-600 rounded-full flex items-center justify-center"><i class="fab fa-whatsapp"></i></button>
+                            <button onclick="shareFileNative('${item.name}', '${catName}', '${fileUrl}', '${fileName}')" class="w-9 h-9 bg-green-50 text-green-600 rounded-full flex items-center justify-center"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
             });
         }
 
-        async function shareFileNative(productName, categoryName, fileUrl) {
-            const shareText = `Hello! Please find the official ${categoryName} for ${productName} here:\n\n${fileUrl}`;
-            if (navigator.share) await navigator.share({ title: productName, text: shareText });
-            else shareOnWhatsApp(shareText);
+        // Updated function to fetch the PDF and natively share the actual file
+        async function shareFileNative(productName, categoryName, fileUrl, fileName) {
+            try {
+                // Fetch the PDF file as a blob
+                const response = await fetch(fileUrl);
+                const blob = await response.blob();
+                
+                // Convert blob into a File object for the native sharing API
+                const file = new File([blob], fileName, { type: 'application/pdf' });
+                const shareText = `*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} attached.`;
+
+                // Trigger Web Share API with the physical file
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: productName,
+                        text: shareText
+                    });
+                } else {
+                    // Fallback for browsers/devices that don't support file sharing
+                    alert("Your device browser doesn't support direct file sharing. The link will be shared instead.");
+                    shareOnWhatsApp(`*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} here:\n\n${fileUrl}`);
+                }
+            } catch (error) {
+                console.log('Error fetching or sharing file:', error);
+                // Hard fallback if the fetch fails (e.g. running locally without a server)
+                shareOnWhatsApp(`*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} here:\n\n${fileUrl}`);
+            }
         }
         
         // --- CUSTOMER APP LINK SHARE ---
