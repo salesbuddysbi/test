@@ -9,14 +9,11 @@
     
     <title>Sales Buddy | SBI General</title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- CSV Parser & PDF Generators -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
@@ -50,12 +47,9 @@
 </head>
 <body class="bg-sbiLight text-sbiDark font-sans antialiased overflow-x-hidden selection:bg-sbiBlue selection:text-white flex flex-col min-h-[100dvh]">
 
-    <!-- APP HEADER -->
     <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center">
-        <!-- Desktop max-width limit for nav -->
         <div class="px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
-            <!-- TYPOGRAPHY LOGO -->
             <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
                 <span class="font-extrabold text-sbiPurple text-xl leading-none tracking-tight">Sales Buddy</span>
                 <span class="font-bold text-gray-400 text-[9px] uppercase tracking-[0.2em] mt-0.5">One Touch Point</span>
@@ -67,15 +61,12 @@
         </div>
     </nav>
 
-    <!-- MAIN APP CONTAINER -->
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
-        <!-- 1. DASHBOARD (HOME VIEW) -->
         <div id="homeView" class="app-view flex flex-col flex-grow transition-opacity duration-300 w-full max-w-3xl mx-auto">
 
             <div class="px-5 flex-grow mt-6">
                 
-                <!-- GREETING & PROFESSIONAL CONTEXT -->
                 <div class="mb-6">
                     <h1 class="text-[26px] font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
                     <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Wishing you a wonderful day! Please choose an option below to continue.</p>
@@ -142,7 +133,6 @@
             </footer>
         </div>
 
-        <!-- 2. QUOTE PAGE VIEW -->
         <div id="quotePageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max">
                 <i class="fas fa-arrow-left"></i> Back
@@ -172,7 +162,6 @@
             </div>
         </div>
 
-        <!-- 3. CASHLESS HOSPITAL VIEW -->
         <div id="cashlessView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 flex flex-col h-full w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-4 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max shrink-0">
                 <i class="fas fa-arrow-left"></i> Back
@@ -182,15 +171,11 @@
                 <h2 class="text-2xl font-bold text-sbiDark mb-1">Network Hospitals</h2>
             </div>
 
-            <!-- Pre-loader & Upload State -->
             <div id="cashlessStateContainer" class="flex-grow flex items-center justify-center mb-8">
-                <!-- Dynamically populated via JS -->
-            </div>
+                </div>
 
-            <!-- Main Interactive Search Interface -->
             <div id="cashlessSearchContainer" class="hidden flex-grow flex flex-col h-full pb-4">
                 
-                <!-- Category Form -->
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4 shrink-0 flex flex-col gap-3">
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block">Search Category</label>
@@ -229,7 +214,6 @@
                     </button>
                 </div>
 
-                <!-- Action Bar (Hidden until search yields results) -->
                 <div id="actionButtons" class="flex gap-3 mb-4 shrink-0 hidden">
                     <button onclick="downloadHospitalsPDF()" class="flex-1 bg-sbiBlue text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 active:bg-blue-600 transition-colors shadow-sm">
                         <i class="fas fa-file-pdf"></i> Download PDF
@@ -239,21 +223,18 @@
                     </button>
                 </div>
 
-                <!-- Results Area -->
                 <div id="resultsWrapper" class="flex-grow relative overflow-hidden flex flex-col hidden">
                     <p class="text-xs text-gray-500 mb-2 font-medium flex justify-between items-center">
                         <span>Found: <span id="hospCount" class="font-bold text-sbiDark">0</span> matches</span>
                         <span id="previewNote" class="text-[9px] uppercase text-sbiBlue font-bold bg-blue-50 px-2 py-0.5 rounded">Preview Mode</span>
                     </p>
                     <div id="hospitalsContainer" class="flex-grow overflow-y-auto pb-6 flex flex-col gap-3">
-                        <!-- Cards injected via JS -->
-                    </div>
+                        </div>
                 </div>
 
             </div>
         </div>
         
-        <!-- 4. IFRAME CALCULATOR VIEW -->
         <div id="calculatorView" class="app-view hidden flex-grow flex flex-col bg-white transition-opacity duration-300">
             <div class="w-full max-w-3xl mx-auto bg-white border-b border-gray-100 shadow-sm z-10 px-4 py-2 flex items-center">
                 <button onclick="navigateTo(currentCalcBackTarget)" class="text-gray-700 active:text-sbiBlue font-medium flex items-center gap-2 p-2 -ml-2 rounded-lg">
@@ -266,24 +247,22 @@
             </div>
         </div>
 
-        <!-- 5. DOWNLOADS CATEGORY VIEW -->
         <div id="downloadsPageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Back</button>
             <div class="mb-5"><h2 class="text-2xl font-bold text-sbiDark mb-1">Downloads</h2></div>
             <div class="flex flex-col gap-3 pb-8">
+                <button onclick="openDownloadCategory('Important Lists', 'list')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-teal-500"><i class="fas fa-list-check text-teal-500 text-lg"></i> <h3 class="font-bold text-[15px]">Important Lists</h3></button>
                 <button onclick="openDownloadCategory('Brochures', 'brochure')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-sbiBlue"><i class="fas fa-book-open text-sbiBlue text-lg"></i> <h3 class="font-bold text-[15px]">Brochures</h3></button>
                 <button onclick="openDownloadCategory('Proposal Forms', 'proposal')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-sbiPurple"><i class="fas fa-file-signature text-sbiPurple text-lg"></i> <h3 class="font-bold text-[15px]">Proposal Forms</h3></button>
                 <button onclick="openDownloadCategory('Policy Wordings', 'policy')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-green-500"><i class="fas fa-file-contract text-green-500 text-lg"></i> <h3 class="font-bold text-[15px]">Policy Wordings</h3></button>
                 <button onclick="openDownloadCategory('Claim Forms', 'claim')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-red-500"><i class="fas fa-file-medical text-red-500 text-lg"></i> <h3 class="font-bold text-[15px]">Claim Forms</h3></button>
                 <button onclick="openDownloadCategory('Other Forms', 'other')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-orange-500"><i class="fas fa-folder-open text-orange-500 text-lg"></i> <h3 class="font-bold text-[15px]">Other Forms</h3></button>
-                <button onclick="openDownloadCategory('Important Lists', 'list')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-teal-500"><i class="fas fa-list-check text-teal-500 text-lg"></i> <h3 class="font-bold text-[15px]">Important Lists</h3></button>
             </div>
         </div>
 
-        <!-- 6. DOWNLOADS LIST VIEW -->
         <div id="downloadsListView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('downloadsPageView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Folders</button>
-            <div class="mb-5"><h2 id="downloadCategoryTitle" class="text-2xl font-bold text-sbiDark">Category</h2></div>
+            <div class="mb-2"><h2 id="downloadCategoryTitle" class="text-2xl font-bold text-sbiDark">Category</h2></div>
             <div id="downloadFilesContainer" class="flex flex-col gap-3 pb-10"></div>
         </div>
     </main>
@@ -317,13 +296,22 @@
             'claim': [{name: "Health Alpha", slug: "health_alpha_claim"}, {name: "Super Health", slug: "super_health_claim"}, {name: "Super Top-Up", slug: "super_top_up_claim"}],
             'other': [{name: "AML Form", slug: "aml_form"}, {name: "Form 97", slug: "form_97"}],
             'list': [
-                {name: "Annexure II", slug: "annexure_ii", icon: "📄"}, 
-                {name: "Specific List", slug: "specific_list", icon: "📋"}, 
-                {name: "Health Multiplier", slug: "health_multiplier", icon: "✖️"}, 
-                {name: "Medical Treatment Abroad", slug: "medical_abroad", icon: "✈️"},
-                {name: "Adventure Sports", slug: "adventure_sports", icon: "🪂"},
-                {name: "Gym & Sports Injury", slug: "gym_sports_injury", icon: "🏋️"},
-                {name: "Global Cover", slug: "global_cover", icon: "🌍"}
+                // Group 1: Common Lists
+                {group: "Common Lists", name: "Specific Waiting Period", slug: "specific_waiting_period", icon: "⏳"}, 
+                {group: "Common Lists", name: "Annexure II (Non-Payable Items)", slug: "annexure_ii", icon: "📄"}, 
+                {group: "Common Lists", name: "Day Care", slug: "day_care", icon: "🏥"},
+                
+                // Group 2: Super Health Lists
+                {group: "Super Health Lists", name: "Health Multiplier", slug: "health_multiplier", icon: "✖️"}, 
+                {group: "Super Health Lists", name: "Medical Treatment Abroad", slug: "medical_abroad", icon: "✈️"},
+                
+                // Group 3: Health Alpha Lists
+                {group: "Health Alpha Lists", name: "Adventure Sports", slug: "adventure_sports", icon: "🪂"},
+                {group: "Health Alpha Lists", name: "Gym and Sports Injury", slug: "gym_sports_injury", icon: "🏋️"},
+                {group: "Health Alpha Lists", name: "Global Coverage", slug: "health_alpha_global_cover", icon: "🌍"},
+                
+                // Group 4: Super Top-Up Lists
+                {group: "Super Top-Up Lists", name: "Global Coverage", slug: "super_top_up_global_cover", icon: "🌍"}
             ]
         };
 
@@ -333,13 +321,26 @@
             const container = document.getElementById('downloadFilesContainer');
             container.innerHTML = ''; 
             
+            let currentGroup = "";
+
             (docDatabase[catSlug] || []).forEach(item => {
-                const fileName = item.slug + ".pdf";
+                // RENDER SUB-HEADERS IF ITEM HAS A GROUP
+                if (item.group && item.group !== currentGroup) {
+                    currentGroup = item.group;
+                    container.innerHTML += `<h3 class="text-xs font-extrabold text-gray-400 uppercase tracking-wider mt-4 mb-1 pl-1">${currentGroup}</h3>`;
+                }
+
+                const serverFileName = item.slug + ".pdf";
                 const baseUrl = window.location.href.split('index.html')[0];
-                const fileUrl = baseUrl.endsWith('/') ? baseUrl + fileName : baseUrl + '/' + fileName;
+                const fileUrl = baseUrl.endsWith('/') ? baseUrl + serverFileName : baseUrl + '/' + serverFileName;
                 const iconDisplay = item.icon ? `<div class="text-xl">${item.icon}</div>` : `<i class="fas fa-file-pdf text-red-500 text-lg"></i>`;
 
-                // Passed fileName dynamically into the native share function
+                // SMART CLEAN NAME GENERATOR
+                let singularCat = catName.replace(/s$/, ''); // Removes trailing 's' (Brochures -> Brochure)
+                let cleanFileName = ['Other Forms', 'Important Lists'].includes(catName) 
+                    ? `${item.name}.pdf` 
+                    : `${item.name} ${singularCat}.pdf`;
+
                 container.innerHTML += `
                     <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
@@ -347,25 +348,21 @@
                             <div class="truncate"><h4 class="font-bold text-sm text-sbiDark truncate">${item.name}</h4></div>
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
-                            <a href="./${fileName}" download class="w-9 h-9 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center"><i class="fas fa-download text-xs"></i></a>
-                            <button onclick="shareFileNative('${item.name}', '${catName}', '${fileUrl}', '${fileName}')" class="w-9 h-9 bg-green-50 text-green-600 rounded-full flex items-center justify-center"><i class="fab fa-whatsapp"></i></button>
+                            <a href="./${serverFileName}" download="${cleanFileName}" class="w-9 h-9 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center"><i class="fas fa-download text-xs"></i></a>
+                            <button onclick="shareFileNative('${item.name}', '${catName}', '${fileUrl}', '${cleanFileName}')" class="w-9 h-9 bg-green-50 text-green-600 rounded-full flex items-center justify-center"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
             });
         }
 
-        // Updated function to fetch the PDF and natively share the actual file
-        async function shareFileNative(productName, categoryName, fileUrl, fileName) {
+        async function shareFileNative(productName, categoryName, fileUrl, cleanFileName) {
             try {
-                // Fetch the PDF file as a blob
                 const response = await fetch(fileUrl);
                 const blob = await response.blob();
                 
-                // Convert blob into a File object for the native sharing API
-                const file = new File([blob], fileName, { type: 'application/pdf' });
+                const file = new File([blob], cleanFileName, { type: 'application/pdf' });
                 const shareText = `*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} attached.`;
 
-                // Trigger Web Share API with the physical file
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
@@ -373,13 +370,11 @@
                         text: shareText
                     });
                 } else {
-                    // Fallback for browsers/devices that don't support file sharing
                     alert("Your device browser doesn't support direct file sharing. The link will be shared instead.");
                     shareOnWhatsApp(`*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} here:\n\n${fileUrl}`);
                 }
             } catch (error) {
                 console.log('Error fetching or sharing file:', error);
-                // Hard fallback if the fetch fails (e.g. running locally without a server)
                 shareOnWhatsApp(`*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} here:\n\n${fileUrl}`);
             }
         }
@@ -401,7 +396,6 @@
             const stateContainer = document.getElementById('cashlessStateContainer');
             stateContainer.innerHTML = '<div class="text-center py-10 text-gray-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 text-sbiBlue"></i><br><span class="text-sm font-medium">Looking for database...</span></div>';
             
-            // Try fetching from Repo first
             Papa.parse('./network_hospitals.csv', {
                 download: true,
                 header: true,
@@ -410,7 +404,6 @@
                     processHospitalData(results.data);
                 },
                 error: function() {
-                    // File not found (or CORS error). Fallback to manual upload UI.
                     renderUploadUI();
                 }
             });
@@ -489,7 +482,6 @@
                 document.getElementById('wrapper_city').classList.remove('hidden');
             }
 
-            // Reset UI state when switching categories
             document.getElementById('resultsWrapper').classList.add('hidden');
             document.getElementById('actionButtons').classList.add('hidden');
         }
@@ -523,7 +515,6 @@
             }
         }
 
-        // Helper to format the current search criteria into a clean string
         function getSearchSummary() {
             const cat = document.getElementById('searchCategory').value;
             const term = document.getElementById('hospSearchText').value.trim();
@@ -545,15 +536,13 @@
             const dist = document.getElementById('districtSelect').value;
             const city = document.getElementById('citySelect').value;
 
-            // Form Validations based on chosen category
             if (cat === 'state' && !state) return alert("Please select a State to search.");
             if (cat === 'district' && (!state || !dist)) return alert("Please select both State and District.");
             if (cat === 'city' && (!state || !dist || !city)) return alert("Please select State, District, and City.");
 
-            // Data Filtering
             filteredHospitals = allHospitals.filter(h => {
                 if (cat === 'pan_india') {
-                    if (!term) return true; // Show all if empty
+                    if (!term) return true;
                     return h.Name.toLowerCase().includes(term) || h.Pincode.includes(term) || h.City.toLowerCase().includes(term);
                 }
                 if (cat === 'state') return h.State === state;
@@ -572,15 +561,12 @@
             
             if(filteredHospitals.length === 0) {
                 container.innerHTML = '<div class="text-center py-6 text-gray-400 text-sm">No network hospitals found matching your search.</div>';
-                document.getElementById('actionButtons').classList.add('hidden'); // Hide buttons if 0 results
+                document.getElementById('actionButtons').classList.add('hidden');
                 document.getElementById('previewNote').classList.add('hidden');
                 return;
             }
 
-            // Show Download/Share buttons only on successful search
             document.getElementById('actionButtons').classList.remove('hidden');
-
-            // Limit UI rendering to 50 max to keep the app highly responsive
             const renderLimit = Math.min(filteredHospitals.length, 50);
             document.getElementById('previewNote').classList.toggle('hidden', filteredHospitals.length <= 50);
 
@@ -611,7 +597,7 @@
             const doc = new jsPDF('landscape');
             
             doc.setFontSize(18);
-            doc.setTextColor(128, 28, 125); // SBI Purple
+            doc.setTextColor(128, 28, 125);
             doc.text("SBI General - Cashless Network Hospitals", 14, 20);
             
             doc.setFontSize(10);
@@ -627,7 +613,7 @@
                 head: [['Hospital Name', 'Address', 'City', 'District', 'State', 'Pincode']],
                 body: tableData,
                 theme: 'grid',
-                headStyles: { fillColor: [0, 169, 224] }, // SBI Blue
+                headStyles: { fillColor: [0, 169, 224] },
                 styles: { fontSize: 8, cellPadding: 3 },
                 columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 80 } }
             });
@@ -638,19 +624,18 @@
         function downloadHospitalsPDF() {
             if (filteredHospitals.length === 0) return alert("No results to download.");
             const doc = getPDFDocument();
-            doc.save('Cashless_Hospitals_SBIG.pdf');
+            doc.save('Cashless Network Hospitals - SBI General.pdf');
         }
 
         async function shareHospitalsWA() {
             if (filteredHospitals.length === 0) return alert("No results to share.");
             
-            // Generate formatted WhatsApp Text
             const searchSummary = getSearchSummary();
             const waText = `*🏥 SBI General Insurance*\n*Cashless Network Hospitals*\n\n*Search Criteria:* ${searchSummary}\n*Total Hospitals Found:* ${filteredHospitals.length}\n\n_Please find the complete list attached as a PDF document._`;
 
             const doc = getPDFDocument();
             const pdfBlob = doc.output('blob');
-            const file = new File([pdfBlob], 'Cashless_Hospitals_SBIG.pdf', { type: 'application/pdf' });
+            const file = new File([pdfBlob], 'Cashless Network Hospitals - SBI General.pdf', { type: 'application/pdf' });
             
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
@@ -663,11 +648,8 @@
                     console.log('Sharing failed or cancelled:', error);
                 }
             } else {
-                // Fallback for desktop browsers without file share capabilities
                 alert("Your device browser doesn't support direct file sharing. The PDF will be downloaded instead so you can attach it manually.");
                 downloadHospitalsPDF();
-                
-                // Still try to open WhatsApp Web with the formatted text
                 setTimeout(() => { shareOnWhatsApp(waText); }, 1500);
             }
         }
