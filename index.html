@@ -9,11 +9,14 @@
     
     <title>Sales Buddy | SBI General</title>
     
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- CSV Parser & PDF Generators -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
@@ -47,9 +50,12 @@
 </head>
 <body class="bg-sbiLight text-sbiDark font-sans antialiased overflow-x-hidden selection:bg-sbiBlue selection:text-white flex flex-col min-h-[100dvh]">
 
+    <!-- APP HEADER -->
     <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center">
+        <!-- Desktop max-width limit for nav -->
         <div class="px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
+            <!-- TYPOGRAPHY LOGO -->
             <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
                 <span class="font-extrabold text-sbiPurple text-xl leading-none tracking-tight">Sales Buddy</span>
                 <span class="font-bold text-gray-400 text-[9px] uppercase tracking-[0.2em] mt-0.5">One Touch Point</span>
@@ -61,12 +67,15 @@
         </div>
     </nav>
 
+    <!-- MAIN APP CONTAINER -->
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
+        <!-- 1. DASHBOARD (HOME VIEW) -->
         <div id="homeView" class="app-view flex flex-col flex-grow transition-opacity duration-300 w-full max-w-3xl mx-auto">
 
             <div class="px-5 flex-grow mt-6">
                 
+                <!-- GREETING & PROFESSIONAL CONTEXT -->
                 <div class="mb-6">
                     <h1 class="text-[26px] font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
                     <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Wishing you a wonderful day! Please choose an option below to continue.</p>
@@ -133,6 +142,7 @@
             </footer>
         </div>
 
+        <!-- 2. QUOTE PAGE VIEW -->
         <div id="quotePageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max">
                 <i class="fas fa-arrow-left"></i> Back
@@ -162,6 +172,7 @@
             </div>
         </div>
 
+        <!-- 3. CASHLESS HOSPITAL VIEW -->
         <div id="cashlessView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 flex flex-col h-full w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-4 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max shrink-0">
                 <i class="fas fa-arrow-left"></i> Back
@@ -171,11 +182,15 @@
                 <h2 class="text-2xl font-bold text-sbiDark mb-1">Network Hospitals</h2>
             </div>
 
+            <!-- Pre-loader & Upload State -->
             <div id="cashlessStateContainer" class="flex-grow flex items-center justify-center mb-8">
-                </div>
+                <!-- Dynamically populated via JS -->
+            </div>
 
+            <!-- Main Interactive Search Interface -->
             <div id="cashlessSearchContainer" class="hidden flex-grow flex flex-col h-full pb-4">
                 
+                <!-- Category Form -->
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4 shrink-0 flex flex-col gap-3">
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block">Search Category</label>
@@ -214,6 +229,7 @@
                     </button>
                 </div>
 
+                <!-- Action Bar (Hidden until search yields results) -->
                 <div id="actionButtons" class="flex gap-3 mb-4 shrink-0 hidden">
                     <button onclick="downloadHospitalsPDF()" class="flex-1 bg-sbiBlue text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 active:bg-blue-600 transition-colors shadow-sm">
                         <i class="fas fa-file-pdf"></i> Download PDF
@@ -223,18 +239,21 @@
                     </button>
                 </div>
 
+                <!-- Results Area -->
                 <div id="resultsWrapper" class="flex-grow relative overflow-hidden flex flex-col hidden">
                     <p class="text-xs text-gray-500 mb-2 font-medium flex justify-between items-center">
                         <span>Found: <span id="hospCount" class="font-bold text-sbiDark">0</span> matches</span>
                         <span id="previewNote" class="text-[9px] uppercase text-sbiBlue font-bold bg-blue-50 px-2 py-0.5 rounded">Preview Mode</span>
                     </p>
                     <div id="hospitalsContainer" class="flex-grow overflow-y-auto pb-6 flex flex-col gap-3">
-                        </div>
+                        <!-- Cards injected via JS -->
+                    </div>
                 </div>
 
             </div>
         </div>
         
+        <!-- 4. IFRAME CALCULATOR VIEW -->
         <div id="calculatorView" class="app-view hidden flex-grow flex flex-col bg-white transition-opacity duration-300">
             <div class="w-full max-w-3xl mx-auto bg-white border-b border-gray-100 shadow-sm z-10 px-4 py-2 flex items-center">
                 <button onclick="navigateTo(currentCalcBackTarget)" class="text-gray-700 active:text-sbiBlue font-medium flex items-center gap-2 p-2 -ml-2 rounded-lg">
@@ -247,10 +266,12 @@
             </div>
         </div>
 
+        <!-- 5. DOWNLOADS CATEGORY VIEW -->
         <div id="downloadsPageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Back</button>
             <div class="mb-5"><h2 class="text-2xl font-bold text-sbiDark mb-1">Downloads</h2></div>
             <div class="flex flex-col gap-3 pb-8">
+                <!-- Moved Important Lists to the top -->
                 <button onclick="openDownloadCategory('Important Lists', 'list')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-teal-500"><i class="fas fa-list-check text-teal-500 text-lg"></i> <h3 class="font-bold text-[15px]">Important Lists</h3></button>
                 <button onclick="openDownloadCategory('Brochures', 'brochure')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-sbiBlue"><i class="fas fa-book-open text-sbiBlue text-lg"></i> <h3 class="font-bold text-[15px]">Brochures</h3></button>
                 <button onclick="openDownloadCategory('Proposal Forms', 'proposal')" class="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 flex items-center gap-3.5 text-left border-l-4 border-l-sbiPurple"><i class="fas fa-file-signature text-sbiPurple text-lg"></i> <h3 class="font-bold text-[15px]">Proposal Forms</h3></button>
@@ -260,6 +281,7 @@
             </div>
         </div>
 
+        <!-- 6. DOWNLOADS LIST VIEW -->
         <div id="downloadsListView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('downloadsPageView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max"><i class="fas fa-arrow-left"></i> Folders</button>
             <div class="mb-2"><h2 id="downloadCategoryTitle" class="text-2xl font-bold text-sbiDark">Category</h2></div>
@@ -341,6 +363,11 @@
                     ? `${item.name}.pdf` 
                     : `${item.name} ${singularCat}.pdf`;
 
+                // Safely escape strings to pass into the onclick function
+                const safeName = item.name.replace(/'/g, "\\'");
+                const safeGroup = (item.group || '').replace(/'/g, "\\'");
+                const safeCleanName = cleanFileName.replace(/'/g, "\\'");
+
                 container.innerHTML += `
                     <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
@@ -349,33 +376,49 @@
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
                             <a href="./${serverFileName}" download="${cleanFileName}" class="w-9 h-9 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center"><i class="fas fa-download text-xs"></i></a>
-                            <button onclick="shareFileNative('${item.name}', '${catName}', '${fileUrl}', '${cleanFileName}')" class="w-9 h-9 bg-green-50 text-green-600 rounded-full flex items-center justify-center"><i class="fab fa-whatsapp"></i></button>
+                            <button onclick="shareFileNative('${safeName}', '${catName}', '${fileUrl}', '${safeCleanName}', '${safeGroup}')" class="w-9 h-9 bg-green-50 text-green-600 rounded-full flex items-center justify-center"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
             });
         }
 
-        async function shareFileNative(productName, categoryName, fileUrl, cleanFileName) {
+        async function shareFileNative(itemName, categoryName, fileUrl, cleanFileName, groupName) {
+            
+            // SMART CONTEXTUAL WHATSAPP TEXT GENERATOR
+            let shareText = "";
+            let baseFileName = cleanFileName.replace('.pdf', '');
+
+            if (groupName && groupName !== 'Common Lists') {
+                // If it's a specific product list (e.g. "Super Health Lists"), strip the word "Lists"
+                let prodName = groupName.replace(" Lists", "");
+                shareText = `*${prodName}*\n\nPlease find the official document for *${baseFileName}* attached.`;
+            } else if (categoryName !== 'Important Lists' && !['Other Forms'].includes(categoryName)) {
+                // If it's a Brochure/Proposal Form, the item name IS the product (e.g. "Health Alpha")
+                shareText = `*${itemName}*\n\nPlease find the official document for *${baseFileName}* attached.`;
+            } else {
+                // If it's a generic form or Common List
+                shareText = `Please find the official document for *${baseFileName}* attached.`;
+            }
+
             try {
                 const response = await fetch(fileUrl);
                 const blob = await response.blob();
                 
                 const file = new File([blob], cleanFileName, { type: 'application/pdf' });
-                const shareText = `*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} attached.`;
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
-                        title: productName,
+                        title: itemName,
                         text: shareText
                     });
                 } else {
                     alert("Your device browser doesn't support direct file sharing. The link will be shared instead.");
-                    shareOnWhatsApp(`*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} here:\n\n${fileUrl}`);
+                    shareOnWhatsApp(`${shareText}\n\n${fileUrl}`);
                 }
             } catch (error) {
                 console.log('Error fetching or sharing file:', error);
-                shareOnWhatsApp(`*SBI General Insurance*\n*${categoryName}*\n\nPlease find the official document for ${productName} here:\n\n${fileUrl}`);
+                shareOnWhatsApp(`${shareText}\n\n${fileUrl}`);
             }
         }
         
