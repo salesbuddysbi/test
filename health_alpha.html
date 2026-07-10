@@ -11,10 +11,12 @@
         :root { --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-color: #764ba2; --border-color: #e2e8f0; }
         body { margin: 0; background: #f0f4f8; font-family: 'Segoe UI', sans-serif; padding-bottom: 40px; }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
         .section-title { display: flex; align-items: center; margin-bottom: 16px; }
-        .section-title .tag { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--accent-color); background: rgba(118, 75, 162, 0.1); padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; margin-right:10px;}
-        .section-title .divider { flex: 1; height: 2px; background: linear-gradient(to right, var(--border-color), transparent); }
+        .section-title .tag { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--accent-color); background: rgba(118, 75, 162, 0.1); padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px;}
+        .section-title .divider { flex: 1; height: 2px; background: linear-gradient(to right, var(--border-color), transparent); margin-left: 12px;}
+        
         .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
         .col-6 { grid-column: span 6; } .col-12 { grid-column: span 12; }
         @media (max-width: 768px) { .col-6 { grid-column: span 12; } }
@@ -45,52 +47,67 @@
 
         #results-container { display: none; margin-top: 40px; }
         .results-header { text-align: center; margin-bottom: 20px; color: var(--accent-color); font-weight: 800; font-size: 20px; }
-        .premium-breakdown-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
+        
+        /* UI GRID FIX FOR SQUISHED MOBILE CARDS */
+        .premium-breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .premium-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .p-card-header { padding: 15px 5px; text-align: center; color: white; font-weight: 800; font-size: 15px; text-transform: uppercase; }
+        .p-card-header { padding: 15px 5px; text-align: center; color: white; font-weight: 800; font-size: 14px; text-transform: uppercase; }
         .header-purple { background: linear-gradient(135deg, #4a148c 0%, #764ba2 100%); }
         .header-blue { background: linear-gradient(135deg, #0288d1 0%, #29b6f6 100%); }
         .p-card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .p-final-container { text-align: center; }
-        .p-final-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
-        .p-final-amount { font-size: 26px; font-weight: 900; color: var(--accent-color); line-height: 1.1; }
-        .p-saved-box { background: #dcfce7; border-radius: 6px; padding: 6px; color: #166534; font-weight: 700; font-size: 12px; margin-top: 5px; }
+        .p-final-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .p-final-amount { font-size: 22px; font-weight: 900; color: var(--accent-color); line-height: 1.2; }
+        .p-saved-box { background: #dcfce7; border-radius: 6px; padding: 6px; color: #166534; font-weight: 700; font-size: 11px; margin-top: 5px; }
+
+        .features-container { background: #fff; border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .feat-item { display: flex; flex-direction: column; gap: 4px; }
+        .feat-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+        .feat-val { font-size: 14px; color: #1e293b; font-weight: 600; }
+        .feat-icon { color: var(--accent-color); margin-bottom: 5px; font-size: 16px; }
+
+        .result-actions-bar { display: flex; gap: 20px; margin-top: 30px; justify-content: center; max-width: 900px; margin-left: auto; margin-right: auto; }
+        @media (max-width: 600px) { .result-actions-bar { flex-direction: column; gap: 10px; } }
 
         /* ======================================================== */
-        /* PDF OVERLAY - PERFECTED A4 STYLING */
+        /* PDF OVERLAY - STYLING WITH BACKGROUNDS & TIERS */
         /* ======================================================== */
         #pdf-overlay-root { display: none; position: absolute; left: -9999px; }
-        .pdf-export-wrapper { width: 794px; background: white; }
+        .pdf-export-wrapper { width: 794px; background: white; margin: 0; padding: 0; line-height: 1.3;}
         
-        .pdf-cover-page { width: 794px; height: 1123px; overflow: hidden; }
+        .pdf-cover-page { width: 794px; height: 1122px; overflow: hidden; }
         .pdf-cover-page img { width: 100%; height: 100%; object-fit: contain; }
 
         .pdf-page-container { 
-            width: 794px; height: 1123px; 
+            width: 794px; 
+            height: 1122px; 
             background-image: url('alphabackground.png'); 
-            background-size: cover; background-position: bottom center; 
-            padding: 35px 30px; box-sizing: border-box; 
-            page-break-before: always; /* Strict CSS pagination */
+            background-size: 100% 100%; 
+            background-repeat: no-repeat;
+            /* CRITICAL FIX: 240px bottom padding to stop content from covering the image */
+            padding: 30px 30px 240px 30px; 
+            box-sizing: border-box; 
             display: flex; flex-direction: column;
         }
         
         .pdf-content-wrapper { 
-            background: rgba(255, 255, 255, 0.80); /* Translucent to show background */
-            padding: 25px; border-radius: 16px; 
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            /* Height is auto so it doesn't block the bottom people image */
-            height: auto; margin-bottom: auto; 
+            background: rgba(255, 255, 255, 0.94); /* Slightly opaque to ensure readability */
+            padding: 20px 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            flex: 1; /* Automatically stretches but obeys the bottom padding */
+            display: flex; flex-direction: column;
         }
 
         .pdf-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #764ba2; padding-bottom: 5px; margin-bottom: 12px; }
         .pdf-title-main { font-size: 16px; font-weight: 900; color: #764ba2; text-transform: uppercase; }
-        .pdf-subtitle { font-size: 11px; color: #475569; }
+        .pdf-subtitle { font-size: 10px; color: #475569; }
 
         .pdf-details-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 9px; }
         .pdf-details-tbl td { border: 1px solid rgba(203, 213, 225, 0.8); padding: 4px 6px; }
         .pdf-details-tbl td.lbl { background: rgba(248, 250, 252, 0.9); font-weight: 700; color: #475569; width: 15%; }
-        .pdf-details-tbl td.val { width: 35%; font-weight: 600; color: #0f172a; background: rgba(255, 255, 255, 0.6); }
+        .pdf-details-tbl td.val { width: 35%; font-weight: 600; color: #0f172a; background: rgba(255, 255, 255, 0.5); }
 
         .pdf-sec-title { font-size: 9px; font-weight: 800; color: #1e293b; text-transform: uppercase; background: rgba(241, 245, 249, 0.9); padding: 4px 8px; border-left: 4px solid #764ba2; margin-bottom: 8px; }
 
@@ -103,26 +120,28 @@
         .tier-save { color: #16a34a; font-size: 8px; font-weight: 800; margin-top: 2px; }
         .si-sub { font-size: 7px; color: #64748b; font-weight: 600; display: block; text-transform: uppercase; margin-top: 1px;}
 
-        /* INBUILT FEATURES (Fixed text overlapping issue via margins) */
-        .pdf-grid-4 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 12px; margin-bottom: 15px; }
-        .pdf-feat-box { display: flex; align-items: center; padding: 3px 0; border-bottom: 1px dotted rgba(203, 213, 225, 0.8); }
+        /* INBUILT FEATURES */
+        .pdf-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 12px; margin-bottom: 15px; }
+        .pdf-feat-box { display: flex; align-items: center; padding: 2px 0; border-bottom: 1px dotted rgba(203, 213, 225, 0.8); }
         .pdf-icon-wrap { color: #764ba2; font-size: 11px; width: 18px; text-align: left; flex-shrink: 0; margin-right: 4px; }
         .pdf-feat-text { display: flex; flex-direction: column; flex: 1; }
-        .pdf-feat-l { font-size: 7px; font-weight: 800; color: #64748b; text-transform: uppercase; line-height: 1.1; margin-bottom: 1px; }
-        .pdf-feat-v { font-size: 8px; font-weight: 800; color: #0f172a; line-height: 1.1; }
+        .pdf-feat-l { font-size: 7px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 1px; }
+        .pdf-feat-v { font-size: 8px; font-weight: 800; color: #0f172a; }
 
-        /* BOTTOM COLUMNS */
+        /* BOTTOM COLUMNS (FIX FOR MERGED TEXT) */
         .pdf-cols-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 5px; }
-        .pdf-col { border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 6px; padding: 6px; background: rgba(255, 255, 255, 0.9); }
+        .pdf-col { border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 6px; padding: 8px; background: rgba(255, 255, 255, 0.8); }
         .pdf-col-h { font-size: 8px; font-weight: 800; color: #764ba2; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px; }
-        .pdf-row-item { display: flex; align-items: center; justify-content: space-between; font-size: 7.5px; padding: 2px 0; border-bottom: 1px dashed rgba(241, 245, 249, 0.8); }
+        .pdf-row-item { display: flex; align-items: center; justify-content: space-between; font-size: 7.5px; padding: 3px 0; border-bottom: 1px dashed rgba(241, 245, 249, 0.8); }
         .pdf-row-item:last-child { border-bottom: none; }
-        .pdf-row-left { display: flex; align-items: center; }
+        
+        /* Strict sizing prevents right-side text from merging into left-side labels */
+        .pdf-row-left { display: flex; align-items: center; max-width: 55%; } 
         .pdf-row-icon { color: #764ba2; font-size: 9px; width: 14px; text-align: left; flex-shrink: 0; margin-right: 4px; }
-        .pdf-row-k { color: #555; font-weight: 600; }
-        .pdf-row-v { color: #000; font-weight: 800; }
+        .pdf-row-k { color: #555; font-weight: 600; line-height: 1.1; }
+        .pdf-row-v { color: #000; font-weight: 800; max-width: 45%; text-align: right; line-height: 1.1; }
 
-        .pdf-footer { margin-top: 15px; padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 7px; color: #64748b; text-align: justify; line-height: 1.3; }
+        .pdf-footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 7px; color: #475569; text-align: justify; line-height: 1.3; }
     </style>
 </head>
 <body>
@@ -202,11 +221,40 @@
 
         <div id="results-container">
             <div class="results-header">Detailed Premium Breakdown</div>
+            
+            <!-- FIXED UI PREMIUM GRID -->
             <div class="premium-breakdown-grid" id="premiumGridTarget"></div>
+
+            <!-- RESTORED INBUILT FEATURES HTML FOR UI & PDF TO READ -->
+            <div class="features-container" id="inbuilt-section">
+                <div class="section-title"><span class="tag"><i class="fas fa-check-circle"></i> Inbuilt Policy Benefits</span><span class="divider"></span></div>
+                <div class="feat-grid">
+                    <div class="feat-item"><i class="fas fa-procedures feat-icon"></i><div class="feat-label">In-Patient</div><div class="feat-val">Up to Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-sun feat-icon"></i><div class="feat-label">Day Care</div><div class="feat-val">Within Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-leaf feat-icon"></i><div class="feat-label">AYUSH Treatment</div><div class="feat-val">Within Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-home feat-icon"></i><div class="feat-label">Domiciliary</div><div class="feat-val">Within Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-hourglass-start feat-icon"></i><div class="feat-label">Pre-Hospitalization</div><div class="feat-val">60 Days</div></div>
+                    <div class="feat-item"><i class="fas fa-hourglass-end feat-icon"></i><div class="feat-label">Post-Hospitalization</div><div class="feat-val">90 Days</div></div>
+                    <div class="feat-item"><i class="fas fa-weight feat-icon"></i><div class="feat-label">Bariatric Surgery</div><div class="feat-val">Within Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-ambulance feat-icon"></i><div class="feat-label">Road Ambulance</div><div class="feat-val">Up to ₹3,500</div></div>
+                    <div class="feat-item"><i class="fas fa-taxi feat-icon"></i><div class="feat-label">Radio Cab</div><div class="feat-val">Up to ₹1,000</div></div>
+                    <div class="feat-item"><i class="fas fa-hand-holding-heart feat-icon"></i><div class="feat-label">Organ Donor</div><div class="feat-val">Up to Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-robot feat-icon"></i><div class="feat-label">Modern Treatment</div><div class="feat-val">Up to Sum Insured</div></div>
+                    <div class="feat-item"><i class="fas fa-sync feat-icon"></i><div class="feat-label">Restore Benefit</div><div class="feat-val">Unlimited / 100%</div></div>
+                    <div class="feat-item"><i class="fas fa-user-injured feat-icon"></i><div class="feat-label">Convalescence</div><div class="feat-val">₹5,000 (Min 7 Days)</div></div>
+                    <div class="feat-item"><i class="fas fa-stethoscope feat-icon"></i><div class="feat-label">Second Opinion</div><div class="feat-val">Covered</div></div>
+                </div>
+            </div>
+
+            <!-- RESTORED MODIFIERS & OPTIONALS -->
+            <div class="features-container" id="modifiers-display-section"><div class="section-title"><span class="tag"><i class="fas fa-sliders-h"></i> Selected Modifiers</span><span class="divider"></span></div><div class="feat-grid" id="modifiers-grid-target"></div></div>
+            <div class="features-container" id="optionals-display-section" style="display:none;"><div class="section-title"><span class="tag"><i class="fas fa-plus-circle"></i> Selected Optional Benefits</span><span class="divider"></span></div><div class="feat-grid" id="optionals-grid-target"></div></div>
+
             <div class="result-actions-bar">
                 <button id="pdfBtn" class="btn btn-green"><i class="fas fa-file-pdf"></i> Download Quote (PDF)</button>
                 <button id="waBtn" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
             </div>
+            <div style="text-align:center; margin-top:15px; font-size:11px; color:#94a3b8; font-style:italic;">Multi-year premiums account for age progression.</div>
         </div>
     </div>
 
@@ -546,6 +594,21 @@
                 if(yr === 1) window.lastCalculatedPremium = yrData.prem;
             }
 
+            const optGrid = document.getElementById('optionals-grid-target'); optGrid.innerHTML = '';
+            const optionalMap = [ { label: 'Consumables', val: document.getElementById('consumables').value, icon: 'fa-box-open' }, { label: 'Air Ambulance', val: document.getElementById('airAmbulance').value, icon: 'fa-plane' }, { label: 'Health Check', val: document.getElementById('healthCheck').value, icon: 'fa-user-md' }, { label: 'Endless SI', val: document.getElementById('endless').value, icon: 'fa-infinity' }, { label: 'Reconstructive', val: document.getElementById('reconstructive').value, icon: 'fa-crutch' }, { label: 'OPD', val: document.getElementById('opd').value, icon: 'fa-clinic-medical' }, { label: 'Hospital Cash', val: document.getElementById('hospitalCash').value, icon: 'fa-money-bill-wave' }, { label: 'Maternity', val: document.getElementById('maternity').value, icon: 'fa-baby' } ];
+            const activeOptionals = optionalMap.filter(o => o.val !== 'Not Opted' && o.val !== 'No');
+            const optSection = document.getElementById('optionals-display-section');
+            if (activeOptionals.length === 0) { optSection.style.display = 'none'; }
+            else { 
+                optSection.style.display = 'block'; 
+                activeOptionals.forEach(o => { let valDisplay = o.val; if(o.label === 'Maternity') valDisplay += ` (${document.getElementById('maternityWait').value} Wait)`; optGrid.innerHTML += `<div class="feat-item"><i class="fas ${o.icon} feat-icon"></i><div class="feat-label">${o.label}</div><div class="feat-val">${valDisplay}</div></div>`; }); 
+            }
+
+            const modGrid = document.getElementById('modifiers-grid-target'); modGrid.innerHTML = '';
+            const ncbSel = document.getElementById('ncb');
+            const modifiers = [ { label: 'Room', val: document.getElementById('roomCategory').value, icon: 'fa-bed' }, { label: 'Pre-Hosp', val: '60 Days', icon: 'fa-hourglass-start' }, { label: 'Post-Hosp', val: '90 Days', icon: 'fa-hourglass-end' }, { label: 'PED Wait', val: document.getElementById('pedWait').value, icon: 'fa-history' }, { label: 'Spec. Wait', val: document.getElementById('specWait').value, icon: 'fa-hourglass-half' }, { label: 'NCB/NCD', val: ncbSel.options[ncbSel.selectedIndex].text, icon: 'fa-star' }, { label: 'Zone', val: document.getElementById('zone').value, icon: 'fa-map-marker-alt' } ];
+            modifiers.forEach(m => { modGrid.innerHTML += `<div class="feat-item"><i class="fas ${m.icon} feat-icon"></i><div class="feat-label">${m.label}</div><div class="feat-val">${m.val}</div></div>`; });
+
             document.getElementById('results-container').style.display = 'block'; 
             document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
         }
@@ -609,11 +672,8 @@
 
             overlayRoot.innerHTML = `
                 <div class="pdf-export-wrapper" id="pdf-export-wrapper">
-                    <!-- Page 1 -->
-                    <div class="pdf-cover-page">
-                        <img src="alphacoverpage.png" alt="Cover Page">
-                    </div>
-                    <!-- Page 2 -->
+                    <div class="pdf-cover-page"><img src="alphacoverpage.png" alt="Cover Page"></div>
+                    
                     <div class="pdf-page-container">
                         <div class="pdf-content-wrapper">
                             <div class="pdf-header-row">
@@ -646,7 +706,7 @@
                 filename: `Health_Alpha_Quote_${customerName}.pdf`,
                 image: { type: 'jpeg', quality: 0.99 },
                 html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-                jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' },
+                jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait' },
                 pagebreak: { mode: 'css' }
             };
 
