@@ -226,15 +226,44 @@
         @media (max-width: 600px) { .result-actions-bar { flex-direction: column; gap: 10px; } }
 
         /* ======================================================== */
-        /* PDF OVERLAY - COMPACT/REDUCED SIZE */
+        /* PDF OVERLAY - A4 PORTRAIT REDESIGN */
         /* ======================================================== */
         #pdf-overlay-root {
             position: absolute; top: 0; left: 0; background: white; z-index: 10000; display: none;
         }
-        .pdf-page { width: 1120px; height: 780px; background: white; padding: 15px; box-sizing: border-box; border: 4px solid #764ba2; display: flex; flex-direction: column; font-family: 'Segoe UI', sans-serif; color: #333; overflow: hidden; }
+        .pdf-export-wrapper {
+            width: 794px; /* Standard A4 width */
+            background: white;
+        }
         
+        .pdf-cover-page {
+            width: 794px;
+            height: 1120px; /* Reduced slightly from 1123px to prevent spillover */
+            box-sizing: border-box;
+            background: white;
+            overflow: hidden;
+        }
+        .pdf-cover-page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Prevents image from stretching out of bounds */
+        }
+
+        .pdf-page { 
+            width: 794px; 
+            height: 1120px; /* Reduced slightly from 1123px */
+            background: white; 
+            padding: 25px; 
+            box-sizing: border-box; 
+            border: 4px solid #764ba2; 
+            display: flex; 
+            flex-direction: column; 
+            font-family: 'Segoe UI', sans-serif; 
+            color: #333; 
+            overflow: hidden; 
+        }
+
         .pdf-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #764ba2; padding-bottom: 4px; margin-bottom: 8px; }
-        
         .pdf-title-main { font-size: 16px; font-weight: 900; color: #764ba2; text-transform: uppercase; }
         .pdf-subtitle { font-size: 11px; }
 
@@ -242,36 +271,35 @@
         .pdf-details-tbl td { border: 1px solid #cbd5e1; padding: 3px 5px; }
         .pdf-details-tbl td.lbl { background: #f8fafc; font-weight: 700; color: #475569; width: 15%; }
         .pdf-details-tbl td.val { width: 35%; font-weight: 600; color: #0f172a; }
-        
+
         .pdf-sec-title { font-size: 9px; font-weight: 800; color: #1e293b; text-transform: uppercase; background: #f1f5f9; padding: 4px 8px; border-left: 4px solid #764ba2; margin-bottom: 8px; }
-        
+
         .pdf-prem-row { display: flex; gap: 6px; margin-bottom: 12px; }
         .pdf-prem-box { flex: 1; border: 1px solid #764ba2; background: #fdfdfd; border-radius: 6px; padding: 4px; text-align: center; }
-        
         .pdf-prem-yr { font-size: 8px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
         .pdf-prem-val { font-size: 14px; font-weight: 900; color: #764ba2; }
-        
-        .pdf-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 10px; margin-bottom: 12px; }
+
+        /* Changed to 3 columns to fit Portrait width properly */
+        .pdf-grid-4 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; margin-bottom: 12px; }
         .pdf-feat-box { display: flex; align-items: flex-start; gap: 6px; padding: 3px; border-bottom: 1px dotted #e2e8f0; }
-        
         .pdf-icon-wrap { color: #764ba2; font-size: 11px; width: 16px; text-align: center; padding-top: 1px; }
         .pdf-feat-text { display: flex; flex-direction: column; }
         .pdf-feat-l { font-size: 7px; font-weight: 700; color: #64748b; text-transform: uppercase; line-height: 1.1; }
         .pdf-feat-v { font-size: 9px; font-weight: 700; color: #0f172a; line-height: 1.2; }
-        
-        .pdf-cols-wrapper { display: flex; gap: 10px; flex: 1; }
-        .pdf-col { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #fff; }
+
+        /* Enforced a 3-column grid instead of loose flex to keep it uniform */
+        .pdf-cols-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; }
+        .pdf-col { border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #fff; }
         .pdf-col-h { font-size: 9px; font-weight: 800; color: #764ba2; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 5px; }
-        
+
         .pdf-row-item { display: flex; align-items: center; justify-content: space-between; font-size: 8px; padding: 2px 0; border-bottom: 1px dashed #f1f5f9; }
         .pdf-row-item:last-child { border-bottom: none; }
         .pdf-row-left { display: flex; align-items: center; gap: 5px; }
         .pdf-row-icon { color: #764ba2; font-size: 9px; width: 12px; text-align: center; }
         .pdf-row-k { color: #555; font-weight: 600; }
         .pdf-row-v { color: #000; font-weight: 700; }
-        
-        .pdf-footer { margin-top: auto; padding-top: 4px; border-top: 1px solid #cbd5e1; font-size: 7px; color: #94a3b8; text-align: justify; line-height: 1.3; }
 
+        .pdf-footer { margin-top: auto; padding-top: 4px; border-top: 1px solid #cbd5e1; font-size: 7px; color: #94a3b8; text-align: justify; line-height: 1.3; }
     </style>
 </head>
 <body>
@@ -617,7 +645,6 @@
             if (siVal < 1000000) { opdContainer.style.display = 'none'; opdSelect.value = "Not Opted"; }
             else { opdContainer.style.display = 'block'; const options = siVal <= 2500000 ? ["Not Opted", "Rs. 5,000"] : ["Not Opted", "Rs. 10,000", "Rs. 25,000"]; opdSelect.innerHTML = options.map(o => `<option ${o===opdSelect.value ? 'selected':''}>${o}</option>`).join(''); }
 
-            // UPDATED Logic to dynamically hide/show Hospital Cash specifically around 10 Lac
             const hospCashContainer = document.getElementById('hospitalCashContainer');
             const hospCashSelect = document.getElementById('hospitalCash');
             if (siVal < 1000000) {
@@ -637,7 +664,6 @@
                 const gender = card.querySelector('.gender-input').value;
                 const age = parseInt(card.querySelector('.age-input').value) || 0;
                 
-                // Allow Females >= 18 to trigger visibility (logic refined in Calculation too)
                 if (gender === 'Female' && age >= 18 && age <= 45) {
                     hasEligibleFemale = true;
                 }
@@ -742,9 +768,7 @@
              return 0;
         }
 
-        // --- Calculate Base Premium with Modifiers ---
         function calculateAndDisplay() {
-            // Validation Error Stop Check
             if (document.querySelector('.input-error')) {
                 alert("Please correct the highlighted age errors before calculating.");
                 return;
@@ -755,7 +779,6 @@
             const maxTenure = 5; 
             const policyType = document.getElementById('policyType').value;
             
-            // Gather Members Ages
             let membersAges = [];
             let femaleEligibleAges = []; 
             
@@ -783,7 +806,6 @@
                 return;
             }
 
-            // --- DISCOUNT RATES CONFIG ---
             const welcomeDiscRate = document.getElementById('welcomeDisc').value === "Yes" ? 0.05 : 0;
             const preferredDiscVal = document.getElementById('preferredNetwork').value;
             const preferredDiscRate = preferredDiscVal === "Preferred Partner" ? 0.10 : 0.00;
@@ -791,7 +813,6 @@
             const zone = document.getElementById('zone').value;
             const zoneDiscRate = (zone === 'Zone B') ? 0.20 : 0;
             
-            // Emp + Cross Sell Capping (15%)
             const employeeDiscRate = document.getElementById('employeeDiscount').value === "Yes" ? 0.05 : 0;
             const crossSellDiscRate = document.getElementById('crossSellDiscount').value === "Yes" ? 0.05 : 0;
             let cappedEmployeeRate = employeeDiscRate;
@@ -800,30 +821,26 @@
                 cappedCrossSellRate = Math.max(0, 0.15 - cappedEmployeeRate);
             }
             
-            // Floater / Individual Floater Logic
             let floaterDisc = 0;
             let indFloaterDisc = 0; 
             if (policyType === 'Family Floater') {
                 floaterDisc = getFloaterDiscount(membersAges.length);
             } 
 
-            // Room Rent Discount
             let roomRentDiscPercent = 0;
             const roomCat = document.getElementById('roomCategory').value;
             if (roomCat === "Single Pvt AC Room") roomRentDiscPercent = 0.075;
             else if (roomCat === "Twin-Sharing") roomRentDiscPercent = 0.10; 
             
-            // Waiting Period Modifiers
             const pedWaitVal = document.getElementById('pedWait').value;
             let pedModifier = 0;
-            if (pedWaitVal === "3 Year") pedModifier = 0.15; // Discount
-            else if (pedWaitVal === "1 Year") pedModifier = -0.30; // Loading
+            if (pedWaitVal === "3 Year") pedModifier = 0.15; 
+            else if (pedWaitVal === "1 Year") pedModifier = -0.30; 
             
             const specWaitVal = document.getElementById('specWait').value;
             let specWaitLoading = 0;
-            if (specWaitVal === "1 Year") specWaitLoading = 0.10; // Loading
+            if (specWaitVal === "1 Year") specWaitLoading = 0.10; 
 
-            // Cumulative Bonus (NCB) Logic
             const ncbVal = document.getElementById('ncb').value;
             let ncbLoadingPercent = 0; 
             let ncbDiscountPercent = 0; 
@@ -839,7 +856,6 @@
             else if (ncbVal === "1000") ncbLoadingPercent = 0.13; 
             else if (ncbVal === "NCD") ncbDiscountPercent = 0.025; 
 
-            // ORGAN DONOR - PER MEMBER
             const baseOrganDonorRate = getOrganDonorPremium(siVal);
             const organDonorAmt = baseOrganDonorRate * membersAges.length;
 
@@ -853,7 +869,6 @@
                 reconstructiveAmount = 550 * membersAges.length;
             }
             
-            // --- OPD CALCULATION ---
             const opdOpt = document.getElementById('opd').value;
             let opdAmount = 0;
             if(opdOpt !== 'Not Opted') {
@@ -876,14 +891,11 @@
                 opdAmount = opdAmount * 0.90; 
             }
 
-            // 2. Air Ambulance
             const airAmbOpt = document.getElementById('airAmbulance').value;
             
-            // 3. Health Check
             const healthCheckOpt = document.getElementById('healthCheck').value;
             let healthCheckAmount = 0;
             
-            // Maternity inputs
             const maternityOpt = document.getElementById('maternity').value;
             let maternityBenefitAmt = 0;
             if (maternityOpt === "Rs. 50,000") maternityBenefitAmt = 50000;
@@ -1191,9 +1203,6 @@
 
         document.getElementById('calcBtn').addEventListener('click', calculateAndDisplay);
 
-        // ============================================
-        // PDF GENERATION LOGIC
-        // ============================================
         async function generatePDFBlob(customerName, si, policyType, combination, zone, tenure, membersStr) {
             const overlayRoot = document.getElementById('pdf-overlay-root');
             
@@ -1298,46 +1307,56 @@
                 </div>`;
 
             overlayRoot.innerHTML = `
-                <div class="pdf-page" id="pdf-page-content">
-                    <div class="pdf-header-row">
-                        <div>
-                            <div class="pdf-title-main">Health Alpha Select</div>
-                            <div class="pdf-subtitle">Premium Quote Calculation</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpFkxL3TkvBl2a1hu_Z8gwhK2mBuZBlbYD9ql3gAl6RkDFhMQG7AISp6Sb&s=10" style="height: 40px; margin-bottom:5px;" alt="Logo"><br>
-                            <div style="font-size:11px;">Date: ${new Date().toLocaleDateString()}</div>
-                        </div>
+                <div class="pdf-export-wrapper" id="pdf-export-wrapper">
+                    
+                    <div class="pdf-cover-page">
+                        <img src="alphacoverpage.png" alt="Cover Page">
                     </div>
-                    <div class="pdf-sec-title">1. Quote Details</div>
-                    <table class="pdf-details-tbl">
-                        <tr><td class="lbl">Customer</td><td class="val">${customerName}</td><td class="lbl">Sum Insured</td><td class="val">${si}</td></tr>
-                        <tr><td class="lbl">Type</td><td class="val">${policyType}</td><td class="lbl">Combination</td><td class="val">${combination}</td></tr>
-                        <tr><td class="lbl">Zone/Tenure</td><td class="val">${zone} / ${tenure}</td><td class="lbl">Members</td><td class="val">${membersStr.join(', ')}</td></tr>
-                    </table>
-                    <div class="pdf-sec-title">2. Premium Summary (Cumulative)</div>
-                    ${premStrip}
-                    <div class="pdf-sec-title">3. Inbuilt Features</div>
-                    ${inbuiltClean}
-                    <div class="pdf-cols-wrapper">
-                        ${colMod}
-                        ${colOpt}
-                        ${colDisc}
+
+                    <div class="html2pdf__page-break"></div>
+
+                    <div class="pdf-page">
+                        <div class="pdf-header-row">
+                            <div>
+                                <div class="pdf-title-main">Health Alpha Select</div>
+                                <div class="pdf-subtitle">Premium Quote Calculation</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpFkxL3TkvBl2a1hu_Z8gwhK2mBuZBlbYD9ql3gAl6RkDFhMQG7AISp6Sb&s=10" style="height: 40px; margin-bottom:5px;" alt="Logo"><br>
+                                <div style="font-size:11px;">Date: ${new Date().toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="pdf-sec-title">1. Quote Details</div>
+                        <table class="pdf-details-tbl">
+                            <tr><td class="lbl">Customer</td><td class="val">${customerName}</td><td class="lbl">Sum Insured</td><td class="val">${si}</td></tr>
+                            <tr><td class="lbl">Type</td><td class="val">${policyType}</td><td class="lbl">Combination</td><td class="val">${combination}</td></tr>
+                            <tr><td class="lbl">Zone/Tenure</td><td class="val">${zone} / ${tenure}</td><td class="lbl">Members</td><td class="val">${membersStr.join(', ')}</td></tr>
+                        </table>
+                        <div class="pdf-sec-title">2. Premium Summary (Cumulative)</div>
+                        ${premStrip}
+                        <div class="pdf-sec-title">3. Inbuilt Features</div>
+                        ${inbuiltClean}
+                        <div class="pdf-cols-wrapper">
+                            ${colMod}
+                            ${colOpt}
+                            ${colDisc}
+                        </div>
+                        <div class="pdf-footer">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
                     </div>
-                    <div class="pdf-footer">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
                 </div>
             `;
 
             overlayRoot.style.display = 'flex';
             window.scrollTo(0, 0);
 
-            const element = document.getElementById('pdf-page-content');
+            const element = document.getElementById('pdf-export-wrapper');
+            
             const opt = {
                 margin: 0,
                 filename: `Health_Alpha_Quote_${customerName}.pdf`,
                 image: { type: 'jpeg', quality: 0.99 },
                 html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-                jsPDF: { unit: 'px', format: [1123, 794], orientation: 'landscape' }
+                jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' } 
             };
 
             await new Promise(resolve => setTimeout(resolve, 500));
