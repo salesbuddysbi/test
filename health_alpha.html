@@ -238,7 +238,7 @@
         
         .pdf-cover-page {
             width: 794px;
-            height: 1120px; /* Reduced slightly from 1123px to prevent spillover */
+            height: 1120px; /* Reduced slightly to prevent spillover */
             box-sizing: border-box;
             background: white;
             overflow: hidden;
@@ -246,12 +246,12 @@
         .pdf-cover-page img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Prevents image from stretching out of bounds */
+            object-fit: contain;
         }
 
         .pdf-page { 
             width: 794px; 
-            height: 1120px; /* Reduced slightly from 1123px */
+            height: 1120px; /* Reduced slightly to prevent spillover */
             background: white; 
             padding: 25px; 
             box-sizing: border-box; 
@@ -274,12 +274,15 @@
 
         .pdf-sec-title { font-size: 9px; font-weight: 800; color: #1e293b; text-transform: uppercase; background: #f1f5f9; padding: 4px 8px; border-left: 4px solid #764ba2; margin-bottom: 8px; }
 
-        .pdf-prem-row { display: flex; gap: 6px; margin-bottom: 12px; }
-        .pdf-prem-box { flex: 1; border: 1px solid #764ba2; background: #fdfdfd; border-radius: 6px; padding: 4px; text-align: center; }
-        .pdf-prem-yr { font-size: 8px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
-        .pdf-prem-val { font-size: 14px; font-weight: 900; color: #764ba2; }
+        /* MULTI-TIER PREMIUM TABLE CSS */
+        .pdf-tier-table { width: 100%; border-collapse: separate; border-spacing: 4px; margin-bottom: 12px; }
+        .pdf-tier-table th { background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; font-size: 8px; font-weight: 800; color: #475569; text-transform: uppercase; border-radius: 4px; text-align:center;}
+        .pdf-tier-table td { border: 1px solid #764ba2; background: #fdfdfd; padding: 6px; text-align: center; border-radius: 4px; vertical-align: middle; }
+        .pdf-tier-table td.si-col { background: #f1f5f9; border-color: #cbd5e1; font-weight: 800; color: #1e293b; font-size: 10px; }
+        .tier-prem { font-size: 13px; font-weight: 900; color: #764ba2; }
+        .tier-save { color: #16a34a; font-size: 9px; font-weight: 800; margin-top: 2px; }
+        .si-sub { font-size: 7px; color: #64748b; font-weight: 600; display: block; margin-top: 2px; text-transform: uppercase; }
 
-        /* Changed to 3 columns to fit Portrait width properly */
         .pdf-grid-4 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; margin-bottom: 12px; }
         .pdf-feat-box { display: flex; align-items: flex-start; gap: 6px; padding: 3px; border-bottom: 1px dotted #e2e8f0; }
         .pdf-icon-wrap { color: #764ba2; font-size: 11px; width: 16px; text-align: center; padding-top: 1px; }
@@ -287,7 +290,6 @@
         .pdf-feat-l { font-size: 7px; font-weight: 700; color: #64748b; text-transform: uppercase; line-height: 1.1; }
         .pdf-feat-v { font-size: 9px; font-weight: 700; color: #0f172a; line-height: 1.2; }
 
-        /* Enforced a 3-column grid instead of loose flex to keep it uniform */
         .pdf-cols-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; }
         .pdf-col { border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #fff; }
         .pdf-col-h { font-size: 9px; font-weight: 800; color: #764ba2; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 5px; }
@@ -465,7 +467,8 @@
         const HDC_DEDUCTIBLE_RELATIVITY = 0.597004515537621;
 
         const SI_LABEL_TO_VALUE = { "5 Lac": 500000, "7.5 Lac": 750000, "10 Lac": 1000000, "12.5 Lac": 1250000, "15 Lac": 1500000, "20 Lac": 2000000, "25 Lac": 2500000, "30 Lac": 3000000, "35 Lac": 3500000, "50 Lac": 5000000, "75 Lac": 7500000, "1Cr": 10000000 };
-        
+        const SI_LABELS_ORDER = ["5 Lac", "7.5 Lac", "10 Lac", "12.5 Lac", "15 Lac", "20 Lac", "25 Lac", "30 Lac", "35 Lac", "50 Lac", "75 Lac", "1Cr"];
+
         const BASE_RATES = {
             "0-17":  { 500000: 5752, 750000: 6608, 1000000: 6893, 1250000: 7635, 1500000: 8634, 2000000: 9776, 2500000: 10346, 3000000: 10774, 3500000: 11202, 5000000: 12487, 7500000: 13477, 10000000: 14333 },
             "18-25": { 500000: 5480, 750000: 6295, 1000000: 6567, 1250000: 7274, 1500000: 8225, 2000000: 9312, 2500000: 9856, 3000000: 10405, 3500000: 10813, 5000000: 12036, 7500000: 13038, 10000000: 13853 },
@@ -1203,29 +1206,229 @@
 
         document.getElementById('calcBtn').addEventListener('click', calculateAndDisplay);
 
+        // SILENT ENGINE: Calculates premium arrays for the PDF PDF multi-tier upselling grid
+        function calculatePremiumFor(siLabel) {
+            const siVal = SI_LABEL_TO_VALUE[siLabel];
+            const policyType = document.getElementById('policyType').value;
+            let membersAges = []; let femaleEligibleAges = [];
+            
+            document.querySelectorAll('.member-card').forEach(card => {
+                const age = parseInt(card.querySelector('.age-input').value);
+                const gender = card.querySelector('.gender-input').value;
+                if(!isNaN(age)) {
+                    membersAges.push(age);
+                    if (gender === 'Female' && age >= 18 && age <= 45) femaleEligibleAges.push(age);
+                }
+            });
+
+            const welcomeDiscRate = document.getElementById('welcomeDisc').value === "Yes" ? 0.05 : 0;
+            const preferredDiscRate = document.getElementById('preferredNetwork').value === "Preferred Partner" ? 0.10 : 0.00;
+            const girlChildDiscRate = document.getElementById('hasGirlChild').value === "true" ? 0.05 : 0;
+            const zoneDiscRate = document.getElementById('zone').value === 'Zone B' ? 0.20 : 0;
+            
+            let cappedEmployeeRate = document.getElementById('employeeDiscount').value === "Yes" ? 0.05 : 0;
+            let cappedCrossSellRate = document.getElementById('crossSellDiscount').value === "Yes" ? 0.05 : 0;
+            if (cappedEmployeeRate + cappedCrossSellRate > 0.15) cappedCrossSellRate = Math.max(0, 0.15 - cappedEmployeeRate);
+            
+            let floaterDisc = (policyType === 'Family Floater') ? getFloaterDiscount(membersAges.length) : 0;
+            let roomRentDiscPercent = 0;
+            const roomCat = document.getElementById('roomCategory').value;
+            if (roomCat === "Single Pvt AC Room") roomRentDiscPercent = 0.075;
+            else if (roomCat === "Twin-Sharing") roomRentDiscPercent = 0.10; 
+            
+            const pedWaitVal = document.getElementById('pedWait').value;
+            let pedModifier = (pedWaitVal === "3 Year") ? 0.15 : (pedWaitVal === "1 Year" ? -0.30 : 0);
+            let specWaitLoading = document.getElementById('specWait').value === "1 Year" ? 0.10 : 0;
+
+            const ncbVal = document.getElementById('ncb').value;
+            let ncbLoadingPercent = 0; let ncbDiscountPercent = 0; 
+            if (ncbVal === "200") ncbLoadingPercent = 0.05; else if (ncbVal === "300") ncbLoadingPercent = 0.06; else if (ncbVal === "400") ncbLoadingPercent = 0.07; else if (ncbVal === "500") ncbLoadingPercent = 0.08; else if (ncbVal === "600") ncbLoadingPercent = 0.09; else if (ncbVal === "700") ncbLoadingPercent = 0.10; else if (ncbVal === "800") ncbLoadingPercent = 0.11; else if (ncbVal === "900") ncbLoadingPercent = 0.12; else if (ncbVal === "1000") ncbLoadingPercent = 0.13; else if (ncbVal === "NCD") ncbDiscountPercent = 0.025;
+            
+            const organDonorAmt = getOrganDonorPremium(siVal) * membersAges.length;
+            const restoreBenefitPercent = getRestoreBenefitLoading(siVal);
+            let y_consumables_rate = document.getElementById('consumables').value === 'Yes' ? 0.10 : 0;
+            let endlessLoadingPercent = document.getElementById('endless').value === 'Yes' ? (siVal >= 1000000 ? getEndlessLoading(siVal) : 0) : 0;
+            let reconstructiveAmount = document.getElementById('reconstructive').value === 'Yes' ? 550 * membersAges.length : 0;
+
+            let opdAmount = 0;
+            const opdOpt = document.getElementById('opd').value;
+            if(opdOpt !== 'Not Opted' && siVal >= 1000000) {
+                const limitFactor = OPD_LIMIT_FACTORS[opdOpt] || 0;
+                const baseOpd = OPD_BASE_RATE * limitFactor;
+                if(policyType === 'Individual') opdAmount = baseOpd * membersAges.length;
+                else if (policyType === 'Individual Floater') opdAmount = baseOpd * 1.0;
+                else {
+                    let floaterFactor = 1.0;
+                    if(membersAges.length === 2) floaterFactor = 1.20;
+                    else if(membersAges.length === 3) floaterFactor = 1.40;
+                    else if(membersAges.length > 3) floaterFactor = 1.50;
+                    opdAmount = baseOpd * floaterFactor;
+                }
+                opdAmount = opdAmount * 0.90; 
+            }
+
+            const airAmbOpt = document.getElementById('airAmbulance').value;
+            const healthCheckOpt = document.getElementById('healthCheck').value;
+            
+            let maternityBenefitAmt = 0;
+            const maternityOpt = document.getElementById('maternity').value;
+            if(siVal >= 1000000) {
+                if (maternityOpt === "Rs. 50,000") maternityBenefitAmt = 50000;
+                if (maternityOpt === "Rs. 75,000") maternityBenefitAmt = 75000;
+                if (siVal > 1000000 && maternityOpt === "Rs. 50,000") maternityBenefitAmt = 75000; // Auto-upgrade for upselling tier
+            }
+            
+            let matWpMultiplier = 1.0;
+            const maternityWait = document.getElementById('maternityWait').value;
+            if (maternityWait === "1 Year") matWpMultiplier = 1.674666666667; 
+            if (maternityWait === "3 Years") matWpMultiplier = 0.80;
+
+            let accumulatedGross = 0;
+            let results = [];
+            let totalAccumulated = { room: 0, ped: 0, ncbDisc: 0, floater: 0 };
+
+            for (let yr = 1; yr <= 5; yr++) {
+                let y_base = 0; let y_conv = 0; let y_road = 0; let y_radio = 0; let y_air = 0; let y_hdc = 0; let y_mat = 0; let y_nb = 0; let y_vac = 0; let y_hc = 0;
+
+                membersAges.forEach(baseAge => {
+                    let currentAge = baseAge + (yr - 1);
+                    let band = getAgeBand(currentAge);
+                    
+                    y_base += (BASE_RATES[band] && BASE_RATES[band][siVal] ? BASE_RATES[band][siVal] : 0);
+                    y_conv += ((CONVALESCENCE_RATES[band] || 0) / 1000) * 5000;
+                    y_road += (ROAD_AMB_BASE_RATES[band] || 0) * ROAD_AMB_RELATIVITY;
+                    y_radio += (RADIO_CAB_BASE_RATES[band] || 0) * RADIO_CAB_RELATIVITY;
+                    if (airAmbOpt === 'Yes') y_air += (AIR_AMB_BASE_RATES[band] || 0) * AIR_AMB_RELATIVITY;
+                    
+                    const hospCashOpt = document.getElementById('hospitalCash').value;
+                    if (hospCashOpt !== 'Not Opted' && siVal >= 1000000) {
+                        y_hdc += (HDC_BASE_RATES[band] || 0) * (HDC_DAYS_RELATIVITY[hospCashOpt] || 0) * HDC_DEDUCTIBLE_RELATIVITY;
+                    }
+                });
+
+                if (maternityBenefitAmt > 0 && femaleEligibleAges.length > 0) {
+                    femaleEligibleAges.forEach(femAge => {
+                        let currentFemAge = femAge + (yr - 1);
+                        if (currentFemAge >= 18 && currentFemAge <= 45) {
+                            let matBand = getMaternityAgeBand(currentFemAge);
+                            if (matBand && MATERNITY_RATES[matBand] && MATERNITY_RATES[matBand][maternityBenefitAmt]) {
+                                y_mat += MATERNITY_RATES[matBand][maternityBenefitAmt] * matWpMultiplier;
+                            }
+                            y_nb += NEW_BORN_RATES[siVal] || 0;
+                            y_vac += CHILD_VACCINATION_RATE;
+                        }
+                    });
+                }
+
+                if(healthCheckOpt !== 'Not Opted') {
+                    let eligibleMembers = 0;
+                    membersAges.forEach(baseAge => { if((baseAge + yr - 1) >= 18) eligibleMembers++; });
+                    if(eligibleMembers > 0) {
+                        let relativity = 1.0;
+                        if(eligibleMembers === 2) relativity = 1.20; else if(eligibleMembers === 3) relativity = 1.50; else if(eligibleMembers > 3) relativity = 1.65;
+                        y_hc = HEALTH_CHECK_RATES[healthCheckOpt] * relativity;
+                    }
+                }
+
+                let y_room = y_base * roomRentDiscPercent;
+                let y_post = y_base * 0.03;
+                let y_ped = pedModifier > 0 ? -1 * (y_base * pedModifier) : y_base * Math.abs(pedModifier);
+                let y_spec = y_base * specWaitLoading;
+                let y_ncbLoad = y_base * ncbLoadingPercent;
+                let y_ncbDisc = -1 * (y_base * ncbDiscountPercent);
+
+                totalAccumulated.room += y_room;
+                if(y_ped < 0) totalAccumulated.ped += Math.abs(y_ped); 
+                totalAccumulated.ncbDisc += Math.abs(y_ncbDisc); 
+
+                let y_baseForLoad = y_base + (y_room * -1) + y_ped + y_spec + y_ncbLoad + y_ncbDisc + y_post;
+                
+                let y_restore = y_baseForLoad * restoreBenefitPercent;
+                let y_consumables = y_baseForLoad * y_consumables_rate;
+                let y_endless = y_baseForLoad * endlessLoadingPercent;
+                let y_eop = membersAges.length * E_OPINION_RATE;
+
+                let y_groupA = y_baseForLoad + y_restore + y_consumables + y_endless + organDonorAmt + y_air + y_road + y_radio + reconstructiveAmount + y_eop;
+                let y_floaterRed = (policyType === 'Family Floater') ? y_groupA * floaterDisc : 0;
+                totalAccumulated.floater += y_floaterRed;
+                
+                let y_postFloaterA = y_groupA - y_floaterRed;
+                let y_groupB = opdAmount + y_hdc + y_hc + y_mat + y_vac + y_nb + y_conv;
+                let y_grossTotal = y_postFloaterA + y_groupB;
+
+                accumulatedGross += y_grossTotal;
+                let runningTotal = accumulatedGross;
+                
+                runningTotal -= runningTotal * (TENURE_DISCOUNTS[yr] || 0);
+                runningTotal -= runningTotal * zoneDiscRate;
+                runningTotal -= runningTotal * preferredDiscRate;
+                runningTotal -= runningTotal * girlChildDiscRate;
+                runningTotal -= runningTotal * welcomeDiscRate;
+                runningTotal -= runningTotal * cappedEmployeeRate;
+                runningTotal -= runningTotal * cappedCrossSellRate;
+
+                let finalCumulative = runningTotal;
+                let totalDiscountAmt = accumulatedGross - finalCumulative;
+                let maxAllowedDiscount = accumulatedGross * 0.45;
+                if(totalDiscountAmt > maxAllowedDiscount) finalCumulative += (totalDiscountAmt - maxAllowedDiscount);
+
+                if (policyType === 'Individual Floater' && membersAges.length >= 2) finalCumulative -= (finalCumulative * 0.05);
+
+                let originalListPrice = accumulatedGross + totalAccumulated.room + totalAccumulated.ped + totalAccumulated.ncbDisc + totalAccumulated.floater; 
+                let totalSavingsDisplay = originalListPrice - finalCumulative;
+                let savingsPercent = originalListPrice > 0 ? (totalSavingsDisplay / originalListPrice) * 100 : 0;
+
+                results.push({
+                    prem: Math.round(finalCumulative),
+                    save: Math.round(savingsPercent)
+                });
+            }
+            return results;
+        }
+
         async function generatePDFBlob(customerName, si, policyType, combination, zone, tenure, membersStr) {
             const overlayRoot = document.getElementById('pdf-overlay-root');
             
-            let premStrip = '<div class="pdf-prem-row">';
-            for(let i=1; i<=5; i++) {
-                let card = document.querySelector(`#card-yr-${i}`);
-                if(card) {
-                    let cardVal = card.querySelector(`.p-final-amount`).innerText;
-                    
-                    let savedBox = card.querySelector(`.p-saved-box`);
-                    let savedHTML = '';
-                    if(savedBox) {
-                        let text = savedBox.innerText;
-                        let match = text.match(/\((\d+)%\)/); 
-                        if(match && match[1]) {
-                            savedHTML = `<div style="color:#16a34a; font-size:10px; font-weight:800; margin-top:2px;">SAVE ${match[1]}%</div>`;
-                        }
-                    }
+            // --- NEW: Generate 3-Tier Multi-SI Grid ---
+            const baseSiLabel = document.getElementById('sumInsured').value;
+            const baseSiIdx = SI_LABELS_ORDER.indexOf(baseSiLabel);
+            
+            let targetSIs = [];
+            targetSIs.push({ label: baseSiLabel, desc: "Selected" });
+            if (baseSiIdx + 1 < SI_LABELS_ORDER.length) targetSIs.push({ label: SI_LABELS_ORDER[baseSiIdx + 1], desc: "1 Level Up" });
+            if (baseSiIdx + 2 < SI_LABELS_ORDER.length) targetSIs.push({ label: SI_LABELS_ORDER[baseSiIdx + 2], desc: "2 Levels Up" });
 
-                    premStrip += `<div class="pdf-prem-box"><div class="pdf-prem-yr">${i} Year Policy</div><div class="pdf-prem-val">${cardVal}</div>${savedHTML}</div>`;
+            let tierRowsHTML = '';
+            targetSIs.forEach(siObj => {
+                const premiumData = calculatePremiumFor(siObj.label); 
+                
+                let tdHtml = `<td class="si-col">${siObj.label}<span class="si-sub">${siObj.desc}</span></td>`;
+                for(let i=0; i<5; i++) {
+                    let item = premiumData[i];
+                    let saveHtml = item.save > 10 ? `<div class="tier-save">SAVE ${item.save}%</div>` : '';
+                    tdHtml += `<td><div class="tier-prem">₹ ${item.prem.toLocaleString('en-IN')}</div>${saveHtml}</td>`;
                 }
-            }
-            premStrip += '</div>';
+                tierRowsHTML += `<tr>${tdHtml}</tr>`;
+            });
+
+            let premStrip = `
+                <table class="pdf-tier-table">
+                    <thead>
+                        <tr>
+                            <th>Sum Insured</th>
+                            <th>1 Year</th>
+                            <th>2 Year</th>
+                            <th>3 Year</th>
+                            <th>4 Year</th>
+                            <th>5 Year</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tierRowsHTML}
+                    </tbody>
+                </table>
+            `;
+            // --- END NEW GRID LOGIC ---
 
             let inbuiltClean = '<div class="pdf-grid-4">';
             document.querySelectorAll('#inbuilt-section .feat-item').forEach(item => {
@@ -1328,12 +1531,14 @@
                         </div>
                         <div class="pdf-sec-title">1. Quote Details</div>
                         <table class="pdf-details-tbl">
-                            <tr><td class="lbl">Customer</td><td class="val">${customerName}</td><td class="lbl">Sum Insured</td><td class="val">${si}</td></tr>
+                            <tr><td class="lbl">Customer</td><td class="val">${customerName}</td><td class="lbl">Selected SI</td><td class="val">${si}</td></tr>
                             <tr><td class="lbl">Type</td><td class="val">${policyType}</td><td class="lbl">Combination</td><td class="val">${combination}</td></tr>
                             <tr><td class="lbl">Zone/Tenure</td><td class="val">${zone} / ${tenure}</td><td class="lbl">Members</td><td class="val">${membersStr.join(', ')}</td></tr>
                         </table>
-                        <div class="pdf-sec-title">2. Premium Summary (Cumulative)</div>
+                        
+                        <div class="pdf-sec-title">2. Premium Multi-Tier Summary (Cumulative)</div>
                         ${premStrip}
+                        
                         <div class="pdf-sec-title">3. Inbuilt Features</div>
                         ${inbuiltClean}
                         <div class="pdf-cols-wrapper">
