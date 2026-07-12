@@ -8,6 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
+        /* CRITICAL FRONT-END FIX: Box Sizing Reset to prevent padding from bursting containers */
+        *, *::before, *::after { box-sizing: border-box; }
+
         :root { --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --accent-color: #764ba2; --border-color: #e2e8f0; }
         body { margin: 0; background: #f0f4f8; font-family: 'Segoe UI', sans-serif; padding-bottom: 40px; }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
@@ -87,7 +90,6 @@
             background-repeat: no-repeat;
             /* CRITICAL FIX: 240px bottom padding to stop content from covering the image */
             padding: 30px 30px 240px 30px; 
-            box-sizing: border-box; 
             display: flex; flex-direction: column;
         }
         
