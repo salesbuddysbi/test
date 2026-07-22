@@ -106,16 +106,25 @@
 
     <!-- APP HEADER -->
     <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center">
-        <div class="px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
+        <div class="px-3 md:px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
+            <!-- Logo Section -->
             <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
-                <span class="font-extrabold text-sbiPurple text-xl leading-none tracking-tight">Sales Buddy</span>
+                <span class="font-extrabold text-sbiPurple text-lg md:text-xl leading-none tracking-tight">Sales Buddy</span>
                 <span class="font-bold text-gray-400 text-9px uppercase tracking-02em mt-0.5">One Touch Point</span>
             </div>
             
-            <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-simba active:bg-orange-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow flex items-center gap-2 transition-colors tracking-wide">
-                <i class="fas fa-sign-in-alt"></i> SIMBA
-            </a>
+            <!-- Quick Actions Section -->
+            <div class="flex items-center gap-1.5 md:gap-2">
+                <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-simba active:bg-orange-600 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
+                    <i class="fas fa-sign-in-alt"></i> SIMBA
+                </a>
+                <!-- New Endorsement Button Added Here with target="_blank" -->
+                <a href="https://www.sbigeneral.in/endorsement" target="_blank" rel="noopener noreferrer" class="bg-sbiPurple active:bg-purple-800 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
+                    <i class="fas fa-edit"></i> Endorse
+                </a>
+            </div>
+
         </div>
     </nav>
 
