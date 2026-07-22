@@ -128,39 +128,42 @@
         .result-actions-bar { display: flex; gap: 20px; margin-top: 30px; justify-content: center; max-width: 900px; margin-left: auto; margin-right: auto; }
         @media (max-width: 600px) { .result-actions-bar { flex-direction: column; gap: 10px; } }
 
-        /* PORTRAIT PDF OVERLAY & PAGES - FIXED FOR EXACTLY 2 PAGES */
-        #pdf-overlay-root { position: absolute; top: 0; left: 0; background: white; z-index: 10000; display: none; width: 794px; }
-        .pdf-page-container { width: 794px; height: 1120px; box-sizing: border-box; overflow: hidden; position: relative; }
-        .pdf-content-page { padding: 25px; background: white; font-family: 'Segoe UI', sans-serif; color: #333; display: flex; flex-direction: column; }
-        
-        .pdf-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; margin-bottom: 10px; }
-        .pdf-title-main { font-size: 18px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; }
-        .pdf-subtitle { font-size: 11px; }
-        .pdf-details-tbl { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9px; }
-        .pdf-details-tbl td { border: 1px solid #cbd5e1; padding: 4px 6px; }
+        /* PORTRAIT PDF OVERLAY & PAGES - FIXED FOR FLUID CONTENT */
+        #pdf-overlay-root { position: absolute; top: 0; left: 0; background: white; z-index: -1000; opacity: 0; pointer-events: none; width: 794px; }
+        .pdf-page-container { width: 794px; box-sizing: border-box; position: relative; }
+        .pdf-content-page { padding: 40px; background: white; font-family: 'Segoe UI', sans-serif; color: #333; display: flex; flex-direction: column; }
+
+        /* The vital page-break class that html2pdf needs */
+        .html2pdf__page-break { page-break-before: always; margin: 0; padding: 0; height: 0; }
+
+        .pdf-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; margin-bottom: 15px; }
+        .pdf-title-main { font-size: 20px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; }
+        .pdf-subtitle { font-size: 12px; }
+        .pdf-details-tbl { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
+        .pdf-details-tbl td { border: 1px solid #cbd5e1; padding: 6px 8px; }
         .pdf-details-tbl td.lbl { background: #f8fafc; font-weight: 700; color: #475569; width: 20%; }
         .pdf-details-tbl td.val { width: 30%; font-weight: 600; color: #0f172a; }
-        .pdf-sec-title { font-size: 10px; font-weight: 800; color: #1e293b; text-transform: uppercase; background: #f1f5f9; padding: 5px 8px; border-left: 4px solid var(--accent-color); margin-bottom: 8px; margin-top: 4px; }
-        .pdf-prem-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .pdf-prem-box { flex: 1; border: 1px solid var(--accent-color); background: #fdfdfd; border-radius: 6px; padding: 6px; text-align: center; }
-        .pdf-prem-yr { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
-        .pdf-prem-val { font-size: 15px; font-weight: 900; color: var(--accent-color); }
-        .pdf-grid-1 { display: grid; grid-template-columns: 1fr; gap: 4px; margin-bottom: 10px; }
-        .pdf-feat-box { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-bottom: 1px dotted #e2e8f0; background: #f8fafc; border-radius: 4px;}
-        .pdf-icon-wrap { color: var(--accent-color); font-size: 12px; width: 18px; text-align: center; }
+        .pdf-sec-title { font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; background: #f1f5f9; padding: 6px 10px; border-left: 4px solid var(--accent-color); margin-bottom: 10px; margin-top: 10px; }
+        .pdf-prem-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .pdf-prem-box { flex: 1; border: 1px solid var(--accent-color); background: #fdfdfd; border-radius: 6px; padding: 10px; text-align: center; }
+        .pdf-prem-yr { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .pdf-prem-val { font-size: 18px; font-weight: 900; color: var(--accent-color); }
+        .pdf-grid-1 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
+        .pdf-feat-box { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px dotted #e2e8f0; background: #f8fafc; border-radius: 4px;}
+        .pdf-icon-wrap { color: var(--accent-color); font-size: 14px; width: 20px; text-align: center; }
         .pdf-feat-text { display: flex; align-items: center; flex: 1; justify-content: space-between; }
-        .pdf-feat-l { font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        .pdf-feat-v { font-size: 9.5px; font-weight: 800; color: #0f172a; }
-        .pdf-cols-wrapper { display: flex; gap: 8px; margin-bottom: 10px; }
-        .pdf-col { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #fff; }
-        .pdf-col-h { font-size: 9.5px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 5px; }
-        .pdf-row-item { display: flex; align-items: center; justify-content: space-between; font-size: 8.5px; padding: 3px 0; border-bottom: 1px dashed #f1f5f9; }
+        .pdf-feat-l { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .pdf-feat-v { font-size: 11px; font-weight: 800; color: #0f172a; }
+        .pdf-cols-wrapper { display: flex; gap: 12px; margin-bottom: 15px; }
+        .pdf-col { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #fff; }
+        .pdf-col-h { font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 8px; }
+        .pdf-row-item { display: flex; align-items: center; justify-content: space-between; font-size: 10px; padding: 4px 0; border-bottom: 1px dashed #f1f5f9; }
         .pdf-row-item:last-child { border-bottom: none; }
-        .pdf-row-left { display: flex; align-items: center; gap: 5px; }
-        .pdf-row-icon { color: var(--accent-color); font-size: 9.5px; width: 12px; text-align: center; }
+        .pdf-row-left { display: flex; align-items: center; gap: 6px; }
+        .pdf-row-icon { color: var(--accent-color); font-size: 11px; width: 14px; text-align: center; }
         .pdf-row-k { color: #555; font-weight: 600; }
         .pdf-row-v { color: #000; font-weight: 700; }
-        .pdf-footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 7.5px; color: #94a3b8; text-align: justify; line-height: 1.3; }
+        .pdf-footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #cbd5e1; font-size: 9px; color: #94a3b8; text-align: justify; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -1045,7 +1048,7 @@
                     if(savedBox) {
                         let text = savedBox.innerText;
                         let match = text.match(/\((\d+)%\)/); 
-                        if(match && match[1]) { savedHTML = `<div style="color:#16a34a; font-size:9px; font-weight:800; margin-top:2px;">SAVE ${match[1]}%</div>`; }
+                        if(match && match[1]) { savedHTML = `<div style="color:#16a34a; font-size:10px; font-weight:800; margin-top:4px;">SAVE ${match[1]}%</div>`; }
                     }
                     premStrip += `<div class="pdf-prem-box"><div class="pdf-prem-yr">${i} Yr Policy</div><div class="pdf-prem-val">${cardVal}</div>${savedHTML}</div>`;
                 }
@@ -1100,26 +1103,23 @@
             
             let colDisc = `<div class="pdf-col"><div class="pdf-col-h">Discounts</div>${discRows}</div>`;
 
-            // Updated Layout Structure: strictly limits overflow boundaries and injects html2pdf native breaks
             overlayRoot.innerHTML = `
                 <div id="pdf-document-wrapper" style="width: 794px; background: white;">
-                    <!-- Page 1: Cover Page -->
-                    <div class="pdf-page-container" style="background: #0f766e;">
-                        <img src="supertopupcoverpage.jpg" onerror="this.onerror=null; this.src='supertopupcoverpage.png';" style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="Super Top Up Cover Page">
+                    <!-- PAGE 1: Cover Page (Height reduced slightly to prevent overflow) -->
+                    <div class="pdf-page-container" style="background: #0f766e; height: 1120px; overflow: hidden; box-sizing: border-box;">
+                        <img src="supertopupcoverpage.jpg" onerror="this.onerror=null; this.style.display='none';" style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="Cover">
                     </div>
                     
-                    <div class="html2pdf__page-break"></div>
-                    
-                    <!-- Page 2: Quote Summary Page -->
-                    <div class="pdf-page-container pdf-content-page">
+                    <!-- PAGE 2: Quote Summary Page (Page break applied directly to this container) -->
+                    <div class="pdf-page-container pdf-content-page html2pdf__page-break" style="min-height: 1120px;">
                         <div class="pdf-header-row">
                             <div>
                                 <div class="pdf-title-main">Super Top Up</div>
                                 <div class="pdf-subtitle">Premium Quote Calculation</div>
                             </div>
                             <div style="text-align:right;">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpFkxL3TkvBl2a1hu_Z8gwhK2mBuZBlbYD9ql3gAl6RkDFhMQG7AISp6Sb&s=10" style="height: 35px; margin-bottom:4px;" alt="Logo"><br>
-                                <div style="font-size:10px;">Date: ${new Date().toLocaleDateString()}</div>
+                                <div style="font-weight: 700; color: var(--accent-color); margin-bottom:4px;">HEALTH INSURANCE</div>
+                                <div style="font-size:11px;">Date: ${new Date().toLocaleDateString()}</div>
                             </div>
                         </div>
                         <div class="pdf-sec-title">1. Quote Details</div>
@@ -1129,36 +1129,46 @@
                             <tr><td class="lbl">Type</td><td class="val">${policyType}</td><td class="lbl">Combination</td><td class="val">${combination}</td></tr>
                             <tr><td class="lbl">Tenure</td><td class="val">${tenure}</td><td class="lbl">Members</td><td class="val">${membersStr.join(', ')}</td></tr>
                         </table>
+                        
                         <div class="pdf-sec-title">2. Premium Summary (Cumulative)</div>
                         ${premStrip}
+                        
                         <div class="pdf-sec-title">3. Policy Features & Modifiers</div>
                         ${inbuiltClean}
+                        
                         <div class="pdf-cols-wrapper">
                             ${colMod}
                             ${colOpt}
                             ${colDisc}
                         </div>
-                        <div class="pdf-footer" style="margin-top:auto;">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
+                        <div class="pdf-footer">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
                     </div>
                 </div>
             `;
 
-            overlayRoot.style.display = 'block'; 
+            // Make visible strictly for rendering layout calculations
+            overlayRoot.style.opacity = '1'; 
             window.scrollTo(0, 0);
             
             const element = document.getElementById('pdf-document-wrapper');
             const opt = { 
                 margin: 0, 
                 filename: `Super_Top_Up_Quote_${customerName}.pdf`, 
-                image: { type: 'jpeg', quality: 0.99 }, 
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 794 }, 
-                jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait' },
-                pagebreak: { mode: ['legacy'] } // Instructs html2pdf to only strictly break where the explicit class is placed
+                image: { type: 'jpeg', quality: 1.0 }, 
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] } 
             };
             
-            await new Promise(resolve => setTimeout(resolve, 600));
+            // Give images a fraction of a second to load into the DOM
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
             const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
-            overlayRoot.style.display = 'none';
+            
+            // Hide it again
+            overlayRoot.style.opacity = '0';
+            overlayRoot.innerHTML = ''; // Clean up DOM
+            
             return pdfBlob;
         }
 
