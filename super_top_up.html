@@ -58,15 +58,16 @@
         .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
         .col-4 { grid-column: span 4; }
         .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
         .col-12 { grid-column: span 12; }
-        @media (max-width: 768px) { .col-4, .col-6 { grid-column: span 12; } .container { padding: 10px; } .card { padding: 16px; } }
+        @media (max-width: 768px) { .col-4, .col-6, .col-8 { grid-column: span 12; } .container { padding: 10px; } .card { padding: 16px; } }
 
         /* INPUTS */
         label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
         input[type="text"], input[type="number"], select { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--surface-secondary); color: var(--text-main); transition: all 0.2s ease; appearance: none; }
         select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; background-color: var(--surface-secondary); }
         input:focus, select:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.1); background-color: #fff; }
-        input[readonly] { cursor: not-allowed; background-color: #f1f5f9; }
+        input[readonly] { cursor: not-allowed; background-color: #e2e8f0; opacity: 0.7; }
 
         /* INPUT VALIDATION STYLES */
         .input-error { border-color: var(--danger-color) !important; background-color: #fef2f2 !important; color: var(--danger-color) !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important; animation: shake 0.4s ease-in-out; }
@@ -135,6 +136,35 @@
         @media (max-width: 600px) { .result-actions-bar { flex-direction: column; gap: 10px; } }
 
         /* ==========================================
+           MODAL STYLES (CUSTOMIZE QUOTE)
+           ========================================== */
+        .modal-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(30, 41, 59, 0.7); z-index: 1000; align-items: center; justify-content: center; 
+            backdrop-filter: blur(4px); 
+        }
+        .modal-box { 
+            background: #ffffff; border-radius: 20px; padding: 30px; width: 90%; max-width: 420px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-icon-wrap { text-align: center; margin-bottom: 10px; font-size: 38px; }
+        .modal-title { text-align: center; color: #6b21a8; font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 25px; }
+        .modal-input-group { margin-bottom: 20px; }
+        .modal-input-group label { color: #64748b; font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block; }
+        .modal-input-group input { 
+            width: 100%; padding: 14px 16px; font-size: 14px; border: 1px solid #cbd5e1; 
+            border-radius: var(--radius-md); background: #fdfdfd; transition: all 0.2s ease; 
+        }
+        .modal-input-group input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); outline: none; }
+        .modal-actions { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: #475569; flex: 1; padding: 14px 0; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-submit-modal { background: #10b981; color: white; flex: 1.5; padding: 14px 0; border: none; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.2s; }
+        .btn-submit-modal:active { transform: translateY(1px); }
+
+        /* ==========================================
            THE HEALTH ALPHA PDF CSS FIX - PORTRAIT
            ========================================== */
         #pdf-overlay-root { 
@@ -172,7 +202,7 @@
             background: white; 
             padding: 20px; 
             box-sizing: border-box; 
-            border: 4px solid var(--accent-color); 
+            border: none; 
             display: flex; 
             flex-direction: column; 
             font-family: 'Segoe UI', sans-serif; 
@@ -207,7 +237,14 @@
         .pdf-row-icon { color: var(--accent-color); font-size: 10px; width: 14px; text-align: center; }
         .pdf-row-k { color: #555; font-weight: 600; }
         .pdf-row-v { color: #000; font-weight: 700; }
-        .pdf-footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 9px; color: #94a3b8; text-align: justify; line-height: 1.4; }
+        
+        .pdf-sales-footer { margin-top: auto; padding: 10px; border-radius: 8px; background: #f8fafc; border: 1px dashed #cbd5e1; display: flex; align-items: center; gap: 10px; font-size: 10px; color: #334155; margin-bottom: 10px;}
+        .pdf-sales-icon { font-size: 16px; color: var(--accent-color); }
+        .pdf-sales-info { display: flex; flex-direction: column; }
+        .pdf-sales-info-label { font-weight: 800; text-transform: uppercase; font-size: 8px; color: #94a3b8; letter-spacing: 0.5px;}
+        .pdf-sales-info-value { font-weight: 700; font-size: 11px; color: var(--accent-color); }
+
+        .pdf-footer { padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 9px; color: #94a3b8; text-align: justify; line-height: 1.4; }
     </style>
 </head>
 <body class="">
@@ -351,6 +388,29 @@
         </div>
     </div>
 
+    <!-- CUSTOMIZE QUOTE MODAL -->
+    <div id="customizeModalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon-wrap"><i class="fab fa-whatsapp" id="modalIcon" style="color:#25D366;"></i></div>
+            <h3 class="modal-title">Customize Your Quote</h3>
+            
+            <div class="modal-input-group">
+                <label>Sales Person Name (Optional)</label>
+                <input type="text" id="salesName" placeholder="e.g. John Doe">
+            </div>
+            
+            <div class="modal-input-group">
+                <label>Contact Number (Optional)</label>
+                <input type="text" id="salesContact" placeholder="e.g. +91 9876543210">
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancelModalBtn" class="btn-outline">Cancel</button>
+                <button id="confirmModalBtn" class="btn-submit-modal"><i class="fas fa-paper-plane" id="confirmModalIcon"></i> Generate & Share</button>
+            </div>
+        </div>
+    </div>
+
     <div id="pdf-overlay-root"></div>
 
     <script>
@@ -432,7 +492,7 @@
                 "81-85": { 800000: 21111, 1300000: 25873, 1800000: 32110, 2300000: 34317, 4300000: 39995, 6800000: 44018, 9300000: 46767 },
                 "85+":   { 800000: 28461, 1300000: 34901, 1800000: 43334, 2300000: 46307, 4300000: 53943, 6800000: 59401, 9300000: 63129 }
             },
-            750000: { 
+            75000: { 
                 "0-17":  { 750000: 1237, 1250000: 1616, 1750000: 2078, 2250000: 2273, 4250000: 2833, 6750000: 3066, 9250000: 3242 },
                 "18-35": { 750000: 1587, 1250000: 2072, 1750000: 2671, 2250000: 2905, 4250000: 3688, 6750000: 4000, 9250000: 4236 },
                 "36-45": { 750000: 2027, 1250000: 2542, 1750000: 3298, 2250000: 3574, 4250000: 4457, 6750000: 4853, 9250000: 5146 },
@@ -633,30 +693,55 @@
             }
         }
 
+        function calculateAgeFromDOB(dobStr) {
+            const parts = dobStr.split('-');
+            if(parts.length !== 3) return null;
+            const d = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) - 1;
+            const y = parseInt(parts[2], 10);
+            const dob = new Date(y, m, d);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const mDiff = today.getMonth() - dob.getMonth();
+            if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            return age < 0 ? 0 : age;
+        }
+
         membersWrap.addEventListener('input', (e) => {
+            // Handle Age Input
             if (e.target.classList.contains('age-input')) {
-                const role = e.target.getAttribute('data-role');
-                const val = parseInt(e.target.value);
-                const errorSpan = e.target.nextElementSibling;
+                const ageEl = e.target;
+                const card = ageEl.closest('.member-card');
+                const dobEl = card.querySelector('.dob-input');
+                
+                if (!ageEl.hasAttribute('readonly')) {
+                    if (ageEl.value !== '') dobEl.setAttribute('readonly', true);
+                    else dobEl.removeAttribute('readonly');
+                }
+
+                const role = ageEl.getAttribute('data-role');
+                const val = parseInt(ageEl.value);
+                const errorSpan = ageEl.nextElementSibling;
                 
                 if (isNaN(val)) { 
-                    e.target.classList.remove('input-error'); 
+                    ageEl.classList.remove('input-error'); 
                     if (errorSpan) errorSpan.style.display = 'none'; 
                 }
                 else if (role === 'adult' && val < 18) { 
-                    e.target.classList.add('input-error'); 
+                    ageEl.classList.add('input-error'); 
                     if (errorSpan) { errorSpan.innerText = "Adult min age is 18"; errorSpan.style.display = 'block'; } 
                 }
                 else if (role === 'child' && val > 25) { 
-                    e.target.classList.add('input-error'); 
+                    ageEl.classList.add('input-error'); 
                     if (errorSpan) { errorSpan.innerText = "Child max age is 25"; errorSpan.style.display = 'block'; } 
                 }
                 else { 
-                    e.target.classList.remove('input-error'); 
+                    ageEl.classList.remove('input-error'); 
                     if (errorSpan) errorSpan.style.display = 'none'; 
                 }
 
-                // Default Paperless Discount to Yes when an age is entered and update its style
                 if (!isNaN(val)) {
                     const paperlessSel = document.getElementById('paperlessDiscount');
                     paperlessSel.value = "Yes";
@@ -665,6 +750,38 @@
 
                 checkGirlChildDiscount();
                 checkEarlyEntryDiscount();
+            }
+
+            // Handle DOB Input
+            if (e.target.classList.contains('dob-input')) {
+                const dobEl = e.target;
+                const card = dobEl.closest('.member-card');
+                const ageEl = card.querySelector('.age-input');
+
+                let val = dobEl.value.replace(/\D/g, ''); 
+                if (val.length > 2) val = val.substring(0, 2) + '-' + val.substring(2);
+                if (val.length > 5) val = val.substring(0, 5) + '-' + val.substring(5, 9);
+                dobEl.value = val;
+
+                if (val.length > 0) {
+                    ageEl.setAttribute('readonly', true);
+                    if (val.length === 10) {
+                        const age = calculateAgeFromDOB(val);
+                        if(age !== null && !isNaN(age)) {
+                            ageEl.value = age;
+                            ageEl.dispatchEvent(new Event('input', { bubbles: true })); 
+                        }
+                    } else {
+                        ageEl.value = '';
+                        ageEl.classList.remove('input-error');
+                        const errorSpan = ageEl.nextElementSibling;
+                        if (errorSpan) errorSpan.style.display = 'none';
+                    }
+                } else {
+                    ageEl.removeAttribute('readonly');
+                    ageEl.value = '';
+                    ageEl.dispatchEvent(new Event('input', { bubbles: true }));
+                }
             }
         });
 
@@ -726,8 +843,12 @@
                 <div class="member-card col-12">
                     <div class="band-wrap"><span class="band-pill">Adult ${i}</span></div>
                     <div class="grid">
-                        <div class="col-6"><label>Age</label><input type="number" min="18" max="120" data-role="adult" data-index="${i}" class="age-input" placeholder="Min 18 yrs"/><div class="validation-msg">Adult minimum age is 18</div></div>
-                        <div class="col-6"><label>Gender</label><select class="gender-input" data-role="adult" data-index="${i}"><option>Male</option><option>Female</option></select></div>
+                        <div class="col-8" style="display: flex; gap: 12px;">
+                            <div style="flex: 1;"><label>DOB</label><input type="text" class="dob-input" data-role="adult" data-index="${i}" placeholder="DD-MM-YYYY" maxlength="10"/></div>
+                            <div style="display: flex; align-items: center; padding-top: 24px; font-weight: 800; font-size: 11px; color: #94a3b8;">OR</div>
+                            <div style="flex: 1; position: relative;"><label>Age</label><input type="number" min="18" max="120" data-role="adult" data-index="${i}" class="age-input" placeholder="Min 18 yrs"/><div class="validation-msg">Adult minimum age is 18</div></div>
+                        </div>
+                        <div class="col-4"><label>Gender</label><select class="gender-input" data-role="adult" data-index="${i}"><option>Male</option><option>Female</option></select></div>
                     </div>
                 </div>`;
             }
@@ -737,8 +858,12 @@
                 <div class="member-card col-12">
                     <div class="band-wrap"><span class="band-pill">Child ${i}</span></div>
                     <div class="grid">
-                        <div class="col-6"><label>Age</label><input type="number" min="0" max="25" data-role="child" data-index="${i}" class="age-input" placeholder="0 - 25 yrs"/><div class="validation-msg">Child maximum age is 25</div></div>
-                        <div class="col-6"><label>Gender</label><select class="gender-input" data-role="child" data-index="${i}"><option>Male</option><option>Female</option></select></div>
+                        <div class="col-8" style="display: flex; gap: 12px;">
+                            <div style="flex: 1;"><label>DOB</label><input type="text" class="dob-input" data-role="child" data-index="${i}" placeholder="DD-MM-YYYY" maxlength="10"/></div>
+                            <div style="display: flex; align-items: center; padding-top: 24px; font-weight: 800; font-size: 11px; color: #94a3b8;">OR</div>
+                            <div style="flex: 1; position: relative;"><label>Age</label><input type="number" min="0" max="25" data-role="child" data-index="${i}" class="age-input" placeholder="0 - 25 yrs"/><div class="validation-msg">Child maximum age is 25</div></div>
+                        </div>
+                        <div class="col-4"><label>Gender</label><select class="gender-input" data-role="child" data-index="${i}"><option>Male</option><option>Female</option></select></div>
                     </div>
                 </div>`;
             }
@@ -829,7 +954,6 @@
             return "18-35"; 
         }
 
-        // --- UPDATED FLOATER DISCOUNT LOGIC ---
         function getFloaterDiscount(memberCount) { 
             if (memberCount === 2) return 0.20; 
             if (memberCount === 3) return 0.25; 
@@ -838,7 +962,6 @@
         }
 
         function calculateAndDisplay() {
-            // New strict check for the PRO variant
             if (document.getElementById('variant').value === 'Pro') {
                 alert("The PRO variant is currently under construction. Please proceed with the Plus variant.");
                 return;
@@ -1087,9 +1210,60 @@
             }
         }
 
+        // ==========================================
+        // MODAL AND PDF LOGIC
+        // ==========================================
+        let pendingAction = null;
+
+        function openCustomizeModal(actionType) {
+            pendingAction = actionType;
+            const modal = document.getElementById('customizeModalOverlay');
+            const icon = document.getElementById('modalIcon');
+            const confirmBtn = document.getElementById('confirmModalBtn');
+            const confirmIcon = document.getElementById('confirmModalIcon');
+            
+            if(actionType === 'whatsapp') {
+                icon.className = 'fab fa-whatsapp';
+                icon.style.color = '#25D366';
+                confirmBtn.style.background = '#10b981';
+                confirmBtn.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+                confirmBtn.innerHTML = '<i class="fas fa-paper-plane" id="confirmModalIcon"></i> Generate & Share';
+            } else {
+                icon.className = 'fas fa-file-pdf';
+                icon.style.color = '#ef4444';
+                confirmBtn.style.background = '#0369a1';
+                confirmBtn.style.boxShadow = '0 4px 12px rgba(3, 105, 161, 0.3)';
+                confirmBtn.innerHTML = '<i class="fas fa-download" id="confirmModalIcon"></i> Download PDF';
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeCustomizeModal() {
+            document.getElementById('customizeModalOverlay').style.display = 'none';
+            pendingAction = null;
+        }
+
+        document.getElementById('cancelModalBtn').addEventListener('click', closeCustomizeModal);
+
+        // Close modal if clicked outside the box
+        document.getElementById('customizeModalOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('customizeModalOverlay')) {
+                closeCustomizeModal();
+            }
+        });
+        
+        document.getElementById('confirmModalBtn').addEventListener('click', () => {
+            const sName = document.getElementById('salesName').value.trim();
+            const sContact = document.getElementById('salesContact').value.trim();
+            const action = pendingAction;
+            closeCustomizeModal();
+            if(action) handlePdfAction(action, sName, sContact);
+        });
+
         document.getElementById('calcBtn').addEventListener('click', calculateAndDisplay);
 
-        async function generatePDFBlob(customerName, variant, si, deductible, policyType, combination, tenure, membersStr) {
+        async function generatePDFBlob(customerName, variant, si, deductible, policyType, combination, tenure, membersStr, sName, sContact) {
             const overlayRoot = document.getElementById('pdf-overlay-root');
             
             let premStrip = '<div class="pdf-prem-row">';
@@ -1157,6 +1331,23 @@
             
             let colDisc = `<div class="pdf-col"><div class="pdf-col-h">Discounts</div>${discRows}</div>`;
 
+            // Setup Sales Customization Section
+            let salesSection = '';
+            if (sName || sContact) {
+                let nameStr = sName ? sName : '';
+                let contactStr = sContact ? sContact : '';
+                let dash = (sName && sContact) ? ' | ' : '';
+                
+                salesSection = `
+                <div class="pdf-sales-footer">
+                    <i class="fas fa-user-tie pdf-sales-icon"></i>
+                    <div class="pdf-sales-info">
+                        <span class="pdf-sales-info-label">Quote Prepared By</span>
+                        <span class="pdf-sales-info-value">${nameStr}${dash}${contactStr}</span>
+                    </div>
+                </div>`;
+            }
+
             overlayRoot.innerHTML = `
                 <div id="pdf-render-target">
                     <div class="pdf-cover-page">
@@ -1191,7 +1382,11 @@
                             ${colOpt}
                             ${colDisc}
                         </div>
-                        <div class="pdf-footer">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
+                        
+                        <div style="margin-top:auto;">
+                            ${salesSection}
+                            <div class="pdf-footer">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1219,7 +1414,7 @@
             return pdfBlob;
         }
 
-        async function handlePdfAction(actionType) {
+        async function handlePdfAction(actionType, sName, sContact) {
             const customerName = document.getElementById('customerName').value || "Customer";
             const si = document.getElementById('sumInsured').value;
             const deductible = document.getElementById('deductible').value;
@@ -1243,13 +1438,23 @@
             const card = document.querySelector(`#card-yr-${targetCardYr} .p-final-amount`);
             if(card) final1Yr = card.innerText;
 
-            const pdfBlob = await generatePDFBlob(customerName, variantText, si, deductible, policyType, combination, tenure, membersStr);
+            const pdfBlob = await generatePDFBlob(customerName, variantText, si, deductible, policyType, combination, tenure, membersStr, sName, sContact);
             const fileName = `Super_Top_Up_Quote_${customerName}.pdf`;
 
             if (actionType === 'download') {
                 const url = URL.createObjectURL(pdfBlob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
             } else if (actionType === 'whatsapp') {
-                const msg = `*Super Top Up Quote* 🏥\n\n` + `*Customer Name:* ${customerName}\n` + `*${basePremiumLabel}:* ${final1Yr} \n` + `-----------------------------\n` + `*Variant:* ${variantText}\n` + `*Deductible:* ${deductible}\n` + `*Sum Insured:* ${si}\n` + `*Policy Type:* ${policyType}\n` + `*Tenure:* ${tenure}\n` + `*Combination:* ${combination}\n` + `*Member Ages:* ${waMemStr}\n` + `-----------------------------\n` + `_Please find the attached quote for more details_`;
+                
+                let waSalesInfo = '';
+                if(sName || sContact) {
+                    let n = sName || '';
+                    let c = sContact || '';
+                    let sep = (n && c) ? ' - ' : '';
+                    waSalesInfo = `\n\n*Quote Prepared By:*\n${n}${sep}${c}\n`;
+                }
+
+                const msg = `*Super Top Up Quote* 🏥\n\n` + `*Customer Name:* ${customerName}\n` + `*${basePremiumLabel}:* ${final1Yr} \n` + `-----------------------------\n` + `*Variant:* ${variantText}\n` + `*Deductible:* ${deductible}\n` + `*Sum Insured:* ${si}\n` + `*Policy Type:* ${policyType}\n` + `*Tenure:* ${tenure}\n` + `*Combination:* ${combination}\n` + `*Member Ages:* ${waMemStr}\n` + `-----------------------------` + waSalesInfo + `\n_Please find the attached quote for more details_`;
+                
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1268,8 +1473,10 @@
             sel.addEventListener('change', (e) => updateDiscountSelectStyle(e.target));
         });
 
-        document.getElementById('pdfBtn').addEventListener('click', () => handlePdfAction('download'));
-        document.getElementById('waBtn').addEventListener('click', () => handlePdfAction('whatsapp'));
+        // Hooks for new Modal workflow instead of direct generation
+        document.getElementById('pdfBtn').addEventListener('click', () => openCustomizeModal('download'));
+        document.getElementById('waBtn').addEventListener('click', () => openCustomizeModal('whatsapp'));
+
         document.getElementById('genMembersBtn').addEventListener('click', renderMemberRows);
         document.getElementById('resetBtn').addEventListener('click', () => window.location.reload());
         document.getElementById('policyType').addEventListener('change', () => { enforcePolicyCombination(); renderMemberRows(); });
