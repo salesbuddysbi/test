@@ -24,14 +24,14 @@
         .section-title .divider { flex: 1; height: 2px; background: linear-gradient(to right, var(--border-color), transparent); margin-left: 12px;}
         
         .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-        .col-6 { grid-column: span 6; } .col-12 { grid-column: span 12; }
-        @media (max-width: 768px) { .col-6 { grid-column: span 12; } }
+        .col-4 { grid-column: span 4; } .col-6 { grid-column: span 6; } .col-8 { grid-column: span 8; } .col-12 { grid-column: span 12; }
+        @media (max-width: 768px) { .col-4, .col-6, .col-8 { grid-column: span 12; } }
         
         label { display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
         input[type="text"], input[type="number"], select { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: #1e293b; transition: all 0.2s ease; appearance: none; }
         select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; }
         input:focus, select:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(118,75,162,0.1); background: #fff; }
-        input[readonly] { cursor: not-allowed; background-color: #f1f5f9; }
+        input[readonly] { cursor: not-allowed; background-color: #e2e8f0; opacity: 0.7; }
 
         .input-error { border-color: #ef4444 !important; background-color: #fef2f2 !important; color: #ef4444 !important; }
         .validation-msg { display: none; color: #ef4444; font-size: 11px; font-weight: 700; margin-top: 4px; }
@@ -45,11 +45,11 @@
         .band-pill { display: inline-block; background: #1e293b; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 99px; font-weight: 700; margin-bottom: 8px; }
 
         .actions { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
-        .btn { border: none; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .btn { border: none; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap:8px; }
         .btn-primary { background: var(--primary-gradient); color: #fff; }
         .btn-grey { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         .btn-green { background: #10b981; color: white; width: 100%; margin-top: 10px; }
-        .btn-whatsapp { background: #25D366; color: white; width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap:8px;}
+        .btn-whatsapp { background: #25D366; color: white; width: 100%; margin-top: 10px; }
 
         #results-container { display: none; margin-top: 40px; }
         .results-header { text-align: center; margin-bottom: 20px; color: var(--accent-color); font-weight: 800; font-size: 20px; }
@@ -141,16 +141,17 @@
         </div>
     </div>
 
-    <!-- NEW SALES PERSON INTERCEPT MODAL -->
+    <!-- DYNAMIC SALES PERSON INTERCEPT MODAL -->
     <div id="salesModalOverlay" class="custom-alert-overlay">
         <div class="custom-alert-box" style="max-width: 380px;">
-            <i class="fab fa-whatsapp" style="font-size: 32px; color: #25D366; margin-bottom: 15px;"></i>
+            <i id="modalIcon" class="fas fa-file-invoice" style="font-size: 32px; color: var(--accent-color); margin-bottom: 15px;"></i>
             <div class="results-header" style="margin-bottom: 20px; font-size: 18px;">Customize Your Quote</div>
             
             <div style="text-align: left; margin-bottom: 15px;">
-                <label>Sales Person Name (Optional)</label>
+                <label>Name (Optional)</label>
                 <input type="text" id="salesInputName" placeholder="e.g. John Doe">
             </div>
+            
             <div style="text-align: left; margin-bottom: 25px;">
                 <label>Contact Number (Optional)</label>
                 <input type="text" id="salesInputContact" placeholder="e.g. +91 9876543210">
@@ -158,7 +159,7 @@
             
             <div class="actions" style="margin-top: 0; flex-direction: row;">
                 <button class="btn btn-grey" onclick="closeSalesModal()" style="flex: 1; padding: 12px 10px;">Cancel</button>
-                <button class="btn btn-whatsapp" onclick="submitSalesModal()" style="flex: 2; margin-top: 0; padding: 12px 10px;"><i class="fas fa-paper-plane"></i> Generate & Share</button>
+                <button id="modalSubmitBtn" class="btn btn-primary" onclick="submitSalesModal()" style="flex: 2; margin-top: 0; padding: 12px 10px;"><i class="fas fa-check"></i> Generate</button>
             </div>
         </div>
     </div>
@@ -280,13 +281,35 @@
         function closeAlert() { document.getElementById('customAlertOverlay').style.display = 'none'; }
         
         // SALES PERSON MODAL HANDLERS
-        function openSalesModal() { document.getElementById('salesModalOverlay').style.display = 'flex'; }
+        let pendingAction = ''; 
+
+        function openSalesModal(actionType) { 
+            pendingAction = actionType;
+            const icon = document.getElementById('modalIcon');
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            
+            if (actionType === 'whatsapp') {
+                icon.className = 'fab fa-whatsapp';
+                icon.style.color = '#25D366';
+                submitBtn.className = 'btn btn-whatsapp';
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Generate & Share';
+            } else {
+                icon.className = 'fas fa-file-pdf';
+                icon.style.color = '#10b981';
+                submitBtn.className = 'btn btn-green';
+                submitBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
+            }
+            document.getElementById('salesModalOverlay').style.display = 'flex'; 
+        }
+
         function closeSalesModal() { document.getElementById('salesModalOverlay').style.display = 'none'; }
+
         function submitSalesModal() {
             closeSalesModal();
             const sName = document.getElementById('salesInputName').value.trim();
             const sPhone = document.getElementById('salesInputContact').value.trim();
-            handlePdfAction('whatsapp', sName, sPhone);
+            
+            handlePdfAction(pendingAction, sName, sPhone);
         }
 
         // --- RATE TABLES ---
@@ -335,14 +358,66 @@
 
         function parseCombination(combo) { const parts = combo.split('+'); let adults = 0, children = 0; parts.forEach(p => { const n = parseInt(p); if (p.includes('A')) adults += n || 0; if (p.includes('C')) children += n || 0; }); return { adults, children }; }
 
-        function bindAgeValidation() {
-            membersWrap.querySelectorAll('.age-input').forEach(el => {
-                el.addEventListener('input', (e) => {
+        // Date logic calculation
+        function calculateAgeFromDOB(dobStr) {
+            const parts = dobStr.split('-');
+            if(parts.length !== 3) return null;
+            const d = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) - 1;
+            const y = parseInt(parts[2], 10);
+            const dob = new Date(y, m, d);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const mDiff = today.getMonth() - dob.getMonth();
+            if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            return age < 0 ? 0 : age;
+        }
+
+        function bindMemberInputs() {
+            membersWrap.querySelectorAll('.member-card').forEach(card => {
+                const ageEl = card.querySelector('.age-input');
+                const dobEl = card.querySelector('.dob-input');
+                
+                ageEl.addEventListener('input', (e) => {
+                    // Only lock DOB if the Age field is NOT marked readonly (meaning the user is manually typing the Age)
+                    if (!ageEl.hasAttribute('readonly')) {
+                        if (e.target.value !== '') dobEl.setAttribute('readonly', true);
+                        else dobEl.removeAttribute('readonly');
+                    }
+                    
                     const role = e.target.getAttribute('data-role'); const val = parseInt(e.target.value); const errorSpan = e.target.nextElementSibling;
                     if (isNaN(val)) { e.target.classList.remove('input-error'); if (errorSpan) errorSpan.style.display = 'none'; return; }
                     if (role === 'adult' && val < 18) { e.target.classList.add('input-error'); if (errorSpan) { errorSpan.innerText = "Adult min age is 18"; errorSpan.style.display = 'block'; } } 
                     else if (role === 'child' && val > 25) { e.target.classList.add('input-error'); if (errorSpan) { errorSpan.innerText = "Child max age is 25"; errorSpan.style.display = 'block'; } } 
                     else { e.target.classList.remove('input-error'); if (errorSpan) errorSpan.style.display = 'none'; }
+                });
+
+                dobEl.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\D/g, ''); // strip non-digits
+                    if (val.length > 2) val = val.substring(0, 2) + '-' + val.substring(2);
+                    if (val.length > 5) val = val.substring(0, 5) + '-' + val.substring(5, 9);
+                    e.target.value = val;
+
+                    if (val.length > 0) {
+                        ageEl.setAttribute('readonly', true); // Block Age
+                        if (val.length === 10) {
+                            const age = calculateAgeFromDOB(val);
+                            if(age !== null && !isNaN(age)) {
+                                ageEl.value = age;
+                                ageEl.dispatchEvent(new Event('input')); // Re-trigger age validation automatically 
+                            }
+                        } else {
+                            ageEl.value = '';
+                            ageEl.classList.remove('input-error');
+                            const errorSpan = ageEl.nextElementSibling;
+                            if (errorSpan) errorSpan.style.display = 'none';
+                        }
+                    } else {
+                        ageEl.removeAttribute('readonly'); // Unlock Age
+                        ageEl.value = '';
+                    }
                 });
             });
         }
@@ -352,13 +427,13 @@
             const { adults, children } = parseCombination(combo);
             membersWrap.innerHTML = ''; membersError.style.display = 'none';
             for (let i = 1; i <= adults; i++) {
-                membersWrap.innerHTML += `<div class="member-card col-12"><div class="band-wrap"><span class="band-pill">Adult ${i}</span></div><div class="grid"><div class="col-6"><label>Age</label><input type="number" min="18" max="120" data-role="adult" data-index="${i}" class="age-input" placeholder="Min 18 yrs"/><div class="validation-msg">Adult minimum age is 18</div></div><div class="col-6"><label>Gender</label><select class="gender-input" data-role="adult" data-index="${i}"><option>Male</option><option>Female</option></select></div></div></div>`;
+                membersWrap.innerHTML += `<div class="member-card col-12"><div class="band-wrap"><span class="band-pill">Adult ${i}</span></div><div class="grid"><div class="col-8" style="display: flex; gap: 12px;"><div style="flex: 1;"><label>DOB</label><input type="text" class="dob-input" data-role="adult" data-index="${i}" placeholder="DD-MM-YYYY" maxlength="10"/></div><div style="display: flex; align-items: center; padding-top: 24px; font-weight: 800; font-size: 11px; color: #94a3b8;">OR</div><div style="flex: 1; position: relative;"><label>Age</label><input type="number" min="18" max="120" data-role="adult" data-index="${i}" class="age-input" placeholder="Min 18 yrs"/><div class="validation-msg">Adult minimum age is 18</div></div></div><div class="col-4"><label>Gender</label><select class="gender-input" data-role="adult" data-index="${i}"><option>Male</option><option>Female</option></select></div></div></div>`;
             }
             for (let i = 1; i <= children; i++) {
-                membersWrap.innerHTML += `<div class="member-card col-12"><div class="band-wrap"><span class="band-pill">Child ${i}</span></div><div class="grid"><div class="col-6"><label>Age</label><input type="number" min="0" max="25" data-role="child" data-index="${i}" class="age-input" placeholder="0 - 25 yrs"/><div class="validation-msg">Child maximum age is 25</div></div><div class="col-6"><label>Gender</label><select class="gender-input" data-role="child" data-index="${i}"><option>Male</option><option>Female</option></select></div></div></div>`;
+                membersWrap.innerHTML += `<div class="member-card col-12"><div class="band-wrap"><span class="band-pill">Child ${i}</span></div><div class="grid"><div class="col-8" style="display: flex; gap: 12px;"><div style="flex: 1;"><label>DOB</label><input type="text" class="dob-input" data-role="child" data-index="${i}" placeholder="DD-MM-YYYY" maxlength="10"/></div><div style="display: flex; align-items: center; padding-top: 24px; font-weight: 800; font-size: 11px; color: #94a3b8;">OR</div><div style="flex: 1; position: relative;"><label>Age</label><input type="number" min="0" max="25" data-role="child" data-index="${i}" class="age-input" placeholder="0 - 25 yrs"/><div class="validation-msg">Child maximum age is 25</div></div></div><div class="col-4"><label>Gender</label><select class="gender-input" data-role="child" data-index="${i}"><option>Male</option><option>Female</option></select></div></div></div>`;
             }
             membersWrap.querySelectorAll('input, select').forEach(el => { el.addEventListener('change', () => { updateOptionalVisibility(); checkGirlChildDiscount(); }); });
-            bindAgeValidation(); updateOptionalVisibility(); checkGirlChildDiscount();
+            bindMemberInputs(); updateOptionalVisibility(); checkGirlChildDiscount();
         }
 
         function enforcePolicyCombination() {
@@ -710,7 +785,7 @@
                 <div class="pdf-sales-signature">
                     <div>
                         <div class="sales-title">Custom Quote Prepared By</div>
-                        <div class="sales-name">${salesName || 'Authorized Sales Partner'}</div>
+                        <div class="sales-name">${salesName || 'Authorized Partner'}</div>
                     </div>
                     <div class="sales-contact">
                         ${salesContact ? `<i class="fas fa-phone-alt"></i> ${salesContact}` : ''}
@@ -794,8 +869,13 @@
                 const url = URL.createObjectURL(pdfBlob);
                 const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
             } else if (actionType === 'whatsapp') {
-                const salesIntro = salesName ? `\n*Prepared by:* ${salesName} ${salesContact ? `(${salesContact})` : ''}` : '';
-                const msg = `*Health Alpha Select Quote* 🏥${salesIntro}\n\n*Customer Name:* ${customerName}\n*${tenureText} Total Premium:* ${finalPremium} \n-----------------------------\n*Sum Insured:* ${si}\n*Policy Type:* ${policyType}\n*Zone / Tenure:* ${zone} / ${tenureText}\n*Combination:* ${combination}\n*Member Ages:* ${waMemStr}\n-----------------------------\n_Please find the attached quote for more details_`;
+                let salesFooter = '';
+                if (salesName || salesContact) {
+                    salesFooter = `\n-----------------------------\n*Quote Prepared By:*\n*Name:* ${salesName || 'Authorized Partner'}`;
+                    if (salesContact) salesFooter += `\n*Contact:* ${salesContact}`;
+                }
+
+                const msg = `*Health Alpha Select Quote* 🏥\n\n*Customer Name:* ${customerName}\n*${tenureText} Total Premium:* ${finalPremium} \n-----------------------------\n*Sum Insured:* ${si}\n*Policy Type:* ${policyType}\n*Zone / Tenure:* ${zone} / ${tenureText}\n*Combination:* ${combination}\n*Member Ages:* ${waMemStr}${salesFooter}\n-----------------------------\n_Please find the attached quote for more details_`;
                 
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -810,8 +890,8 @@
         }
 
         // Updated Listeners for PDF and WhatsApp
-        document.getElementById('pdfBtn').addEventListener('click', () => handlePdfAction('download'));
-        document.getElementById('waBtn').addEventListener('click', openSalesModal);
+        document.getElementById('pdfBtn').addEventListener('click', () => openSalesModal('download'));
+        document.getElementById('waBtn').addEventListener('click', () => openSalesModal('whatsapp'));
         
         document.getElementById('genMembersBtn').addEventListener('click', renderMemberRows);
         document.getElementById('resetBtn').addEventListener('click', () => window.location.reload());
