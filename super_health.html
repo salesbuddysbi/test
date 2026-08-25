@@ -572,12 +572,17 @@
 
 <script>
     // ========================================================================
-    // UPDATED Google Apps Script Web App URL Included Below:
+    // Google Apps Script Web App URL Included Below:
     // ========================================================================
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwtZMEVsoEGVu9BEhoDLLkWSrJkRT5Fjwg9XqhMi5SywyPPlrEfgnTvyVGRwZ3Co7I/exec'; 
 
     function generateQuoteId() {
         return 'SH' + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    // Utility placeholder to prevent ReferenceError if images are missing
+    async function getCompressedImageFromURL(url, width) {
+        return Promise.reject("Image compression utility not found, using fallback.");
     }
 
     // SAVING FUNCTION - Captures instantly, ignores CORS blocking
@@ -1136,6 +1141,7 @@
     let currentQuote = null;
     let pendingAction = null; 
 
+    // --- INSTANT GENERATION & PUSH CALCULATE FUNCTION ---
     function calculate(recalledQuoteId = null) {
         const customerName = document.getElementById('customerName').value.trim() || "Not Specified";
         const variant = document.getElementById('variant').value;
@@ -1150,10 +1156,15 @@
         document.getElementById('resultArea').style.display = 'none';
         document.getElementById('btnDownload').style.display = 'none';
         document.getElementById('btnWhatsapp').style.display = 'none';
-        
-        if (typeof recalledQuoteId !== 'string') {
-            recalledQuoteId = null;
-            document.getElementById('quoteIdContainer').style.display = 'none';
+
+        // Retain active Quote ID or generate a fresh one
+        let activeQuoteId = null;
+        if (typeof recalledQuoteId === 'string' && recalledQuoteId) {
+            activeQuoteId = recalledQuoteId;
+        } else if (currentQuote && currentQuote.quoteId) {
+            activeQuoteId = currentQuote.quoteId;
+        } else {
+            activeQuoteId = generateQuoteId(); 
         }
 
         if (!startAge) {
@@ -1171,7 +1182,6 @@
 
         let constantOptionalAnnual = 0.0;
         let selectedOptionalsList = [];
-
         let hasDomestic = false;
         let staffAge = 0;
         let staffSi = 0;
@@ -1247,7 +1257,7 @@
         const termDiscounts = [0, 0.04, 0.06]; 
         
         currentQuote = {
-            quoteId: recalledQuoteId, 
+            quoteId: activeQuoteId,
             customerName: customerName,
             variant: variant,
             family: family,
@@ -1346,6 +1356,11 @@
         document.getElementById('resultArea').style.display = 'block';
         document.getElementById('btnDownload').style.display = 'flex';
         document.getElementById('btnWhatsapp').style.display = 'flex';
+
+        // Instantly display and push to sheets
+        document.getElementById('displayQuoteId').innerText = currentQuote.quoteId;
+        document.getElementById('quoteIdContainer').style.display = 'block';
+        saveQuoteToExcel(currentQuote.quoteId); 
     }
 
     document.getElementById('opt_domestic').addEventListener('change', function() {
@@ -1394,19 +1409,9 @@
         generateAndAction(actionToExecute, salesName, salesContact);
     }
 
+    // --- PDF / WHATSAPP EXPORT FUNCTION ---
     async function generateAndAction(action, salesName = "", salesContact = "") {
         if(!currentQuote) return;
-
-        // --- Generate ID and Save to Google Sheets ONLY NOW ---
-        if (!currentQuote.quoteId) {
-            const newQuoteId = generateQuoteId();
-            currentQuote.quoteId = newQuoteId;
-            document.getElementById('displayQuoteId').innerText = newQuoteId;
-            document.getElementById('quoteIdContainer').style.display = 'block'; 
-            
-            // Fires instantly via no-cors
-            saveQuoteToExcel(newQuoteId); 
-        }
 
         try {
             const { jsPDF } = window.jspdf;
@@ -1419,7 +1424,7 @@
                 const coverImageData = await getCompressedImageFromURL('superhealthcoverpage.png', 800);
                 doc.addImage(coverImageData, 'JPEG', 0, 0, 210, 297);
             } catch (imgErr) {
-                console.warn("Cover image failed to load. Fallback rendering applied.", imgErr);
+                console.warn("Cover image failed to load. Fallback rendering applied.");
                 doc.setFillColor(...primaryColor);
                 doc.rect(0, 0, 210, 297, 'F');
                 doc.setTextColor(255, 255, 255);
