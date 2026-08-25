@@ -383,9 +383,9 @@
 
     <div class="content">
         
-        <!-- Recall Quote Section -->
+        <!-- Rework Quote Section -->
         <div style="background: #e1f5fe; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #0091d0;">
-            <label style="color: #0091d0;">Recall Previous Quote</label>
+            <label style="color: #0091d0;">Rework on Existing Quote</label>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="searchQuoteId" placeholder="Enter Quote ID (e.g. SH123456)" style="flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0;">
                 <button type="button" id="fetchBtn" onclick="recallQuote()" style="background: #0091d0; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: 120px;">
@@ -572,17 +572,26 @@
 
 <script>
     // ========================================================================
-    // Google Apps Script Web App URL Included Below:
+    // UPDATED Google Apps Script Web App URL Included Below:
     // ========================================================================
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_-tzmV1Er6KmXeoCj5t7PGGxPy3AjO6234EgclgnIN2XYJtiwHF57CMWUKYsvxhzY/exec'; 
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwtZMEVsoEGVu9BEhoDLLkWSrJkRT5Fjwg9XqhMi5SywyPPlrEfgnTvyVGRwZ3Co7I/exec'; 
 
     function generateQuoteId() {
-        // Generates exactly SH + 6 Digits (e.g., SH482910)
         return 'SH' + Math.floor(100000 + Math.random() * 900000);
     }
 
+    // SAVING FUNCTION - Captures instantly, ignores CORS blocking
     async function saveQuoteToExcel(quoteId) {
         const wellnessMembersChecked = Array.from(document.querySelectorAll('.wellness-member-check:checked')).map(cb => cb.value).join(',');
+        const isDomesticChecked = document.getElementById('opt_domestic').checked;
+
+        // Fetch premiums safely from currentQuote.results array
+        let p1 = 0, p2 = 0, p3 = 0;
+        if (currentQuote && currentQuote.results) {
+            p1 = currentQuote.results[0]?.final || 0;
+            p2 = currentQuote.results[1]?.final || 0;
+            p3 = currentQuote.results[2]?.final || 0;
+        }
 
         const payload = {
             quoteId: quoteId,
@@ -592,22 +601,32 @@
             family: document.getElementById('family').value,
             age: document.getElementById('age').value,
             si: document.getElementById('sumInsured').value,
-            optDomestic: document.getElementById('opt_domestic').checked,
-            staffAge: document.getElementById('staff_age').value,
-            staffSi: document.getElementById('staff_si').value,
+            optDomestic: isDomesticChecked,
+            staffAge: isDomesticChecked ? document.getElementById('staff_age').value : '',
+            staffSi: isDomesticChecked ? document.getElementById('staff_si').value : '',
             optReinsure: document.getElementById('opt_reinsure').checked,
             optBonus: document.getElementById('opt_bonus').checked,
             optAccident: document.getElementById('opt_accident').checked,
             optWellness: document.getElementById('opt_wellness').checked,
             wellnessMembers: wellnessMembersChecked,
-            optWalk: document.getElementById('opt_walk').checked
+            optWalk: document.getElementById('opt_walk').checked,
+            premium1Yr: p1,
+            premium2Yr: p2,
+            premium3Yr: p3
         };
 
         try {
-            fetch(GOOGLE_APP_SCRIPT_URL, {
+            // Using "mode: 'no-cors'" forces the browser to send it without waiting for pre-flight approvals.
+            // This is the secret to 100% instant/lively capture to Google Apps Script from static HTML.
+            await fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
                 body: JSON.stringify(payload)
             });
+            console.log("Data instantly sent to backend.");
         } catch (e) {
             console.error("Failed to save quote to Sheets", e);
         }
@@ -673,11 +692,9 @@
                     });
                 }
 
-                // Show the quote ID for reference
                 document.getElementById('displayQuoteId').innerText = data.QuoteID;
                 document.getElementById('quoteIdContainer').style.display = 'block';
 
-                // Recalculate everything to display the grid
                 calculate(data.QuoteID); 
             }
         } catch (error) {
@@ -1386,6 +1403,8 @@
             currentQuote.quoteId = newQuoteId;
             document.getElementById('displayQuoteId').innerText = newQuoteId;
             document.getElementById('quoteIdContainer').style.display = 'block'; 
+            
+            // Fires instantly via no-cors
             saveQuoteToExcel(newQuoteId); 
         }
 
