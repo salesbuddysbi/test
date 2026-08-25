@@ -576,6 +576,14 @@
     // ========================================================================
     const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwtZMEVsoEGVu9BEhoDLLkWSrJkRT5Fjwg9XqhMi5SywyPPlrEfgnTvyVGRwZ3Co7I/exec'; 
 
+    let currentQuote = null;
+    let pendingAction = null; 
+    
+    // Memory trackers to prevent duplicate spam but allow new scenarios
+    let lastCalcSignature = null;
+    let activeQuoteId = null;
+    let lastSavedPayloadStr = null; 
+
     function generateQuoteId() {
         return 'SH' + Math.floor(100000 + Math.random() * 900000);
     }
@@ -585,12 +593,11 @@
         return Promise.reject("Image compression utility not found, using fallback.");
     }
 
-    // SAVING FUNCTION - Captures instantly, ignores CORS blocking
+    // SAVING FUNCTION
     async function saveQuoteToExcel(quoteId) {
         const wellnessMembersChecked = Array.from(document.querySelectorAll('.wellness-member-check:checked')).map(cb => cb.value).join(',');
         const isDomesticChecked = document.getElementById('opt_domestic').checked;
 
-        // Fetch premiums safely from currentQuote.results array
         let p1 = 0, p2 = 0, p3 = 0;
         if (currentQuote && currentQuote.results) {
             p1 = currentQuote.results[0]?.final || 0;
@@ -620,18 +627,25 @@
             premium3Yr: p3
         };
 
+        const currentPayloadStr = JSON.stringify(payload);
+
+        // Anti-Spam: If nothing has changed, do not push a duplicate row to Google Sheets
+        if (currentPayloadStr === lastSavedPayloadStr) {
+            console.log("No changes detected. Skipping save to avoid duplicate processing.");
+            return; 
+        }
+
         try {
-            // Using "mode: 'no-cors'" forces the browser to send it without waiting for pre-flight approvals.
-            // This is the secret to 100% instant/lively capture to Google Apps Script from static HTML.
             await fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
-                body: JSON.stringify(payload)
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: currentPayloadStr
             });
-            console.log("Data instantly sent to backend.");
+            
+            // Save this string to memory so we don't send it again unless modified
+            lastSavedPayloadStr = currentPayloadStr; 
+            console.log("Scenario saved to backend.");
         } catch (e) {
             console.error("Failed to save quote to Sheets", e);
         }
@@ -697,9 +711,7 @@
                     });
                 }
 
-                document.getElementById('displayQuoteId').innerText = data.QuoteID;
-                document.getElementById('quoteIdContainer').style.display = 'block';
-
+                // Call calculate passing the recalled Quote ID so we lock onto it
                 calculate(data.QuoteID); 
             }
         } catch (error) {
@@ -1138,10 +1150,7 @@
         return { base, optional };
     }
 
-    let currentQuote = null;
-    let pendingAction = null; 
-
-    // --- INSTANT GENERATION & PUSH CALCULATE FUNCTION ---
+    // MAIN CALCULATE FUNCTION (Handles Anti-Spam & New Scenarios)
     function calculate(recalledQuoteId = null) {
         const customerName = document.getElementById('customerName').value.trim() || "Not Specified";
         const variant = document.getElementById('variant').value;
@@ -1157,16 +1166,6 @@
         document.getElementById('btnDownload').style.display = 'none';
         document.getElementById('btnWhatsapp').style.display = 'none';
 
-        // Retain active Quote ID or generate a fresh one
-        let activeQuoteId = null;
-        if (typeof recalledQuoteId === 'string' && recalledQuoteId) {
-            activeQuoteId = recalledQuoteId;
-        } else if (currentQuote && currentQuote.quoteId) {
-            activeQuoteId = currentQuote.quoteId;
-        } else {
-            activeQuoteId = generateQuoteId(); 
-        }
-
         if (!startAge) {
             errorBox.innerText = "Please enter valid age.";
             errorBox.style.display = 'block';
@@ -1178,6 +1177,39 @@
             errorBox.innerText = "Sum Insured not found.";
             errorBox.style.display = 'block';
             return;
+        }
+
+        // Create a unique "signature" of the current form inputs to detect changes
+        const currentSignature = JSON.stringify({
+            variant: variant,
+            family: family,
+            age: startAge,
+            si: si,
+            optDomestic: document.getElementById('opt_domestic').checked,
+            staffAge: document.getElementById('staff_age').value,
+            staffSi: document.getElementById('staff_si').value,
+            optReinsure: document.getElementById('opt_reinsure').checked,
+            optBonus: document.getElementById('opt_bonus').checked,
+            optAccident: document.getElementById('opt_accident').checked,
+            optWellness: document.getElementById('opt_wellness').checked,
+            wellnessMembers: Array.from(document.querySelectorAll('.wellness-member-check:checked')).map(cb => cb.value).join(','),
+            optWalk: document.getElementById('opt_walk').checked
+        });
+
+        // Scenario Generation Logic
+        if (typeof recalledQuoteId === 'string' && recalledQuoteId) {
+            // If data is just recalled from backend, strictly use that ID and set baseline
+            activeQuoteId = recalledQuoteId;
+            lastCalcSignature = currentSignature;
+        } else {
+            // User manually clicked "Calculate"
+            if (currentSignature !== lastCalcSignature || !activeQuoteId) {
+                // The user changed something! Generate a NEW Quote ID for this scenario.
+                activeQuoteId = generateQuoteId();
+                lastCalcSignature = currentSignature;
+            }
+            // If currentSignature === lastCalcSignature, they clicked without changing. 
+            // activeQuoteId remains the same, preventing unnecessary generation.
         }
 
         let constantOptionalAnnual = 0.0;
@@ -1357,7 +1389,7 @@
         document.getElementById('btnDownload').style.display = 'flex';
         document.getElementById('btnWhatsapp').style.display = 'flex';
 
-        // Instantly display and push to sheets
+        // Instantly display and trigger save to sheets
         document.getElementById('displayQuoteId').innerText = currentQuote.quoteId;
         document.getElementById('quoteIdContainer').style.display = 'block';
         saveQuoteToExcel(currentQuote.quoteId); 
