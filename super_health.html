@@ -494,7 +494,7 @@
         </form>
 
         <div id="resultArea">
-            <!-- Quote ID Display (Hidden until generation or recall) -->
+            <!-- Quote ID Display (Hidden until generation) -->
             <div id="quoteIdContainer" style="text-align: center; margin-bottom: 15px; display: none;">
                 <span style="background: #fff3cd; color: #856404; padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 1px solid #ffeeba;">
                     Quote ID: <span id="displayQuoteId"></span>
@@ -651,6 +651,7 @@
         }
     }
 
+    // RECALL FUNCTION - ONLY populates fields. Leaves calculations hidden until user acts.
     async function recallQuote() {
         const quoteId = document.getElementById('searchQuoteId').value.trim();
         const msgBox = document.getElementById('recallMsg');
@@ -675,8 +676,19 @@
                 msgBox.innerText = "Quote ID not found.";
             } else {
                 msgBox.style.color = '#2ecc71';
-                msgBox.innerText = "Quote recalled successfully!";
+                msgBox.innerText = "Data loaded! You can now modify and recalculate.";
 
+                // 1. Reset backend-sync variables to force a NEW scenario when they click Calculate
+                activeQuoteId = null;
+                lastCalcSignature = null;
+                currentQuote = null;
+
+                // 2. Hide old calculations, error boxes, and Quote ID display
+                document.getElementById('resultArea').style.display = 'none';
+                document.getElementById('quoteIdContainer').style.display = 'none';
+                document.getElementById('errorBox').style.display = 'none';
+
+                // 3. Populate form fields
                 document.getElementById('customerName').value = data.CustomerName || '';
                 document.getElementById('variant').value = data.Variant;
                 handleVariantChange(); 
@@ -710,9 +722,7 @@
                         if (members.includes(cb.value)) cb.checked = true;
                     });
                 }
-
-                // Call calculate passing the recalled Quote ID so we lock onto it
-                calculate(data.QuoteID); 
+                // (Notice we intentionally DO NOT call calculate() here anymore)
             }
         } catch (error) {
             msgBox.style.color = '#d32f2f';
@@ -1151,7 +1161,7 @@
     }
 
     // MAIN CALCULATE FUNCTION (Handles Anti-Spam & New Scenarios)
-    function calculate(recalledQuoteId = null) {
+    function calculate() {
         const customerName = document.getElementById('customerName').value.trim() || "Not Specified";
         const variant = document.getElementById('variant').value;
         const family = document.getElementById('family').value;
@@ -1196,20 +1206,10 @@
             optWalk: document.getElementById('opt_walk').checked
         });
 
-        // Scenario Generation Logic
-        if (typeof recalledQuoteId === 'string' && recalledQuoteId) {
-            // If data is just recalled from backend, strictly use that ID and set baseline
-            activeQuoteId = recalledQuoteId;
+        // Generate a new Quote ID if this is a fresh calculation or details have changed
+        if (currentSignature !== lastCalcSignature || !activeQuoteId) {
+            activeQuoteId = generateQuoteId();
             lastCalcSignature = currentSignature;
-        } else {
-            // User manually clicked "Calculate"
-            if (currentSignature !== lastCalcSignature || !activeQuoteId) {
-                // The user changed something! Generate a NEW Quote ID for this scenario.
-                activeQuoteId = generateQuoteId();
-                lastCalcSignature = currentSignature;
-            }
-            // If currentSignature === lastCalcSignature, they clicked without changing. 
-            // activeQuoteId remains the same, preventing unnecessary generation.
         }
 
         let constantOptionalAnnual = 0.0;
