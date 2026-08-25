@@ -319,7 +319,7 @@
             margin-bottom: 5px;
         }
 
-        /* --- STANDARDIZED MODAL DESIGN CSS --- */
+        /* --- MODAL CSS --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -340,98 +340,34 @@
             box-sizing: border-box;
         }
 
-        .modal-icon-container {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .modal-icon-container { text-align: center; margin-bottom: 15px; }
+        .modal-title { color: var(--primary); font-size: 22px; margin-top: 0; margin-bottom: 25px; font-weight: 700; text-align: center; }
+        
+        .custom-form-group label { color: #4a5568; font-size: 15px; font-weight: 700; margin-bottom: 8px; display: block; }
+        .custom-input { width: 100%; border-radius: 14px !important; border: 1px solid #e2e8f0 !important; padding: 16px 18px !important; background-color: #f8fafc !important; color: #2d3748; font-size: 16px !important; box-sizing: border-box; transition: all 0.2s; }
+        .custom-input:focus { border-color: var(--secondary) !important; background-color: #fff !important; outline: none; box-shadow: 0 0 0 3px rgba(0, 145, 208, 0.1); }
 
-        .modal-title {
-            color: var(--primary);
-            font-size: 22px;
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-weight: 700;
-            text-align: center;
-        }
+        .modal-actions { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-cancel { flex: 1; background-color: #f8fafc; color: #334155; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 16px; font-weight: 700; padding: 14px; cursor: pointer; transition: all 0.2s; }
+        .btn-cancel:hover { background-color: #e2e8f0; }
+        .btn-submit { flex: 1.6; background-color: var(--whatsapp); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; padding: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-submit svg { margin-right: 8px; }
 
-        .custom-form-group label {
-            color: #4a5568;
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: block;
+        /* --- SPINNER CSS --- */
+        .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
-
-        .custom-input {
-            width: 100%;
-            border-radius: 14px !important;
-            border: 1px solid #e2e8f0 !important;
-            padding: 16px 18px !important;
-            background-color: #f8fafc !important;
-            color: #2d3748;
-            font-size: 16px !important;
-            box-sizing: border-box;
-            transition: all 0.2s;
-        }
-
-        .custom-input::placeholder {
-            color: #94a3b8;
-        }
-
-        .custom-input:focus {
-            border-color: var(--secondary) !important;
-            background-color: #fff !important;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 145, 208, 0.1);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            background-color: #f8fafc;
-            color: #334155;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            padding: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-            background-color: #e2e8f0;
-        }
-
-        .btn-submit {
-            flex: 1.6;
-            background-color: var(--whatsapp);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            padding: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .btn-submit:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .btn-submit svg {
-            margin-right: 8px;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-loading .spinner { display: inline-block; }
+        .btn-loading .btn-text { display: none; }
+        .btn-loading { cursor: not-allowed; opacity: 0.8; }
 
         @media (max-width: 768px) {
             .comparison-container { grid-template-columns: 1fr; }
@@ -446,6 +382,20 @@
     </div>
 
     <div class="content">
+        
+        <!-- Recall Quote Section -->
+        <div style="background: #e1f5fe; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #0091d0;">
+            <label style="color: #0091d0;">Recall Previous Quote</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="searchQuoteId" placeholder="Enter Quote ID (e.g. SH123456)" style="flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0;">
+                <button type="button" id="fetchBtn" onclick="recallQuote()" style="background: #0091d0; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: 120px;">
+                    <span class="spinner"></span>
+                    <span class="btn-text">Fetch Data</span>
+                </button>
+            </div>
+            <div id="recallMsg" style="font-size: 13px; margin-top: 8px; color: #d32f2f;"></div>
+        </div>
+
         <form id="calcForm">
             <div class="form-group">
                 <label>Customer Name (Optional)</label>
@@ -544,6 +494,13 @@
         </form>
 
         <div id="resultArea">
+            <!-- Quote ID Display (Hidden until generation or recall) -->
+            <div id="quoteIdContainer" style="text-align: center; margin-bottom: 15px; display: none;">
+                <span style="background: #fff3cd; color: #856404; padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 1px solid #ffeeba;">
+                    Quote ID: <span id="displayQuoteId"></span>
+                </span>
+            </div>
+
             <h3 style="text-align: center; color: var(--primary);">Detailed Premium Breakdown (Excl. Tax)</h3>
             <div class="comparison-container">
                 <div class="plan-card">
@@ -589,12 +546,9 @@
     </div>
 </div>
 
-<!-- NEW STANDARDIZED MODAL -->
 <div id="salesModal" class="modal-overlay">
     <div class="modal-wrapper">
-        <div class="modal-icon-container" id="modalTopIcon">
-            <!-- Icon injected via JS -->
-        </div>
+        <div class="modal-icon-container" id="modalTopIcon"></div>
         <h3 class="modal-title">Customize Your Quote</h3>
         
         <div class="form-group custom-form-group" style="margin-bottom:20px;">
@@ -617,26 +571,123 @@
 </div>
 
 <script>
-    function getCompressedImageFromURL(url, maxWidth = 800) {
-        return new Promise((resolve, reject) => {
-            var img = new Image();
-            img.setAttribute("crossOrigin", "anonymous");
-            img.onload = () => {
-                var canvas = document.createElement("canvas");
-                let scale = maxWidth / img.width;
-                canvas.width = maxWidth;
-                canvas.height = img.height * scale;
-                var ctx = canvas.getContext("2d");
+    // ========================================================================
+    // Google Apps Script Web App URL Included Below:
+    // ========================================================================
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_-tzmV1Er6KmXeoCj5t7PGGxPy3AjO6234EgclgnIN2XYJtiwHF57CMWUKYsvxhzY/exec'; 
+
+    function generateQuoteId() {
+        // Generates exactly SH + 6 Digits (e.g., SH482910)
+        return 'SH' + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    async function saveQuoteToExcel(quoteId) {
+        const wellnessMembersChecked = Array.from(document.querySelectorAll('.wellness-member-check:checked')).map(cb => cb.value).join(',');
+
+        const payload = {
+            quoteId: quoteId,
+            customerName: document.getElementById('customerName').value,
+            variant: document.getElementById('variant').value,
+            policyType: document.getElementById('policyType').value,
+            family: document.getElementById('family').value,
+            age: document.getElementById('age').value,
+            si: document.getElementById('sumInsured').value,
+            optDomestic: document.getElementById('opt_domestic').checked,
+            staffAge: document.getElementById('staff_age').value,
+            staffSi: document.getElementById('staff_si').value,
+            optReinsure: document.getElementById('opt_reinsure').checked,
+            optBonus: document.getElementById('opt_bonus').checked,
+            optAccident: document.getElementById('opt_accident').checked,
+            optWellness: document.getElementById('opt_wellness').checked,
+            wellnessMembers: wellnessMembersChecked,
+            optWalk: document.getElementById('opt_walk').checked
+        };
+
+        try {
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+        } catch (e) {
+            console.error("Failed to save quote to Sheets", e);
+        }
+    }
+
+    async function recallQuote() {
+        const quoteId = document.getElementById('searchQuoteId').value.trim();
+        const msgBox = document.getElementById('recallMsg');
+        const fetchBtn = document.getElementById('fetchBtn');
+
+        if (!quoteId) {
+            msgBox.innerText = "Please enter a Quote ID.";
+            return;
+        }
+
+        msgBox.style.color = '#0091d0';
+        msgBox.innerText = "Fetching data...";
+        fetchBtn.classList.add('btn-loading');
+        fetchBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${GOOGLE_APP_SCRIPT_URL}?quoteId=${quoteId}`);
+            const data = await response.json();
+
+            if (data.error) {
+                msgBox.style.color = '#d32f2f';
+                msgBox.innerText = "Quote ID not found.";
+            } else {
+                msgBox.style.color = '#2ecc71';
+                msgBox.innerText = "Quote recalled successfully!";
+
+                document.getElementById('customerName').value = data.CustomerName || '';
+                document.getElementById('variant').value = data.Variant;
+                handleVariantChange(); 
                 
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                setPolicyType(data.PolicyType);
+                document.getElementById('family').value = data.Family;
+                handleFamilyChange(); 
                 
-                resolve(canvas.toDataURL("image/jpeg", 0.7));
-            };
-            img.onerror = error => reject(error);
-            img.src = url;
-        });
+                document.getElementById('age').value = data.Age;
+                document.getElementById('age').dispatchEvent(new Event('input')); 
+                
+                document.getElementById('sumInsured').value = data.SumInsured;
+
+                document.getElementById('opt_domestic').checked = data.OptDomestic === true || data.OptDomestic === "TRUE";
+                document.getElementById('opt_domestic').dispatchEvent(new Event('change'));
+                document.getElementById('staff_age').value = data.StaffAge || '';
+                document.getElementById('staff_si').value = data.StaffSi || '50000';
+
+                document.getElementById('opt_reinsure').checked = data.OptReinsure === true || data.OptReinsure === "TRUE";
+                document.getElementById('opt_bonus').checked = data.OptBonus === true || data.OptBonus === "TRUE";
+                document.getElementById('opt_accident').checked = data.OptAccident === true || data.OptAccident === "TRUE";
+                document.getElementById('opt_walk').checked = data.OptWalk === true || data.OptWalk === "TRUE";
+
+                const optWellness = data.OptWellness === true || data.OptWellness === "TRUE";
+                document.getElementById('opt_wellness').checked = optWellness;
+                document.getElementById('opt_wellness').dispatchEvent(new Event('change'));
+
+                if (optWellness && data.WellnessMembers) {
+                    const members = data.WellnessMembers.split(',');
+                    document.querySelectorAll('.wellness-member-check').forEach(cb => {
+                        if (members.includes(cb.value)) cb.checked = true;
+                    });
+                }
+
+                // Show the quote ID for reference
+                document.getElementById('displayQuoteId').innerText = data.QuoteID;
+                document.getElementById('quoteIdContainer').style.display = 'block';
+
+                // Recalculate everything to display the grid
+                calculate(data.QuoteID); 
+            }
+        } catch (error) {
+            msgBox.style.color = '#d32f2f';
+            msgBox.innerText = "Network error while fetching quote.";
+            console.error(error);
+        } finally {
+            fetchBtn.classList.remove('btn-loading');
+            fetchBtn.disabled = false;
+        }
     }
 
     const db = {
@@ -1068,7 +1119,7 @@
     let currentQuote = null;
     let pendingAction = null; 
 
-    function calculate() {
+    function calculate(recalledQuoteId = null) {
         const customerName = document.getElementById('customerName').value.trim() || "Not Specified";
         const variant = document.getElementById('variant').value;
         const family = document.getElementById('family').value;
@@ -1082,6 +1133,11 @@
         document.getElementById('resultArea').style.display = 'none';
         document.getElementById('btnDownload').style.display = 'none';
         document.getElementById('btnWhatsapp').style.display = 'none';
+        
+        if (typeof recalledQuoteId !== 'string') {
+            recalledQuoteId = null;
+            document.getElementById('quoteIdContainer').style.display = 'none';
+        }
 
         if (!startAge) {
             errorBox.innerText = "Please enter valid age.";
@@ -1174,6 +1230,7 @@
         const termDiscounts = [0, 0.04, 0.06]; 
         
         currentQuote = {
+            quoteId: recalledQuoteId, 
             customerName: customerName,
             variant: variant,
             family: family,
@@ -1292,16 +1349,14 @@
         const submitBtn = document.getElementById('modalSubmitBtn');
 
         if (action === 'whatsapp') {
-            // Render WhatsApp SVG at top
             topIcon.innerHTML = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#25D366"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.115.552 4.17 1.6 5.996L.103 24l6.115-1.603a11.97 11.97 0 005.813 1.512h.005c6.645 0 12.031-5.383 12.031-12.031C24 5.383 18.676 0 12.031 0zm0 21.906h-.005a9.96 9.96 0 01-5.078-1.37l-.364-.216-3.771.99.1-.035 1.006-3.676-.237-.377a9.946 9.946 0 01-1.52-5.301C2.162 5.385 6.645.9 12.031.9c5.384 0 9.866 4.484 9.866 9.869s-4.482 9.868-9.866 9.868zm5.417-7.391c-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.668.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.882-.788-1.478-1.761-1.651-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.074-.149-.668-1.611-.916-2.206-.241-.579-.487-.501-.668-.51l-.57-.009c-.198 0-.521.074-.793.372-.272.298-1.041 1.016-1.041 2.479 0 1.463 1.066 2.876 1.214 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.574-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.569-.347z"/></svg>`;
             submitText.innerText = "Generate & Share";
-            submitIcon.innerHTML = `<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>`; // Paper Plane
+            submitIcon.innerHTML = `<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>`; 
             submitBtn.style.backgroundColor = '#2ecc71'; 
         } else {
-            // Render generic/download SVG at top
             topIcon.innerHTML = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#0091d0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>`;
             submitText.innerText = "Generate & Download";
-            submitIcon.innerHTML = `<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>`; // Download Icon
+            submitIcon.innerHTML = `<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>`; 
             submitBtn.style.backgroundColor = 'var(--secondary)';
         }
         
@@ -1324,6 +1379,15 @@
 
     async function generateAndAction(action, salesName = "", salesContact = "") {
         if(!currentQuote) return;
+
+        // --- Generate ID and Save to Google Sheets ONLY NOW ---
+        if (!currentQuote.quoteId) {
+            const newQuoteId = generateQuoteId();
+            currentQuote.quoteId = newQuoteId;
+            document.getElementById('displayQuoteId').innerText = newQuoteId;
+            document.getElementById('quoteIdContainer').style.display = 'block'; 
+            saveQuoteToExcel(newQuoteId); 
+        }
 
         try {
             const { jsPDF } = window.jspdf;
@@ -1357,6 +1421,11 @@
             doc.setFont("helvetica", "bold");
             doc.setFontSize(16);
             doc.text("SBI Super Health Insurance - Premium Quote", 14, 15);
+
+            // Add Quote ID top right of PDF
+            doc.setFontSize(12);
+            doc.setTextColor(...secondaryColor);
+            doc.text(`ID: ${currentQuote.quoteId}`, 196, 15, null, null, "right");
             
             doc.setDrawColor(...secondaryColor);
             doc.setLineWidth(0.5);
@@ -1536,7 +1605,7 @@
                 let custDisplay = currentQuote.customerName !== "Not Specified" ? currentQuote.customerName : "Valued Customer";
                 let oneYrPremium = currentQuote.results.find(r => r.tenure.includes("1"))?.final || 0;
 
-                let waText = `*Super Health Quote* 🏥\n\n*Customer Name:* ${custDisplay}\n*1 Yr Total Premium:* ₹ ${oneYrPremium.toLocaleString('en-IN')}\n-----------------------------\n*Sum Insured:* ${currentQuote.si.toLocaleString('en-IN')}\n*Policy Type:* ${document.getElementById('policyType').value.toUpperCase()}\n*Variant:* ${currentQuote.variant}\n*Combination:* ${currentQuote.family}\n*Eldest Member Age :* ${currentQuote.age}\n-----------------------------`;
+                let waText = `*Super Health Quote* 🏥\n\n*Customer Name:* ${custDisplay}\n*Quote ID:* ${currentQuote.quoteId}\n*1 Yr Total Premium:* ₹ ${oneYrPremium.toLocaleString('en-IN')}\n-----------------------------\n*Sum Insured:* ${currentQuote.si.toLocaleString('en-IN')}\n*Policy Type:* ${document.getElementById('policyType').value.toUpperCase()}\n*Variant:* ${currentQuote.variant}\n*Combination:* ${currentQuote.family}\n*Eldest Member Age :* ${currentQuote.age}\n-----------------------------`;
                 
                 if(salesName) {
                     waText += `\n\n*Provided By:* ${salesName}`;
@@ -1572,7 +1641,6 @@
         handleVariantChange();
         bindDOBAndAge();
     };
-
 </script>
 
 </body>
