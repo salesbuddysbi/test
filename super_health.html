@@ -628,9 +628,7 @@
 <!-- NEW STANDARDIZED MODAL -->
 <div id="salesModal" class="modal-overlay">
     <div class="modal-wrapper">
-        <div class="modal-icon-container" id="modalTopIcon">
-            <!-- Icon injected via JS -->
-        </div>
+        <div class="modal-icon-container" id="modalTopIcon"></div>
         <h3 class="modal-title">Customize Your Quote</h3>
         
         <div class="form-group custom-form-group" style="margin-bottom:20px;">
@@ -653,8 +651,8 @@
 </div>
 
 <script>
-    // --- QUOTE REWORK STATE & UTILITIES ---
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOMarZ2Lggze89bywlE_0b-xd0Tm2SA-Fu5aR2ZLJ15sfxFwdkAhpn4WvvOsXgdo0m/exec'; 
+    // --- GOOGLE APPS SCRIPT INTEGRATION ---
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyzJSXiDoNjftOAH2LFduQ8hgOaV0sjREvbW22TvXb97ZX28NuckYuDblD-_aQH243/exec'; 
 
     let currentQuote = null;
     let pendingAction = null; 
@@ -739,7 +737,7 @@
         fetchBtn.disabled = true;
 
         try {
-            const response = await fetch(`${GOOGLE_APP_SCRIPT_URL}?quoteId=${quoteId}`);
+            const response = await fetch(`${GOOGLE_APP_SCRIPT_URL}?quoteId=${encodeURIComponent(quoteId)}`);
             const data = await response.json();
 
             if (data.error) {
@@ -785,7 +783,7 @@
                 document.getElementById('opt_wellness').dispatchEvent(new Event('change'));
 
                 if (optWellness && data.WellnessMembers) {
-                    const members = data.WellnessMembers.split(',');
+                    const members = String(data.WellnessMembers).split(',');
                     document.querySelectorAll('.wellness-member-check').forEach(cb => {
                         if (members.includes(cb.value)) cb.checked = true;
                     });
@@ -801,8 +799,7 @@
         }
     }
 
-
-    // --- ORIGINAL PDF IMAGE & DATA UTILITIES ---
+    // --- PDF IMAGE COMPRESSION & ASSET LOADING ---
     function getCompressedImageFromURL(url, maxWidth = 800) {
         return new Promise((resolve, reject) => {
             var img = new Image();
@@ -1251,7 +1248,7 @@
         return { base, optional };
     }
 
-    // --- MAIN CALCULATE FUNCTION (Integrated with State Tracking) ---
+    // --- MAIN CALCULATE FUNCTION ---
     function calculate() {
         const customerName = document.getElementById('customerName').value.trim() || "Not Specified";
         const variant = document.getElementById('variant').value;
@@ -1280,7 +1277,6 @@
             return;
         }
 
-        // Quote Rework - Create form signature to check if parameters changed
         const currentSignature = JSON.stringify({
             variant: variant,
             family: family,
@@ -1297,7 +1293,6 @@
             optWalk: document.getElementById('opt_walk').checked
         });
 
-        // Generate a new Quote ID if this is a fresh calculation or inputs have changed
         if (currentSignature !== lastCalcSignature || !activeQuoteId) {
             activeQuoteId = generateQuoteId();
             lastCalcSignature = currentSignature;
@@ -1380,7 +1375,7 @@
         const termDiscounts = [0, 0.04, 0.06]; 
         
         currentQuote = {
-            quoteId: activeQuoteId, // Added active Quote ID to State
+            quoteId: activeQuoteId,
             customerName: customerName,
             variant: variant,
             family: family,
@@ -1480,7 +1475,6 @@
         document.getElementById('btnDownload').style.display = 'flex';
         document.getElementById('btnWhatsapp').style.display = 'flex';
 
-        // Trigger UI rendering for Quote ID and save to backend
         document.getElementById('displayQuoteId').innerText = currentQuote.quoteId;
         document.getElementById('quoteIdContainer').style.display = 'block';
         saveQuoteToExcel(currentQuote.quoteId); 
@@ -1506,12 +1500,12 @@
         if (action === 'whatsapp') {
             topIcon.innerHTML = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#25D366"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.115.552 4.17 1.6 5.996L.103 24l6.115-1.603a11.97 11.97 0 005.813 1.512h.005c6.645 0 12.031-5.383 12.031-12.031C24 5.383 18.676 0 12.031 0zm0 21.906h-.005a9.96 9.96 0 01-5.078-1.37l-.364-.216-3.771.99.1-.035 1.006-3.676-.237-.377a9.946 9.946 0 01-1.52-5.301C2.162 5.385 6.645.9 12.031.9c5.384 0 9.866 4.484 9.866 9.869s-4.482 9.868-9.866 9.868zm5.417-7.391c-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.668.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.882-.788-1.478-1.761-1.651-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.074-.149-.668-1.611-.916-2.206-.241-.579-.487-.501-.668-.51l-.57-.009c-.198 0-.521.074-.793.372-.272.298-1.041 1.016-1.041 2.479 0 1.463 1.066 2.876 1.214 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.574-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.569-.347z"/></svg>`;
             submitText.innerText = "Generate & Share";
-            submitIcon.innerHTML = `<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>`; // Paper Plane
+            submitIcon.innerHTML = `<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>`;
             submitBtn.style.backgroundColor = '#2ecc71'; 
         } else {
             topIcon.innerHTML = `<svg viewBox="0 0 24 24" width="48" height="48" fill="#0091d0"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>`;
             submitText.innerText = "Generate & Download";
-            submitIcon.innerHTML = `<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>`; // Download Icon
+            submitIcon.innerHTML = `<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>`;
             submitBtn.style.backgroundColor = 'var(--secondary)';
         }
         
@@ -1532,7 +1526,7 @@
         generateAndAction(actionToExecute, salesName, salesContact);
     }
 
-    // --- PDF / WHATSAPP EXPORT FUNCTION (Updated with Quote ID rendering) ---
+    // --- PDF / WHATSAPP EXPORT FUNCTION ---
     async function generateAndAction(action, salesName = "", salesContact = "") {
         if(!currentQuote) return;
 
@@ -1569,7 +1563,6 @@
             doc.setFontSize(16);
             doc.text("SBI Super Health Insurance - Premium Quote", 14, 15);
             
-            // Render Quote ID top right of PDF
             doc.setFontSize(12);
             doc.setTextColor(...secondaryColor);
             doc.text(`ID: ${currentQuote.quoteId}`, 196, 15, null, null, "right");
@@ -1752,7 +1745,6 @@
                 let custDisplay = currentQuote.customerName !== "Not Specified" ? currentQuote.customerName : "Valued Customer";
                 let oneYrPremium = currentQuote.results.find(r => r.tenure.includes("1"))?.final || 0;
 
-                // Included Quote ID to WhatsApp Share message
                 let waText = `*Super Health Quote* 🏥\n\n*Customer Name:* ${custDisplay}\n*Quote ID:* ${currentQuote.quoteId}\n*1 Yr Total Premium:* ₹ ${oneYrPremium.toLocaleString('en-IN')}\n-----------------------------\n*Sum Insured:* ${currentQuote.si.toLocaleString('en-IN')}\n*Policy Type:* ${document.getElementById('policyType').value.toUpperCase()}\n*Variant:* ${currentQuote.variant}\n*Combination:* ${currentQuote.family}\n*Eldest Member Age :* ${currentQuote.age}\n-----------------------------`;
                 
                 if(salesName) {
