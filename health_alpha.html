@@ -75,7 +75,7 @@
         .result-actions-bar { display: flex; gap: 20px; justify-content: center; max-width: 900px; margin-left: auto; margin-right: auto; }
         @media (max-width: 600px) { .result-actions-bar { flex-direction: column; gap: 10px; } }
 
-        /* CUSTOM ALERT & SALES MODAL OVERLAYS */
+        /* MODALS & OVERLAYS */
         .custom-alert-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(3px); }
         .custom-alert-box { background: #fff; padding: 25px; border-radius: 16px; text-align: center; max-width: 340px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .custom-alert-icon { font-size: 40px; color: #ef4444; margin-bottom: 15px; }
@@ -84,7 +84,7 @@
         .custom-alert-btn:active { transform: scale(0.96); }
         @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* PDF OVERLAY - STYLING */
+        /* PDF STYLING */
         #pdf-overlay-root { display: none; position: absolute; left: -9999px; }
         .pdf-export-wrapper { width: 794px; background: white; margin: 0; padding: 0; line-height: 1.3;}
         .pdf-cover-page { width: 794px; height: 1122px; overflow: hidden; }
@@ -121,14 +121,18 @@
         .pdf-row-icon { color: #764ba2; font-size: 9px; width: 14px; text-align: left; flex-shrink: 0; margin-right: 4px; }
         .pdf-row-k { color: #555; font-weight: 600; line-height: 1.1; }
         .pdf-row-v { color: #000; font-weight: 800; max-width: 45%; text-align: right; line-height: 1.1; }
-        
-        /* Sales Person Custom Signature Block */
         .pdf-sales-signature { margin-top: auto; padding: 12px; background: rgba(118, 75, 162, 0.05); border: 1px dashed #764ba2; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .pdf-sales-signature .sales-title { font-size: 8px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
         .pdf-sales-signature .sales-name { font-size: 14px; font-weight: 900; color: #764ba2; }
         .pdf-sales-signature .sales-contact { font-size: 11px; font-weight: 800; color: #1e293b; text-align: right; }
-        
         .pdf-footer { margin-top: 5px; padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 7px; color: #475569; text-align: justify; line-height: 1.3; }
+
+        /* QUOTE RECALL UI SPINNER */
+        .spinner { display: none; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-loading .spinner { display: inline-block; }
+        .btn-loading .btn-text { display: none; }
+        .btn-loading { cursor: not-allowed; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -169,14 +173,27 @@
             <h1>Health Alpha <span>Select</span></h1>
         </header>
 
+        <!-- REWORK QUOTE SECTION -->
+        <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            <label style="color: var(--accent-color); font-weight: 800;"><i class="fas fa-cloud-download-alt"></i> Rework on Existing Quote</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="searchQuoteId" placeholder="Enter Quote ID (e.g. HA123456)" style="flex: 1; margin-bottom: 0;">
+                <button type="button" id="fetchBtn" class="btn btn-primary" onclick="recallQuote()" style="padding: 0 20px; min-width: 130px; margin: 0;">
+                    <span class="spinner"></span>
+                    <span class="btn-text">Fetch Data</span>
+                </button>
+            </div>
+            <div id="recallMsg" style="font-size: 12px; margin-top: 8px; color: #ef4444; font-weight: 600;"></div>
+        </div>
+
         <section class="card" id="basic-section">
             <div class="section-title"><span class="tag"><i class="fas fa-user-circle"></i> Basic Details</span><span class="divider"></span></div>
             <div class="grid">
                 <div class="col-12"><label>Customer Name</label><input type="text" id="customerName" placeholder="Enter Customer Name"></div>
                 <div class="col-6"><label>Sum Insured</label><select id="sumInsured"><option>5 Lac</option><option>7.5 Lac</option><option selected>10 Lac</option><option>12.5 Lac</option><option>15 Lac</option><option>20 Lac</option><option>25 Lac</option><option>30 Lac</option><option>35 Lac</option><option>50 Lac</option><option>75 Lac</option><option>1Cr</option></select></div>
-                <div class="col-12"><label>Policy Type</label><input type="hidden" id="policyType" value="Individual"><div class="toggle-wrapper"><div class="toggle-slider"></div><div class="toggle-option active" data-val="Individual">Individual</div><div class="toggle-option" data-val="Family Floater">Family Floater</div><div class="toggle-option" data-val="Individual Floater">Ind. Floater</div></div></div>
+                <div class="col-12"><label>Policy Type</label><input type="hidden" id="policyType" value="Individual"><div class="toggle-wrapper" id="policyTypeWrapper"><div class="toggle-slider"></div><div class="toggle-option active" data-val="Individual">Individual</div><div class="toggle-option" data-val="Family Floater">Family Floater</div><div class="toggle-option" data-val="Individual Floater">Ind. Floater</div></div></div>
                 <div class="col-6"><label>Combination</label><div style="display:flex; gap:8px;"><select id="combination" style="flex:1;"><option>1A</option><option>2A</option><option>1A+1C</option><option>1A+2C</option><option>1A+3C</option><option>1A+4C</option><option>1A+5C</option><option>2A+1C</option><option>2A+2C</option><option>2A+3C</option><option>2A+4C</option><option>2A+5C</option></select><button class="btn btn-grey" id="genMembersBtn"><i class="fas fa-sync-alt"></i></button></div></div>
-                <div class="col-6"><label>Zone</label><input type="hidden" id="zone" value="Zone B"><div class="toggle-wrapper"><div class="toggle-slider"></div><div class="toggle-option" data-val="Zone A">Zone A</div><div class="toggle-option active" data-val="Zone B">Zone B</div></div></div>
+                <div class="col-6"><label>Zone</label><input type="hidden" id="zone" value="Zone B"><div class="toggle-wrapper" id="zoneWrapper"><div class="toggle-slider"></div><div class="toggle-option" data-val="Zone A">Zone A</div><div class="toggle-option active" data-val="Zone B">Zone B</div></div></div>
                 <div class="col-6"><label>Tenure</label><select id="tenure"><option value="1">1 Year</option><option value="2">2 Year</option><option value="3">3 Year</option><option value="4">4 Year</option><option value="5">5 Year</option></select></div>
             </div>
         </section>
@@ -239,6 +256,13 @@
         </div>
 
         <div id="results-container">
+            <!-- QUOTE ID DISPLAY -->
+            <div id="quoteIdContainer" style="text-align: center; margin-bottom: 20px; display: none;">
+                <span style="background: rgba(118, 75, 162, 0.1); color: var(--accent-color); padding: 8px 20px; border-radius: 99px; font-weight: 800; border: 1px solid var(--accent-color); font-size: 14px;">
+                    Quote ID: <span id="displayQuoteId"></span>
+                </span>
+            </div>
+
             <div class="results-header">Detailed Premium Breakdown</div>
             
             <div class="premium-breakdown-grid" id="premiumGridTarget"></div>
@@ -249,6 +273,7 @@
             </div>
             <div style="text-align:center; margin-top:15px; margin-bottom: 30px; font-size:11px; color:#94a3b8; font-style:italic;">Multi-year premiums account for age progression.</div>
 
+            <!-- INBUILT FEATURES -->
             <div class="features-container" id="inbuilt-section">
                 <div class="section-title"><span class="tag"><i class="fas fa-check-circle"></i> Inbuilt Policy Benefits</span><span class="divider"></span></div>
                 <div class="feat-grid">
@@ -277,39 +302,203 @@
     <div id="pdf-overlay-root"></div>
 
     <script>
+        // ========================================================================
+        // BACKEND / SYNC SETUP
+        // ========================================================================
+        // ---> YOUR PROVIDED WEB APP URL HAS BEEN INTEGRATED BELOW <---
+        const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkyQF8XOVmHR6KpPDw0g6BIDaGaioIkORL3nvHLve9gwawnR1_FZBeJ8QQIOE_Us-g/exec'; 
+
+        let pendingAction = ''; 
+        let activeQuoteId = null;
+        let lastCalcSignature = null;
+        let lastSavedPayloadStr = null; 
+
+        function generateQuoteId() { return 'HA' + Math.floor(100000 + Math.random() * 900000); }
+
         function showAlert(msg) { document.getElementById('customAlertMsg').innerText = msg; document.getElementById('customAlertOverlay').style.display = 'flex'; }
         function closeAlert() { document.getElementById('customAlertOverlay').style.display = 'none'; }
         
-        // SALES PERSON MODAL HANDLERS
-        let pendingAction = ''; 
-
         function openSalesModal(actionType) { 
             pendingAction = actionType;
             const icon = document.getElementById('modalIcon');
             const submitBtn = document.getElementById('modalSubmitBtn');
             
             if (actionType === 'whatsapp') {
-                icon.className = 'fab fa-whatsapp';
-                icon.style.color = '#25D366';
-                submitBtn.className = 'btn btn-whatsapp';
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Generate & Share';
+                icon.className = 'fab fa-whatsapp'; icon.style.color = '#25D366';
+                submitBtn.className = 'btn btn-whatsapp'; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Generate & Share';
             } else {
-                icon.className = 'fas fa-file-pdf';
-                icon.style.color = '#10b981';
-                submitBtn.className = 'btn btn-green';
-                submitBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
+                icon.className = 'fas fa-file-pdf'; icon.style.color = '#10b981';
+                submitBtn.className = 'btn btn-green'; submitBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
             }
             document.getElementById('salesModalOverlay').style.display = 'flex'; 
         }
 
         function closeSalesModal() { document.getElementById('salesModalOverlay').style.display = 'none'; }
-
         function submitSalesModal() {
             closeSalesModal();
             const sName = document.getElementById('salesInputName').value.trim();
             const sPhone = document.getElementById('salesInputContact').value.trim();
-            
             handlePdfAction(pendingAction, sName, sPhone);
+        }
+
+        // Programmatically set toggle values (Used for Recall feature)
+        function setToggleValue(hiddenInputId, val) {
+            const hiddenInput = document.getElementById(hiddenInputId);
+            hiddenInput.value = val;
+            const wrapper = hiddenInput.nextElementSibling;
+            if(!wrapper) return;
+            const options = wrapper.querySelectorAll('.toggle-option');
+            options.forEach(o => o.classList.remove('active'));
+            const targetOpt = wrapper.querySelector(`.toggle-option[data-val="${val}"]`);
+            if (targetOpt) {
+                targetOpt.classList.add('active');
+                const slider = wrapper.querySelector('.toggle-slider');
+                slider.style.transform = `translateX(${targetOpt.offsetLeft}px)`; 
+                slider.style.width = `${targetOpt.offsetWidth}px`;
+            }
+            hiddenInput.dispatchEvent(new Event('change'));
+        }
+
+        // --- BACKEND SAVING LOGIC ---
+        async function saveQuoteToBackend(quoteId, finalPremiums) {
+            let membersArr = [];
+            document.querySelectorAll('.member-card').forEach(card => {
+                membersArr.push({
+                    role: card.querySelector('.age-input').getAttribute('data-role'),
+                    age: parseInt(card.querySelector('.age-input').value) || 0,
+                    gender: card.querySelector('.gender-input').value
+                });
+            });
+
+            const payload = {
+                quoteId: quoteId,
+                customerName: document.getElementById('customerName').value,
+                policyType: document.getElementById('policyType').value,
+                sumInsured: document.getElementById('sumInsured').value,
+                combination: document.getElementById('combination').value,
+                zone: document.getElementById('zone').value,
+                tenure: document.getElementById('tenure').value,
+                roomCategory: document.getElementById('roomCategory').value,
+                pedWait: document.getElementById('pedWait').value,
+                specWait: document.getElementById('specWait').value,
+                ncb: document.getElementById('ncb').value,
+                consumables: document.getElementById('consumables').value,
+                airAmbulance: document.getElementById('airAmbulance').value,
+                healthCheck: document.getElementById('healthCheck').value,
+                endless: document.getElementById('endless').value,
+                reconstructive: document.getElementById('reconstructive').value,
+                opd: document.getElementById('opd').value,
+                hospitalCash: document.getElementById('hospitalCash').value,
+                maternity: document.getElementById('maternity').value,
+                maternityWait: document.getElementById('maternityWait').value,
+                welcomeDisc: document.getElementById('welcomeDisc').value,
+                preferredNetwork: document.getElementById('preferredNetwork').value,
+                crossSellDiscount: document.getElementById('crossSellDiscount').value,
+                employeeDiscount: document.getElementById('employeeDiscount').value,
+                members: JSON.stringify(membersArr), 
+                premium1Yr: finalPremiums[0]?.prem || 0,
+                premium2Yr: finalPremiums[1]?.prem || 0,
+                premium3Yr: finalPremiums[2]?.prem || 0,
+                premium4Yr: finalPremiums[3]?.prem || 0,
+                premium5Yr: finalPremiums[4]?.prem || 0
+            };
+
+            const currentPayloadStr = JSON.stringify(payload);
+
+            if (currentPayloadStr === lastSavedPayloadStr) {
+                console.log("No changes detected. Skipping save.");
+                return; 
+            }
+
+            try {
+                await fetch(GOOGLE_APP_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: currentPayloadStr
+                });
+                lastSavedPayloadStr = currentPayloadStr; 
+                console.log("Health Alpha scenario saved to backend.");
+            } catch (e) { console.error("Failed to save quote to Sheets", e); }
+        }
+
+        // --- BACKEND RECALL LOGIC ---
+        async function recallQuote() {
+            const quoteId = document.getElementById('searchQuoteId').value.trim();
+            const msgBox = document.getElementById('recallMsg');
+            const fetchBtn = document.getElementById('fetchBtn');
+
+            if (!quoteId) { msgBox.innerText = "Please enter a Quote ID."; return; }
+
+            msgBox.style.color = '#764ba2'; msgBox.innerText = "Fetching data...";
+            fetchBtn.classList.add('btn-loading'); fetchBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${GOOGLE_APP_SCRIPT_URL}?quoteId=${quoteId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    msgBox.style.color = '#ef4444'; msgBox.innerText = "Quote ID not found.";
+                } else {
+                    msgBox.style.color = '#10b981'; msgBox.innerText = "Data loaded successfully!";
+                    
+                    activeQuoteId = null; lastCalcSignature = null; // Force new calculation save
+                    document.getElementById('results-container').style.display = 'none';
+
+                    // Form hydration
+                    document.getElementById('customerName').value = data.CustomerName || '';
+                    document.getElementById('sumInsured').value = data.SumInsured;
+                    setToggleValue('policyType', data.PolicyType);
+                    document.getElementById('combination').value = data.Combination;
+                    setToggleValue('zone', data.Zone);
+                    document.getElementById('tenure').value = data.Tenure;
+                    
+                    document.getElementById('roomCategory').value = data.RoomCategory;
+                    document.getElementById('pedWait').value = data.PedWait;
+                    document.getElementById('specWait').value = data.SpecWait;
+                    document.getElementById('ncb').value = data.Ncb;
+                    document.getElementById('consumables').value = data.Consumables;
+                    document.getElementById('airAmbulance').value = data.AirAmbulance;
+                    document.getElementById('healthCheck').value = data.HealthCheck;
+                    document.getElementById('endless').value = data.Endless;
+                    document.getElementById('reconstructive').value = data.Reconstructive;
+                    
+                    // Render UI elements based on core details BEFORE setting optionals that depend on UI limits
+                    enforcePolicyCombination();
+                    renderMemberRows();
+                    updateOptionalVisibility();
+
+                    document.getElementById('opd').value = data.Opd;
+                    document.getElementById('hospitalCash').value = data.HospitalCash;
+                    document.getElementById('maternity').value = data.Maternity;
+                    document.getElementById('maternityWait').value = data.MaternityWait;
+                    document.getElementById('welcomeDisc').value = data.WelcomeDisc;
+                    document.getElementById('preferredNetwork').value = data.PreferredNetwork;
+                    document.getElementById('crossSellDiscount').value = data.CrossSellDiscount;
+                    document.getElementById('employeeDiscount').value = data.EmployeeDiscount;
+
+                    // Hydrate Members dynamically
+                    if (data.Members) {
+                        let membersData = JSON.parse(data.Members);
+                        let cards = document.querySelectorAll('.member-card');
+                        membersData.forEach((mem, idx) => {
+                             if(cards[idx]) {
+                                 const ageInput = cards[idx].querySelector('.age-input');
+                                 const genInput = cards[idx].querySelector('.gender-input');
+                                 ageInput.value = mem.age || '';
+                                 genInput.value = mem.gender;
+                                 ageInput.dispatchEvent(new Event('input')); // trigger validation
+                             }
+                        });
+                    }
+                    
+                    updateOptionalVisibility(); checkGirlChildDiscount();
+                }
+            } catch (error) {
+                msgBox.style.color = '#ef4444'; msgBox.innerText = "Network error while fetching quote.";
+            } finally {
+                fetchBtn.classList.remove('btn-loading'); fetchBtn.disabled = false;
+            }
         }
 
         // --- RATE TABLES ---
@@ -358,66 +547,31 @@
 
         function parseCombination(combo) { const parts = combo.split('+'); let adults = 0, children = 0; parts.forEach(p => { const n = parseInt(p); if (p.includes('A')) adults += n || 0; if (p.includes('C')) children += n || 0; }); return { adults, children }; }
 
-        // Date logic calculation
         function calculateAgeFromDOB(dobStr) {
-            const parts = dobStr.split('-');
-            if(parts.length !== 3) return null;
-            const d = parseInt(parts[0], 10);
-            const m = parseInt(parts[1], 10) - 1;
-            const y = parseInt(parts[2], 10);
-            const dob = new Date(y, m, d);
-            const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            const mDiff = today.getMonth() - dob.getMonth();
-            if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) {
-                age--;
-            }
+            const parts = dobStr.split('-'); if(parts.length !== 3) return null;
+            const dob = new Date(parts[2], parts[1] - 1, parts[0]); const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear(); const mDiff = today.getMonth() - dob.getMonth();
+            if (mDiff < 0 || (mDiff === 0 && today.getDate() < dob.getDate())) { age--; }
             return age < 0 ? 0 : age;
         }
 
         function bindMemberInputs() {
             membersWrap.querySelectorAll('.member-card').forEach(card => {
-                const ageEl = card.querySelector('.age-input');
-                const dobEl = card.querySelector('.dob-input');
-                
+                const ageEl = card.querySelector('.age-input'); const dobEl = card.querySelector('.dob-input');
                 ageEl.addEventListener('input', (e) => {
-                    // Only lock DOB if the Age field is NOT marked readonly (meaning the user is manually typing the Age)
-                    if (!ageEl.hasAttribute('readonly')) {
-                        if (e.target.value !== '') dobEl.setAttribute('readonly', true);
-                        else dobEl.removeAttribute('readonly');
-                    }
-                    
+                    if (!ageEl.hasAttribute('readonly')) { if (e.target.value !== '') dobEl.setAttribute('readonly', true); else dobEl.removeAttribute('readonly'); }
                     const role = e.target.getAttribute('data-role'); const val = parseInt(e.target.value); const errorSpan = e.target.nextElementSibling;
                     if (isNaN(val)) { e.target.classList.remove('input-error'); if (errorSpan) errorSpan.style.display = 'none'; return; }
                     if (role === 'adult' && val < 18) { e.target.classList.add('input-error'); if (errorSpan) { errorSpan.innerText = "Adult min age is 18"; errorSpan.style.display = 'block'; } } 
                     else if (role === 'child' && val > 25) { e.target.classList.add('input-error'); if (errorSpan) { errorSpan.innerText = "Child max age is 25"; errorSpan.style.display = 'block'; } } 
                     else { e.target.classList.remove('input-error'); if (errorSpan) errorSpan.style.display = 'none'; }
                 });
-
                 dobEl.addEventListener('input', (e) => {
-                    let val = e.target.value.replace(/\D/g, ''); // strip non-digits
-                    if (val.length > 2) val = val.substring(0, 2) + '-' + val.substring(2);
-                    if (val.length > 5) val = val.substring(0, 5) + '-' + val.substring(5, 9);
+                    let val = e.target.value.replace(/\D/g, ''); 
+                    if (val.length > 2) val = val.substring(0, 2) + '-' + val.substring(2); if (val.length > 5) val = val.substring(0, 5) + '-' + val.substring(5, 9);
                     e.target.value = val;
-
-                    if (val.length > 0) {
-                        ageEl.setAttribute('readonly', true); // Block Age
-                        if (val.length === 10) {
-                            const age = calculateAgeFromDOB(val);
-                            if(age !== null && !isNaN(age)) {
-                                ageEl.value = age;
-                                ageEl.dispatchEvent(new Event('input')); // Re-trigger age validation automatically 
-                            }
-                        } else {
-                            ageEl.value = '';
-                            ageEl.classList.remove('input-error');
-                            const errorSpan = ageEl.nextElementSibling;
-                            if (errorSpan) errorSpan.style.display = 'none';
-                        }
-                    } else {
-                        ageEl.removeAttribute('readonly'); // Unlock Age
-                        ageEl.value = '';
-                    }
+                    if (val.length > 0) { ageEl.setAttribute('readonly', true); if (val.length === 10) { const age = calculateAgeFromDOB(val); if(age !== null && !isNaN(age)) { ageEl.value = age; ageEl.dispatchEvent(new Event('input')); } } else { ageEl.value = ''; } } 
+                    else { ageEl.removeAttribute('readonly'); ageEl.value = ''; }
                 });
             });
         }
@@ -676,6 +830,24 @@
 
             const siLabel = document.getElementById('sumInsured').value;
             const data = calculatePremiumFor(siLabel);
+            
+            // --- SYNC & QUOTE ID GENERATION ---
+            const currentSignature = JSON.stringify({
+                cust: document.getElementById('customerName').value, policy: document.getElementById('policyType').value, si: siLabel,
+                combo: document.getElementById('combination').value, zone: document.getElementById('zone').value, 
+                ten: document.getElementById('tenure').value, ped: document.getElementById('pedWait').value, 
+                mems: membersAges.join(','), optional: document.getElementById('consumables').value + document.getElementById('opd').value
+            });
+            
+            if (currentSignature !== lastCalcSignature || !activeQuoteId) {
+                activeQuoteId = generateQuoteId(); lastCalcSignature = currentSignature;
+            }
+            document.getElementById('displayQuoteId').innerText = activeQuoteId;
+            document.getElementById('quoteIdContainer').style.display = 'block';
+
+            // TRIGGER BACKGROUND SAVE
+            saveQuoteToBackend(activeQuoteId, data);
+            
             const gridTarget = document.getElementById('premiumGridTarget');
             gridTarget.innerHTML = ''; 
 
@@ -697,9 +869,7 @@
                 </div>`;
                 gridTarget.innerHTML += cardHTML;
                 
-                if(yr === selectedTenure) {
-                    window.selectedTenurePremium = yrData.prem;
-                }
+                if(yr === selectedTenure) { window.selectedTenurePremium = yrData.prem; }
             }
 
             const optGrid = document.getElementById('optionals-grid-target'); optGrid.innerHTML = '';
@@ -724,7 +894,6 @@
 
         async function generatePDFBlob(customerName, si, policyType, combination, zone, tenure, membersStr, salesName = '', salesContact = '') {
             const overlayRoot = document.getElementById('pdf-overlay-root');
-            
             const baseSiLabel = document.getElementById('sumInsured').value;
             const baseSiIdx = SI_LABELS_ORDER.indexOf(baseSiLabel);
             
@@ -745,32 +914,22 @@
                 tierRowsHTML += `<tr>${tdHtml}</tr>`;
             });
 
-            let premStrip = `
-                <table class="pdf-tier-table">
-                    <thead><tr><th>Sum Insured</th><th>1 Year</th><th>2 Year</th><th>3 Year</th><th>4 Year</th><th>5 Year</th></tr></thead>
-                    <tbody>${tierRowsHTML}</tbody>
-                </table>
-            `;
+            let premStrip = `<table class="pdf-tier-table"><thead><tr><th>Sum Insured</th><th>1 Year</th><th>2 Year</th><th>3 Year</th><th>4 Year</th><th>5 Year</th></tr></thead><tbody>${tierRowsHTML}</tbody></table>`;
 
             let inbuiltClean = '<div class="pdf-grid-4">';
-            document.querySelectorAll('#inbuilt-section .feat-item').forEach(item => {
-                let iconClass = item.querySelector('i').className;
-                inbuiltClean += `<div class="pdf-feat-box"><div class="pdf-icon-wrap"><i class="${iconClass}"></i></div><div class="pdf-feat-text"><div class="pdf-feat-l">${item.querySelector('.feat-label').innerText}</div><div class="pdf-feat-v">${item.querySelector('.feat-val').innerText}</div></div></div>`;
-            });
+            document.querySelectorAll('#inbuilt-section .feat-item').forEach(item => { let iconClass = item.querySelector('i').className; inbuiltClean += `<div class="pdf-feat-box"><div class="pdf-icon-wrap"><i class="${iconClass}"></i></div><div class="pdf-feat-text"><div class="pdf-feat-l">${item.querySelector('.feat-label').innerText}</div><div class="pdf-feat-v">${item.querySelector('.feat-val').innerText}</div></div></div>`; });
             inbuiltClean += '</div>';
 
             let colMod = '<div class="pdf-col"><div class="pdf-col-h">Modifiers</div>';
             const ncbSel = document.getElementById('ncb');
             const modifiers = [ { k: 'Room', v: document.getElementById('roomCategory').value, i: 'fa-bed' }, { k: 'Pre-Hosp', v: '60 Days', i: 'fa-hourglass-start' }, { k: 'Post-Hosp', v: '90 Days', i: 'fa-hourglass-end' }, { k: 'PED Wait', v: document.getElementById('pedWait').value, i: 'fa-history' }, { k: 'Spec. Wait', v: document.getElementById('specWait').value, i: 'fa-hourglass-half' }, { k: 'NCB/NCD', v: ncbSel.options[ncbSel.selectedIndex].text, i: 'fa-star' } ];
-            modifiers.forEach(m => { colMod += `<div class="pdf-row-item"><div class="pdf-row-left"><i class="fas ${m.i} pdf-row-icon"></i><div class="pdf-row-k">${m.k}</div></div><div class="pdf-row-v">${m.v}</div></div>`; });
-            colMod += '</div>';
+            modifiers.forEach(m => { colMod += `<div class="pdf-row-item"><div class="pdf-row-left"><i class="fas ${m.i} pdf-row-icon"></i><div class="pdf-row-k">${m.k}</div></div><div class="pdf-row-v">${m.v}</div></div>`; }); colMod += '</div>';
 
             let colOpt = '<div class="pdf-col"><div class="pdf-col-h">Optionals</div>';
             const maternityVal = document.getElementById('maternity').value;
             const optionals = [ { k: 'Consumables', v: document.getElementById('consumables').value, i: 'fa-box-open' }, { k: 'Air Ambulance', v: document.getElementById('airAmbulance').value, i: 'fa-plane' }, { k: 'Health Check', v: document.getElementById('healthCheck').value, i: 'fa-user-md' }, { k: 'Endless SI', v: document.getElementById('endless').value, i: 'fa-infinity' }, { k: 'Reconstructive', v: document.getElementById('reconstructive').value, i: 'fa-crutch' }, { k: 'OPD', v: document.getElementById('opd').value, i: 'fa-clinic-medical' }, { k: 'Hosp. Cash', v: document.getElementById('hospitalCash').value, i: 'fa-money-bill-wave' }, { k: 'Maternity', v: maternityVal, i: 'fa-baby' } ];
             if(maternityVal !== "Not Opted") { optionals.push({ k: 'New Born Baby', v: 'Included', i: 'fa-baby-carriage' }); optionals.push({ k: 'Child Vaccination', v: 'Included', i: 'fa-syringe' }); }
-            optionals.forEach(o => { let displayVal = o.v; if(o.k === 'Maternity' && o.v !== 'Not Opted') displayVal += ` (${document.getElementById('maternityWait').value} Wait)`; colOpt += `<div class="pdf-row-item"><div class="pdf-row-left"><i class="fas ${o.i} pdf-row-icon"></i><div class="pdf-row-k">${o.k}</div></div><div class="pdf-row-v">${displayVal}</div></div>`; });
-            colOpt += '</div>';
+            optionals.forEach(o => { let displayVal = o.v; if(o.k === 'Maternity' && o.v !== 'Not Opted') displayVal += ` (${document.getElementById('maternityWait').value} Wait)`; colOpt += `<div class="pdf-row-item"><div class="pdf-row-left"><i class="fas ${o.i} pdf-row-icon"></i><div class="pdf-row-k">${o.k}</div></div><div class="pdf-row-v">${displayVal}</div></div>`; }); colOpt += '</div>';
 
             const welcomeVal = document.getElementById('welcomeDisc').value; const prefVal = document.getElementById('preferredNetwork').value; const girlChildVal = document.getElementById('hasGirlChild').value === 'true' ? 'Yes' : 'No'; const empVal = document.getElementById('employeeDiscount').value; const crossVal = document.getElementById('crossSellDiscount').value; const zoneVal = document.getElementById('zone').value;
             let floaterDisp = 'No'; const pt = document.getElementById('policyType').value; if(pt === 'Family Floater') floaterDisp = 'Yes'; else if((pt === 'Individual' || pt === 'Individual Floater') && membersStr.length >= 2) floaterDisp = 'Yes (5%)';
@@ -778,30 +937,22 @@
             if(welcomeVal === 'Yes') discRows += addDiscRow('Welcome', 'Yes', 'fa-hand-holding-usd'); if(prefVal === 'Preferred Partner') discRows += addDiscRow('Preferred Net.', 'Yes', 'fa-hospital'); if(girlChildVal === 'Yes') discRows += addDiscRow('Girl Child', 'Yes', 'fa-child'); if(empVal === 'Yes') discRows += addDiscRow('SBI Emp.', 'Yes', 'fa-id-badge'); if(crossVal === 'Yes') discRows += addDiscRow('Cross-Sell', 'Yes', 'fa-exchange-alt'); if(zoneVal === 'Zone B') discRows += addDiscRow('Zone B', 'Yes', 'fa-map-marker-alt'); if(floaterDisp !== 'No') discRows += addDiscRow('Floater Disc.', floaterDisp, 'fa-users');
             let colDisc = `<div class="pdf-col"><div class="pdf-col-h">Discounts</div>${discRows}</div>`;
 
-            // SALES PERSON BLOCK
             let salesBlockHTML = '';
             if (salesName || salesContact) {
-                salesBlockHTML = `
-                <div class="pdf-sales-signature">
-                    <div>
-                        <div class="sales-title">Custom Quote Prepared By</div>
-                        <div class="sales-name">${salesName || 'Authorized Partner'}</div>
-                    </div>
-                    <div class="sales-contact">
-                        ${salesContact ? `<i class="fas fa-phone-alt"></i> ${salesContact}` : ''}
-                    </div>
-                </div>`;
+                salesBlockHTML = `<div class="pdf-sales-signature"><div><div class="sales-title">Custom Quote Prepared By</div><div class="sales-name">${salesName || 'Authorized Partner'}</div></div><div class="sales-contact">${salesContact ? `<i class="fas fa-phone-alt"></i> ${salesContact}` : ''}</div></div>`;
             }
 
             overlayRoot.innerHTML = `
                 <div class="pdf-export-wrapper" id="pdf-export-wrapper">
                     <div class="pdf-cover-page"><img src="alphacoverpage.png" alt="Cover Page"></div>
-                    
                     <div class="pdf-page-container">
                         <div class="pdf-content-wrapper">
                             <div class="pdf-header-row">
                                 <div><div class="pdf-title-main">Health Alpha Select</div><div class="pdf-subtitle">Premium Quote Calculation</div></div>
-                                <div style="text-align:right;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpFkxL3TkvBl2a1hu_Z8gwhK2mBuZBlbYD9ql3gAl6RkDFhMQG7AISp6Sb&s=10" style="height: 35px;" alt="Logo"><br><div style="font-size:10px;">Date: ${new Date().toLocaleDateString()}</div></div>
+                                <div style="text-align:right;">
+                                    <div style="font-size:11px; color:#764ba2; font-weight: 800;">ID: ${activeQuoteId || 'HA-DRAFT'}</div>
+                                    <div style="font-size:10px;">Date: ${new Date().toLocaleDateString()}</div>
+                                </div>
                             </div>
                             <div class="pdf-sec-title">1. Quote Details</div>
                             <table class="pdf-details-tbl">
@@ -814,32 +965,19 @@
                             <div class="pdf-sec-title">3. Inbuilt Features</div>
                             ${inbuiltClean}
                             <div class="pdf-cols-wrapper">${colMod}${colOpt}${colDisc}</div>
-                            
                             ${salesBlockHTML}
-                            
                             <div class="pdf-footer">*Disclaimer: This quote is indicative and based on the information provided. Final premium is subject to underwriting and health status. Benefits mentioned are subject to policy terms and conditions.</div>
                         </div>
                     </div>
                 </div>
             `;
 
-            overlayRoot.style.display = 'block';
-            window.scrollTo(0, 0);
-
+            overlayRoot.style.display = 'block'; window.scrollTo(0, 0);
             const element = document.getElementById('pdf-export-wrapper');
-            const opt = {
-                margin: 0,
-                filename: `Health_Alpha_Quote_${customerName}.pdf`,
-                image: { type: 'jpeg', quality: 0.99 },
-                html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-                jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait' },
-                pagebreak: { mode: 'css' }
-            };
-
+            const opt = { margin: 0, filename: `Health_Alpha_Quote_${customerName}.pdf`, image: { type: 'jpeg', quality: 0.99 }, html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 }, jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait' }, pagebreak: { mode: 'css' } };
             await new Promise(resolve => setTimeout(resolve, 500));
             const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
-            overlayRoot.style.display = 'none';
-            return pdfBlob;
+            overlayRoot.style.display = 'none'; return pdfBlob;
         }
 
         async function handlePdfAction(actionType, salesName = '', salesContact = '') {
@@ -848,34 +986,21 @@
             const policyType = document.getElementById('policyType').value;
             const combination = document.getElementById('combination').value;
             const zone = document.getElementById('zone').value;
-            
             const tenureSelect = document.getElementById('tenure');
             const tenureText = tenureSelect.options[tenureSelect.selectedIndex].text;
             
             let membersStr = []; let waAges = [];
-            document.querySelectorAll('.member-card').forEach(card => {
-                const age = card.querySelector('.age-input').value;
-                if(age) { membersStr.push(`${age}y`); waAges.push(age); }
-            });
-            const waMemStr = waAges.join(', ');
+            document.querySelectorAll('.member-card').forEach(card => { const age = card.querySelector('.age-input').value; if(age) { membersStr.push(`${age}y`); waAges.push(age); } });
             
-            let finalPremium = "N/A";
-            if (window.selectedTenurePremium) finalPremium = "₹ " + window.selectedTenurePremium.toLocaleString('en-IN');
-
+            let finalPremium = "N/A"; if (window.selectedTenurePremium) finalPremium = "₹ " + window.selectedTenurePremium.toLocaleString('en-IN');
             const pdfBlob = await generatePDFBlob(customerName, si, policyType, combination, zone, tenureText, membersStr, salesName, salesContact);
             const fileName = `Health_Alpha_Quote_${customerName}.pdf`;
 
             if (actionType === 'download') {
-                const url = URL.createObjectURL(pdfBlob);
-                const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
+                const url = URL.createObjectURL(pdfBlob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
             } else if (actionType === 'whatsapp') {
-                let salesFooter = '';
-                if (salesName || salesContact) {
-                    salesFooter = `\n-----------------------------\n*Quote Prepared By:*\n*Name:* ${salesName || 'Authorized Partner'}`;
-                    if (salesContact) salesFooter += `\n*Contact:* ${salesContact}`;
-                }
-
-                const msg = `*Health Alpha Select Quote* 🏥\n\n*Customer Name:* ${customerName}\n*${tenureText} Total Premium:* ${finalPremium} \n-----------------------------\n*Sum Insured:* ${si}\n*Policy Type:* ${policyType}\n*Zone / Tenure:* ${zone} / ${tenureText}\n*Combination:* ${combination}\n*Member Ages:* ${waMemStr}${salesFooter}\n-----------------------------\n_Please find the attached quote for more details_`;
+                let salesFooter = ''; if (salesName || salesContact) { salesFooter = `\n-----------------------------\n*Quote Prepared By:*\n*Name:* ${salesName || 'Authorized Partner'}`; if (salesContact) salesFooter += `\n*Contact:* ${salesContact}`; }
+                const msg = `*Health Alpha Select Quote* 🏥\n\n*Customer Name:* ${customerName}\n*Quote ID:* ${activeQuoteId || 'N/A'}\n*${tenureText} Total Premium:* ${finalPremium} \n-----------------------------\n*Sum Insured:* ${si}\n*Policy Type:* ${policyType}\n*Zone / Tenure:* ${zone} / ${tenureText}\n*Combination:* ${combination}\n*Member Ages:* ${waAges.join(', ')}${salesFooter}\n-----------------------------\n_Please find the attached quote for more details_`;
                 
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -889,10 +1014,8 @@
             }
         }
 
-        // Updated Listeners for PDF and WhatsApp
         document.getElementById('pdfBtn').addEventListener('click', () => openSalesModal('download'));
         document.getElementById('waBtn').addEventListener('click', () => openSalesModal('whatsapp'));
-        
         document.getElementById('genMembersBtn').addEventListener('click', renderMemberRows);
         document.getElementById('resetBtn').addEventListener('click', () => window.location.reload());
         document.getElementById('policyType').addEventListener('change', () => { enforcePolicyCombination(); renderMemberRows(); });
