@@ -305,7 +305,6 @@
         // ========================================================================
         // BACKEND / SYNC SETUP
         // ========================================================================
-        // NEW UPDATED WEB APP URL 
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWZqb-dHT35EIOEfAaeYNMx5NNwYqPgRwRb-QjqIDQQrBxTzZj-y2oDhhSROL-rWM/exec'; 
 
         let pendingAction = ''; 
@@ -832,11 +831,37 @@
             const data = calculatePremiumFor(siLabel);
             
             // --- SYNC & QUOTE ID GENERATION ---
+            // FIXED: Capture EVERY SINGLE FIELD so changing a discount triggers a new Quote ID
+            let membersSignature = [];
+            document.querySelectorAll('.member-card').forEach(card => {
+                membersSignature.push(card.querySelector('.age-input').value + card.querySelector('.gender-input').value);
+            });
+
             const currentSignature = JSON.stringify({
-                cust: document.getElementById('customerName').value, policy: document.getElementById('policyType').value, si: siLabel,
-                combo: document.getElementById('combination').value, zone: document.getElementById('zone').value, 
-                ten: document.getElementById('tenure').value, ped: document.getElementById('pedWait').value, 
-                mems: membersAges.join(','), optional: document.getElementById('consumables').value + document.getElementById('opd').value
+                cust: document.getElementById('customerName').value,
+                policy: document.getElementById('policyType').value,
+                si: document.getElementById('sumInsured').value,
+                combo: document.getElementById('combination').value,
+                zone: document.getElementById('zone').value,
+                ten: document.getElementById('tenure').value,
+                room: document.getElementById('roomCategory').value,
+                ped: document.getElementById('pedWait').value,
+                spec: document.getElementById('specWait').value,
+                ncb: document.getElementById('ncb').value,
+                cons: document.getElementById('consumables').value,
+                air: document.getElementById('airAmbulance').value,
+                hc: document.getElementById('healthCheck').value,
+                end: document.getElementById('endless').value,
+                rec: document.getElementById('reconstructive').value,
+                opd: document.getElementById('opd').value,
+                cash: document.getElementById('hospitalCash').value,
+                mat: document.getElementById('maternity').value,
+                matW: document.getElementById('maternityWait').value,
+                welc: document.getElementById('welcomeDisc').value,
+                pref: document.getElementById('preferredNetwork').value,
+                cross: document.getElementById('crossSellDiscount').value,
+                emp: document.getElementById('employeeDiscount').value,
+                mems: membersSignature.join('|')
             });
             
             if (currentSignature !== lastCalcSignature || !activeQuoteId) {
