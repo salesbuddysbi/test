@@ -145,29 +145,6 @@
         </div>
     </div>
 
-    <!-- DYNAMIC SALES PERSON INTERCEPT MODAL -->
-    <div id="salesModalOverlay" class="custom-alert-overlay">
-        <div class="custom-alert-box" style="max-width: 380px;">
-            <i id="modalIcon" class="fas fa-file-invoice" style="font-size: 32px; color: var(--accent-color); margin-bottom: 15px;"></i>
-            <div class="results-header" style="margin-bottom: 20px; font-size: 18px;">Customize Your Quote</div>
-            
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label>Name (Optional)</label>
-                <input type="text" id="salesInputName" placeholder="e.g. John Doe">
-            </div>
-            
-            <div style="text-align: left; margin-bottom: 25px;">
-                <label>Contact Number (Optional)</label>
-                <input type="text" id="salesInputContact" placeholder="e.g. +91 9876543210">
-            </div>
-            
-            <div class="actions" style="margin-top: 0; flex-direction: row;">
-                <button class="btn btn-grey" onclick="closeSalesModal()" style="flex: 1; padding: 12px 10px;">Cancel</button>
-                <button id="modalSubmitBtn" class="btn btn-primary" onclick="submitSalesModal()" style="flex: 2; margin-top: 0; padding: 12px 10px;"><i class="fas fa-check"></i> Generate</button>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
         <header class="page-head">
             <h1>Health Alpha <span>Select</span></h1>
@@ -305,9 +282,8 @@
         // ========================================================================
         // BACKEND / SYNC SETUP
         // ========================================================================
-        const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWZqb-dHT35EIOEfAaeYNMx5NNwYqPgRwRb-QjqIDQQrBxTzZj-y2oDhhSROL-rWM/exec'; 
+        const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCt_R9SdB-L4mBAIr7JJymSSzvzZWX4zyU-xIdVH_HYL1Y4iYVBuU05Tfngp5zfHP14g/exec'; 
 
-        let pendingAction = ''; 
         let activeQuoteId = null;
         let lastCalcSignature = null;
         let lastSavedPayloadStr = null; 
@@ -317,29 +293,6 @@
         function showAlert(msg) { document.getElementById('customAlertMsg').innerText = msg; document.getElementById('customAlertOverlay').style.display = 'flex'; }
         function closeAlert() { document.getElementById('customAlertOverlay').style.display = 'none'; }
         
-        function openSalesModal(actionType) { 
-            pendingAction = actionType;
-            const icon = document.getElementById('modalIcon');
-            const submitBtn = document.getElementById('modalSubmitBtn');
-            
-            if (actionType === 'whatsapp') {
-                icon.className = 'fab fa-whatsapp'; icon.style.color = '#25D366';
-                submitBtn.className = 'btn btn-whatsapp'; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Generate & Share';
-            } else {
-                icon.className = 'fas fa-file-pdf'; icon.style.color = '#10b981';
-                submitBtn.className = 'btn btn-green'; submitBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
-            }
-            document.getElementById('salesModalOverlay').style.display = 'flex'; 
-        }
-
-        function closeSalesModal() { document.getElementById('salesModalOverlay').style.display = 'none'; }
-        function submitSalesModal() {
-            closeSalesModal();
-            const sName = document.getElementById('salesInputName').value.trim();
-            const sPhone = document.getElementById('salesInputContact').value.trim();
-            handlePdfAction(pendingAction, sName, sPhone);
-        }
-
         // Programmatically set toggle values (Used for Recall feature)
         function setToggleValue(hiddenInputId, val) {
             const hiddenInput = document.getElementById(hiddenInputId);
@@ -358,7 +311,7 @@
             hiddenInput.dispatchEvent(new Event('change'));
         }
 
-        // --- BACKEND SAVING LOGIC ---
+        // --- BACKEND SAVING LOGIC (Updated to include Location & User Details) ---
         async function saveQuoteToBackend(quoteId, finalPremiums) {
             let membersArr = [];
             document.querySelectorAll('.member-card').forEach(card => {
@@ -369,11 +322,25 @@
                 });
             });
 
+            const storedName = localStorage.getItem("salesBuddyUserName") || "Authorized Partner";
+            const locCountry = localStorage.getItem("sbUserCountry") || "N/A";
+            const locState = localStorage.getItem("sbUserState") || "N/A";
+            const locDistrict = localStorage.getItem("sbUserDistrict") || "N/A";
+            const locCity = localStorage.getItem("sbUserCity") || "N/A";
+
             const payload = {
+                action: "save",
+                userName: storedName,
+                country: locCountry,
+                state: locState,
+                district: locDistrict,
+                city: locCity,
+                productName: "Health Alpha - Select",
+                planType: document.getElementById('policyType').value,
+                sumInsured: document.getElementById('sumInsured').value,
+                premiumQuoted: finalPremiums[0]?.prem || 0,
                 quoteId: quoteId,
                 customerName: document.getElementById('customerName').value,
-                policyType: document.getElementById('policyType').value,
-                sumInsured: document.getElementById('sumInsured').value,
                 combination: document.getElementById('combination').value,
                 zone: document.getElementById('zone').value,
                 tenure: document.getElementById('tenure').value,
@@ -405,7 +372,6 @@
             const currentPayloadStr = JSON.stringify(payload);
 
             if (currentPayloadStr === lastSavedPayloadStr) {
-                console.log("No changes detected. Skipping save.");
                 return; 
             }
 
@@ -417,7 +383,6 @@
                     body: currentPayloadStr
                 });
                 lastSavedPayloadStr = currentPayloadStr; 
-                console.log("Health Alpha scenario saved to backend.");
             } catch (e) { console.error("Failed to save quote to Sheets", e); }
         }
 
@@ -831,7 +796,6 @@
             const data = calculatePremiumFor(siLabel);
             
             // --- SYNC & QUOTE ID GENERATION ---
-            // FIXED: Capture EVERY SINGLE FIELD so changing a discount triggers a new Quote ID
             let membersSignature = [];
             document.querySelectorAll('.member-card').forEach(card => {
                 membersSignature.push(card.querySelector('.age-input').value + card.querySelector('.gender-input').value);
@@ -963,8 +927,8 @@
             let colDisc = `<div class="pdf-col"><div class="pdf-col-h">Discounts</div>${discRows}</div>`;
 
             let salesBlockHTML = '';
-            if (salesName || salesContact) {
-                salesBlockHTML = `<div class="pdf-sales-signature"><div><div class="sales-title">Custom Quote Prepared By</div><div class="sales-name">${salesName || 'Authorized Partner'}</div></div><div class="sales-contact">${salesContact ? `<i class="fas fa-phone-alt"></i> ${salesContact}` : ''}</div></div>`;
+            if (salesName) {
+                salesBlockHTML = `<div class="pdf-sales-signature"><div><div class="sales-title">Custom Quote Prepared By</div><div class="sales-name">${salesName}</div></div></div>`;
             }
 
             overlayRoot.innerHTML = `
@@ -1005,7 +969,7 @@
             overlayRoot.style.display = 'none'; return pdfBlob;
         }
 
-        async function handlePdfAction(actionType, salesName = '', salesContact = '') {
+        async function handlePdfAction(actionType) {
             const customerName = document.getElementById('customerName').value || "Customer";
             const si = document.getElementById('sumInsured').value;
             const policyType = document.getElementById('policyType').value;
@@ -1014,23 +978,38 @@
             const tenureSelect = document.getElementById('tenure');
             const tenureText = tenureSelect.options[tenureSelect.selectedIndex].text;
             
-            let membersStr = []; let waAges = [];
-            document.querySelectorAll('.member-card').forEach(card => { const age = card.querySelector('.age-input').value; if(age) { membersStr.push(`${age}y`); waAges.push(age); } });
+            // AUTOMATICALLY GRAB THE LOCKED NAME
+            const salesName = localStorage.getItem("salesBuddyUserName") || "Authorized Partner";
+            const salesContact = ""; // Left blank as requested
             
-            let finalPremium = "N/A"; if (window.selectedTenurePremium) finalPremium = "₹ " + window.selectedTenurePremium.toLocaleString('en-IN');
+            let membersStr = []; let waAges = [];
+            document.querySelectorAll('.member-card').forEach(card => { 
+                const age = card.querySelector('.age-input').value; 
+                if(age) { membersStr.push(`${age}y`); waAges.push(age); } 
+            });
+            
+            let finalPremium = "N/A"; 
+            if (window.selectedTenurePremium) finalPremium = "₹ " + window.selectedTenurePremium.toLocaleString('en-IN');
+            
             const pdfBlob = await generatePDFBlob(customerName, si, policyType, combination, zone, tenureText, membersStr, salesName, salesContact);
             const fileName = `Health_Alpha_Quote_${customerName}.pdf`;
 
             if (actionType === 'download') {
-                const url = URL.createObjectURL(pdfBlob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
+                const url = URL.createObjectURL(pdfBlob); 
+                const a = document.createElement('a'); 
+                a.href = url; a.download = fileName; a.click(); 
+                URL.revokeObjectURL(url);
             } else if (actionType === 'whatsapp') {
-                let salesFooter = ''; if (salesName || salesContact) { salesFooter = `\n-----------------------------\n*Quote Prepared By:*\n*Name:* ${salesName || 'Authorized Partner'}`; if (salesContact) salesFooter += `\n*Contact:* ${salesContact}`; }
+                let salesFooter = `\n-----------------------------\n*Quote Prepared By:*\n*Name:* ${salesName}`;
                 const msg = `*Health Alpha Select Quote* 🏥\n\n*Customer Name:* ${customerName}\n*Quote ID:* ${activeQuoteId || 'N/A'}\n*${tenureText} Total Premium:* ${finalPremium} \n-----------------------------\n*Sum Insured:* ${si}\n*Policy Type:* ${policyType}\n*Zone / Tenure:* ${zone} / ${tenureText}\n*Combination:* ${combination}\n*Member Ages:* ${waAges.join(', ')}${salesFooter}\n-----------------------------\n_Please find the attached quote for more details_`;
                 
                 const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try { await navigator.share({ files: [file], title: 'Health Alpha Quote', text: msg }); } 
-                    catch (err) { const url = URL.createObjectURL(pdfBlob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank'); }
+                    catch (err) { 
+                        const url = URL.createObjectURL(pdfBlob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); 
+                        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank'); 
+                    }
                 } else {
                     const url = URL.createObjectURL(pdfBlob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click();
                     showAlert("On this device/browser, we downloaded the PDF. Please attach it manually to WhatsApp.");
@@ -1039,8 +1018,9 @@
             }
         }
 
-        document.getElementById('pdfBtn').addEventListener('click', () => openSalesModal('download'));
-        document.getElementById('waBtn').addEventListener('click', () => openSalesModal('whatsapp'));
+        document.getElementById('pdfBtn').addEventListener('click', () => handlePdfAction('download'));
+        document.getElementById('waBtn').addEventListener('click', () => handlePdfAction('whatsapp'));
+        
         document.getElementById('genMembersBtn').addEventListener('click', renderMemberRows);
         document.getElementById('resetBtn').addEventListener('click', () => window.location.reload());
         document.getElementById('policyType').addEventListener('change', () => { enforcePolicyCombination(); renderMemberRows(); });
