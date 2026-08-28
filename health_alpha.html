@@ -311,8 +311,8 @@
             hiddenInput.dispatchEvent(new Event('change'));
         }
 
-        // --- BACKEND SAVING LOGIC (Updated to include Location & User Details) ---
-        async function saveQuoteToBackend(quoteId, finalPremiums) {
+        // --- BACKEND SAVING LOGIC (Receives dynamic location arguments) ---
+        async function saveQuoteToBackend(quoteId, finalPremiums, locCountry, locState, locDistrict, locCity) {
             let membersArr = [];
             document.querySelectorAll('.member-card').forEach(card => {
                 membersArr.push({
@@ -323,10 +323,6 @@
             });
 
             const storedName = localStorage.getItem("salesBuddyUserName") || "Authorized Partner";
-            const locCountry = localStorage.getItem("sbUserCountry") || "N/A";
-            const locState = localStorage.getItem("sbUserState") || "N/A";
-            const locDistrict = localStorage.getItem("sbUserDistrict") || "N/A";
-            const locCity = localStorage.getItem("sbUserCity") || "N/A";
 
             const payload = {
                 action: "save",
@@ -785,100 +781,126 @@
             return results;
         }
 
-        function calculateAndDisplay() {
+        async function calculateAndDisplay() {
             if (document.querySelector('.input-error')) { showAlert("Please correct the highlighted age errors before calculating."); return; }
             let membersAges = []; let isValid = true;
             document.querySelectorAll('.member-card').forEach(card => { const age = parseInt(card.querySelector('.age-input').value); if (isNaN(age)) isValid = false; membersAges.push(age); });
             if(!isValid && membersAges.length > 0) { showAlert("Please enter ages for all the members"); return; } 
             else if (membersAges.length === 0) { showAlert("Please add members first."); return; }
 
-            const siLabel = document.getElementById('sumInsured').value;
-            const data = calculatePremiumFor(siLabel);
-            
-            // --- SYNC & QUOTE ID GENERATION ---
-            let membersSignature = [];
-            document.querySelectorAll('.member-card').forEach(card => {
-                membersSignature.push(card.querySelector('.age-input').value + card.querySelector('.gender-input').value);
-            });
+            const calcBtn = document.getElementById('calcBtn');
+            const originalBtnHTML = calcBtn.innerHTML;
+            calcBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            calcBtn.disabled = true;
 
-            const currentSignature = JSON.stringify({
-                cust: document.getElementById('customerName').value,
-                policy: document.getElementById('policyType').value,
-                si: document.getElementById('sumInsured').value,
-                combo: document.getElementById('combination').value,
-                zone: document.getElementById('zone').value,
-                ten: document.getElementById('tenure').value,
-                room: document.getElementById('roomCategory').value,
-                ped: document.getElementById('pedWait').value,
-                spec: document.getElementById('specWait').value,
-                ncb: document.getElementById('ncb').value,
-                cons: document.getElementById('consumables').value,
-                air: document.getElementById('airAmbulance').value,
-                hc: document.getElementById('healthCheck').value,
-                end: document.getElementById('endless').value,
-                rec: document.getElementById('reconstructive').value,
-                opd: document.getElementById('opd').value,
-                cash: document.getElementById('hospitalCash').value,
-                mat: document.getElementById('maternity').value,
-                matW: document.getElementById('maternityWait').value,
-                welc: document.getElementById('welcomeDisc').value,
-                pref: document.getElementById('preferredNetwork').value,
-                cross: document.getElementById('crossSellDiscount').value,
-                emp: document.getElementById('employeeDiscount').value,
-                mems: membersSignature.join('|')
-            });
-            
-            if (currentSignature !== lastCalcSignature || !activeQuoteId) {
-                activeQuoteId = generateQuoteId(); lastCalcSignature = currentSignature;
-            }
-            document.getElementById('displayQuoteId').innerText = activeQuoteId;
-            document.getElementById('quoteIdContainer').style.display = 'block';
-
-            // TRIGGER BACKGROUND SAVE
-            saveQuoteToBackend(activeQuoteId, data);
-            
-            const gridTarget = document.getElementById('premiumGridTarget');
-            gridTarget.innerHTML = ''; 
-
-            const selectedTenure = parseInt(document.getElementById('tenure').value) || 1;
-
-            for (let yr = 1; yr <= 5; yr++) {
-                let yrData = data[yr-1];
-                const headerClass = (yr % 2 === 0) ? 'header-blue' : 'header-purple';
-                const cardHTML = `
-                <div class="premium-card">
-                    <div class="p-card-header ${headerClass}">${yr} Year Policy</div>
-                    <div class="p-card-body">
-                        <div class="p-final-container">
-                            <div class="p-final-label">Final Premium</div>
-                            <div class="p-final-amount">₹ ${yrData.prem.toLocaleString('en-IN')}</div>
-                            ${yrData.save > 10 ? `<div class="p-saved-box"><i class="fas fa-check-circle"></i> SAVE: ${yrData.save}%</div>` : ''}
-                        </div>
-                    </div>
-                </div>`;
-                gridTarget.innerHTML += cardHTML;
+            try {
+                const siLabel = document.getElementById('sumInsured').value;
+                const data = calculatePremiumFor(siLabel);
                 
-                if(yr === selectedTenure) { window.selectedTenurePremium = yrData.prem; }
+                // 1. Fetch IP Location ON-DEMAND dynamically (No limits, No CORS issues)
+                let locCountry = "N/A", locState = "N/A", locDistrict = "N/A", locCity = "N/A";
+                try {
+                    const response = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                    if(response.ok) {
+                        const geoData = await response.json();
+                        locCountry = geoData.country || "India";
+                        locState = geoData.region || "Unknown";
+                        locDistrict = geoData.city || "Unknown";
+                        locCity = geoData.city || "Unknown";
+                    }
+                } catch(e) {
+                    console.log("Location fetch failed silently.");
+                }
+                
+                // --- SYNC & QUOTE ID GENERATION ---
+                let membersSignature = [];
+                document.querySelectorAll('.member-card').forEach(card => {
+                    membersSignature.push(card.querySelector('.age-input').value + card.querySelector('.gender-input').value);
+                });
+
+                const currentSignature = JSON.stringify({
+                    cust: document.getElementById('customerName').value,
+                    policy: document.getElementById('policyType').value,
+                    si: document.getElementById('sumInsured').value,
+                    combo: document.getElementById('combination').value,
+                    zone: document.getElementById('zone').value,
+                    ten: document.getElementById('tenure').value,
+                    room: document.getElementById('roomCategory').value,
+                    ped: document.getElementById('pedWait').value,
+                    spec: document.getElementById('specWait').value,
+                    ncb: document.getElementById('ncb').value,
+                    cons: document.getElementById('consumables').value,
+                    air: document.getElementById('airAmbulance').value,
+                    hc: document.getElementById('healthCheck').value,
+                    end: document.getElementById('endless').value,
+                    rec: document.getElementById('reconstructive').value,
+                    opd: document.getElementById('opd').value,
+                    cash: document.getElementById('hospitalCash').value,
+                    mat: document.getElementById('maternity').value,
+                    matW: document.getElementById('maternityWait').value,
+                    welc: document.getElementById('welcomeDisc').value,
+                    pref: document.getElementById('preferredNetwork').value,
+                    cross: document.getElementById('crossSellDiscount').value,
+                    emp: document.getElementById('employeeDiscount').value,
+                    mems: membersSignature.join('|')
+                });
+                
+                if (currentSignature !== lastCalcSignature || !activeQuoteId) {
+                    activeQuoteId = generateQuoteId(); lastCalcSignature = currentSignature;
+                }
+                document.getElementById('displayQuoteId').innerText = activeQuoteId;
+                document.getElementById('quoteIdContainer').style.display = 'block';
+
+                // TRIGGER BACKGROUND SAVE with fresh location data
+                saveQuoteToBackend(activeQuoteId, data, locCountry, locState, locDistrict, locCity);
+                
+                const gridTarget = document.getElementById('premiumGridTarget');
+                gridTarget.innerHTML = ''; 
+
+                const selectedTenure = parseInt(document.getElementById('tenure').value) || 1;
+
+                for (let yr = 1; yr <= 5; yr++) {
+                    let yrData = data[yr-1];
+                    const headerClass = (yr % 2 === 0) ? 'header-blue' : 'header-purple';
+                    const cardHTML = `
+                    <div class="premium-card">
+                        <div class="p-card-header ${headerClass}">${yr} Year Policy</div>
+                        <div class="p-card-body">
+                            <div class="p-final-container">
+                                <div class="p-final-label">Final Premium</div>
+                                <div class="p-final-amount">₹ ${yrData.prem.toLocaleString('en-IN')}</div>
+                                ${yrData.save > 10 ? `<div class="p-saved-box"><i class="fas fa-check-circle"></i> SAVE: ${yrData.save}%</div>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+                    gridTarget.innerHTML += cardHTML;
+                    
+                    if(yr === selectedTenure) { window.selectedTenurePremium = yrData.prem; }
+                }
+
+                const optGrid = document.getElementById('optionals-grid-target'); optGrid.innerHTML = '';
+                const optionalMap = [ { label: 'Consumables', val: document.getElementById('consumables').value, icon: 'fa-box-open' }, { label: 'Air Ambulance', val: document.getElementById('airAmbulance').value, icon: 'fa-plane' }, { label: 'Health Check', val: document.getElementById('healthCheck').value, icon: 'fa-user-md' }, { label: 'Endless SI', val: document.getElementById('endless').value, icon: 'fa-infinity' }, { label: 'Reconstructive', val: document.getElementById('reconstructive').value, icon: 'fa-crutch' }, { label: 'OPD', val: document.getElementById('opd').value, icon: 'fa-clinic-medical' }, { label: 'Hospital Cash', val: document.getElementById('hospitalCash').value, icon: 'fa-money-bill-wave' }, { label: 'Maternity', val: document.getElementById('maternity').value, icon: 'fa-baby' } ];
+                const activeOptionals = optionalMap.filter(o => o.val !== 'Not Opted' && o.val !== 'No');
+                const optSection = document.getElementById('optionals-display-section');
+                if (activeOptionals.length === 0) { optSection.style.display = 'none'; }
+                else { 
+                    optSection.style.display = 'block'; 
+                    activeOptionals.forEach(o => { let valDisplay = o.val; if(o.label === 'Maternity') valDisplay += ` (${document.getElementById('maternityWait').value} Wait)`; optGrid.innerHTML += `<div class="feat-item"><i class="fas ${o.icon} feat-icon"></i><div class="feat-label">${o.label}</div><div class="feat-val">${valDisplay}</div></div>`; }); 
+                }
+
+                const modGrid = document.getElementById('modifiers-grid-target'); modGrid.innerHTML = '';
+                const ncbSel = document.getElementById('ncb');
+                const modifiers = [ { label: 'Room', val: document.getElementById('roomCategory').value, icon: 'fa-bed' }, { label: 'Pre-Hosp', val: '60 Days', icon: 'fa-hourglass-start' }, { label: 'Post-Hosp', val: '90 Days', icon: 'fa-hourglass-end' }, { label: 'PED Wait', val: document.getElementById('pedWait').value, icon: 'fa-history' }, { label: 'Spec. Wait', val: document.getElementById('specWait').value, icon: 'fa-hourglass-half' }, { label: 'NCB/NCD', val: ncbSel.options[ncbSel.selectedIndex].text, icon: 'fa-star' }, { label: 'Zone', val: document.getElementById('zone').value, icon: 'fa-map-marker-alt' } ];
+                modifiers.forEach(m => { modGrid.innerHTML += `<div class="feat-item"><i class="fas ${m.icon} feat-icon"></i><div class="feat-label">${m.label}</div><div class="feat-val">${m.val}</div></div>`; });
+
+                document.getElementById('results-container').style.display = 'block'; 
+                document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                calcBtn.innerHTML = originalBtnHTML;
+                calcBtn.disabled = false;
             }
-
-            const optGrid = document.getElementById('optionals-grid-target'); optGrid.innerHTML = '';
-            const optionalMap = [ { label: 'Consumables', val: document.getElementById('consumables').value, icon: 'fa-box-open' }, { label: 'Air Ambulance', val: document.getElementById('airAmbulance').value, icon: 'fa-plane' }, { label: 'Health Check', val: document.getElementById('healthCheck').value, icon: 'fa-user-md' }, { label: 'Endless SI', val: document.getElementById('endless').value, icon: 'fa-infinity' }, { label: 'Reconstructive', val: document.getElementById('reconstructive').value, icon: 'fa-crutch' }, { label: 'OPD', val: document.getElementById('opd').value, icon: 'fa-clinic-medical' }, { label: 'Hospital Cash', val: document.getElementById('hospitalCash').value, icon: 'fa-money-bill-wave' }, { label: 'Maternity', val: document.getElementById('maternity').value, icon: 'fa-baby' } ];
-            const activeOptionals = optionalMap.filter(o => o.val !== 'Not Opted' && o.val !== 'No');
-            const optSection = document.getElementById('optionals-display-section');
-            if (activeOptionals.length === 0) { optSection.style.display = 'none'; }
-            else { 
-                optSection.style.display = 'block'; 
-                activeOptionals.forEach(o => { let valDisplay = o.val; if(o.label === 'Maternity') valDisplay += ` (${document.getElementById('maternityWait').value} Wait)`; optGrid.innerHTML += `<div class="feat-item"><i class="fas ${o.icon} feat-icon"></i><div class="feat-label">${o.label}</div><div class="feat-val">${valDisplay}</div></div>`; }); 
-            }
-
-            const modGrid = document.getElementById('modifiers-grid-target'); modGrid.innerHTML = '';
-            const ncbSel = document.getElementById('ncb');
-            const modifiers = [ { label: 'Room', val: document.getElementById('roomCategory').value, icon: 'fa-bed' }, { label: 'Pre-Hosp', val: '60 Days', icon: 'fa-hourglass-start' }, { label: 'Post-Hosp', val: '90 Days', icon: 'fa-hourglass-end' }, { label: 'PED Wait', val: document.getElementById('pedWait').value, icon: 'fa-history' }, { label: 'Spec. Wait', val: document.getElementById('specWait').value, icon: 'fa-hourglass-half' }, { label: 'NCB/NCD', val: ncbSel.options[ncbSel.selectedIndex].text, icon: 'fa-star' }, { label: 'Zone', val: document.getElementById('zone').value, icon: 'fa-map-marker-alt' } ];
-            modifiers.forEach(m => { modGrid.innerHTML += `<div class="feat-item"><i class="fas ${m.icon} feat-icon"></i><div class="feat-label">${m.label}</div><div class="feat-val">${m.val}</div></div>`; });
-
-            document.getElementById('results-container').style.display = 'block'; 
-            document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
         }
+        
         document.getElementById('calcBtn').addEventListener('click', calculateAndDisplay);
 
         async function generatePDFBlob(customerName, si, policyType, combination, zone, tenure, membersStr, salesName = '', salesContact = '') {
