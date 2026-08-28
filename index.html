@@ -84,21 +84,6 @@
             .md-max-h-240px { max-height: 240px; }
         }
 
-        /* Responsive Background Fix for Welcome Screen */
-        .welcome-backdrop {
-            background-image: url('./image.png');
-            background-color: #DDEEFA; /* Light blue matching the edges of the banner */
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-        }
-        @media (max-width: 768px) {
-            .welcome-backdrop {
-                /* Shifts image so the main subject remains perfectly visible on mobile/tablet */
-                background-position: 15% top; 
-            }
-        }
-
         /* Interactions */
         .active-scale-98:active { transform: scale(0.98); }
 
@@ -119,7 +104,7 @@
 </head>
 <body class="bg-sbiLight text-sbiDark font-sans antialiased overflow-x-hidden selection:bg-sbiBlue selection:text-white flex flex-col min-h-100dvh">
 
-    <!-- APP HEADER (Hidden during Welcome Screen) -->
+    <!-- APP HEADER -->
     <nav id="main-nav" class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center hidden">
         <div class="px-3 md:px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
@@ -136,43 +121,37 @@
                     <i class="fas fa-edit"></i> Endorse
                 </a>
             </div>
-
         </div>
     </nav>
 
     <!-- MAIN APP CONTAINER -->
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
-        <!-- 0. WELCOME / LOGIN VIEW (Mandatory Screen) -->
-        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center px-5 w-full h-full mx-auto transition-opacity duration-300 fixed inset-0 z-50 welcome-backdrop">
-            
-            <!-- Login Card -->
-            <div class="bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-2xl border border-white/50 w-full text-center max-w-sm relative z-10">
-                
-                <div class="w-16 h-16 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-3xl mx-auto mb-5 border-2 border-purple-100">
+        <!-- 0. WELCOME / LOGIN VIEW -->
+        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center min-h-[80vh] px-5 w-full max-w-3xl mx-auto transition-opacity duration-300 absolute top-0 left-0 right-0 bottom-0 bg-sbiLight z-40 -mt-16 pt-16">
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 w-full text-center max-w-md">
+                <div class="w-16 h-16 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border-2 border-purple-100">
                     <i class="fas fa-user-circle"></i>
                 </div>
+                <h1 class="text-2xl font-extrabold text-sbiDark tracking-tight mb-2">Welcome to Sales Buddy</h1>
+                <p class="text-sm text-gray-500 mb-6 leading-relaxed">Enter your Professional Name to Access portal</p>
                 
-                <h1 class="text-2xl font-extrabold text-sbiDark tracking-tight mb-1">Welcome to Sales Buddy</h1>
-                <p class="text-sm text-gray-500 mb-6 leading-relaxed">To proceed, please personalize your workspace by providing your first name.</p>
-                
-                <div class="text-left mb-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wide ml-1">First Name</label>
-                    <input type="text" id="userNameInput" placeholder="Enter your first name" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-sbiPurple focus:ring-1 focus:ring-sbiPurple transition-all text-center">
+                <div class="text-left mb-3">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wide ml-1">Your Full Name</label>
+                    <input type="text" id="userNameInput" placeholder="e.g. John Doe" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-sbiPurple focus:ring-1 focus:ring-sbiPurple transition-all text-center">
                 </div>
                 
-                <p id="nameError" class="text-xs text-red-500 hidden mb-3 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid first name (minimum 3 alphabetical characters).</p>
-                
-                <!-- Disclaimer Note -->
-                <div class="bg-blue-50/80 border border-blue-100 rounded-lg p-3 mb-5 text-left flex gap-2 items-start">
-                    <i class="fas fa-info-circle text-sbiBlue mt-0.5"></i>
-                    <p class="text-[10px] text-gray-600 font-medium leading-tight">
-                        <span class="font-bold text-sbiBlue">Important:</span> This name will be locked for the day and automatically applied to all quotes generated during this session.
+                <!-- Disclaimer Moved Below Input & Font Size Reduced to 9px -->
+                <div class="text-left bg-purple-50 p-3 rounded-lg border border-purple-100 mb-5">
+                    <p class="text-[9px] font-semibold text-sbiPurple leading-relaxed text-center">
+                        <i class="fas fa-info-circle mr-1"></i> <strong>Important:</strong> The name provided will be locked for the entire day and cannot be modified. This exact name will automatically appear on all Quotes generated today, so please ensure it is entered accurately.
                     </p>
                 </div>
+
+                <p id="nameError" class="text-xs text-red-500 hidden mb-4 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid name (minimum 3 alphabetical characters; no numbers or special symbols).</p>
                 
                 <button onclick="saveAndEnter()" class="w-full bg-sbiPurple text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:bg-purple-800 transition-colors flex justify-center items-center gap-2">
-                    Access Dashboard <i class="fas fa-arrow-right"></i>
+                    Enter Dashboard <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
@@ -183,8 +162,8 @@
             <div class="px-5 flex-grow mt-6">
                 
                 <div class="mb-6">
-                    <h1 id="greeting-title" class="text-26px font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
-                    <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Wishing you a wonderful day! Please choose an option below to continue.</p>
+                    <h1 id="greeting-title" class="text-26px font-extrabold text-sbiDark tracking-tight">Welcome!</h1>
+                    <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Have a productive day! Please select a module below to proceed.</p>
                 </div>
 
                 <div class="flex flex-col gap-3">
@@ -207,7 +186,7 @@
                     <div class="glass-card p-3-5 rounded-2xl active-scale-98 transition-transform cursor-pointer border-l-4 border-l-green-500 flex items-center gap-3-5" onclick="initCashlessView()">
                         <div class="w-11 h-11 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-hospital-user"></i></div>
                         <div>
-                            <h3 class="text-15px font-bold text-gray-900 leading-tight">Cashless Hospital</h3>
+                            <h3 class="text-15px font-bold text-gray-900 leading-tight">Cashless Hospitals</h3>
                         </div>
                         <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                     </div>
@@ -215,7 +194,7 @@
                     <div class="glass-card p-3-5 rounded-2xl active-scale-98 transition-transform cursor-pointer border-l-4 border-l-orange-500 flex items-center gap-3-5" onclick="navigateTo('downloadsPageView')">
                         <div class="w-11 h-11 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-download"></i></div>
                         <div>
-                            <h3 class="text-15px font-bold text-gray-900 leading-tight">Downloads</h3>
+                            <h3 class="text-15px font-bold text-gray-900 leading-tight">Resource Downloads</h3>
                         </div>
                         <i class="fas fa-chevron-right text-gray-300 ml-auto text-sm"></i>
                     </div>
@@ -224,7 +203,7 @@
 
             <footer class="mt-8 bg-footerDark pt-4 pb-5 px-5 w-full rounded-t-2xl">
                 <div class="w-full max-w-md mx-auto">
-                    <h3 class="text-sbiBlue font-semibold text-sm mb-3">Customer App</h3>
+                    <h3 class="text-sbiBlue font-semibold text-sm mb-3">Customer Applications</h3>
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <a href="https://apps.apple.com/in/app/sbi-general-insurance/id1495616048" target="_blank" class="bg-white text-black py-2 px-2 rounded-lg flex items-center justify-center gap-2 active:bg-gray-200 transition-colors">
                             <i class="fab fa-apple text-2xl"></i>
@@ -251,7 +230,7 @@
         <!-- 2. QUOTE PAGE VIEW -->
         <div id="quotePageView" class="app-view hidden flex-grow px-5 pt-6 transition-opacity duration-300 w-full max-w-3xl mx-auto">
             <button onclick="navigateTo('homeView')" class="mb-5 bg-white text-gray-600 active:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm border border-gray-100 w-max">
-                <i class="fas fa-arrow-left"></i> Back
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
             </button>
             <div class="mb-5">
                 <h2 class="text-2xl font-bold text-sbiDark mb-1">Select Product</h2>
@@ -407,7 +386,7 @@
 
             if (savedName && savedDate === today) {
                 // User is verified for today - Show Dashboard
-                document.getElementById("greeting-title").innerText = "Welcome back, " + savedName + "!";
+                document.getElementById("greeting-title").innerText = "Welcome, " + savedName + "!";
                 
                 // Hide Welcome Screen, Show Home View & Nav Bar
                 document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
@@ -615,7 +594,7 @@
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-200 text-center flex flex-col items-center gap-3 w-full">
                     <div class="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-3xl shadow-sm border border-orange-100"><i class="fas fa-file-csv"></i></div>
                     <h3 class="font-bold text-sbiDark text-lg leading-tight">Database Required</h3>
-                    <p class="text-sm text-gray-500 mb-2 leading-snug">The hospital network file was not found in the repository. Please upload the CSV file manually.</p>
+                    <p class="text-sm text-gray-500 mb-2 leading-snug">The network hospital database file was not found in the repository. Please upload the valid CSV file to proceed.</p>
                     <label class="bg-sbiBlue text-white px-6 py-3 rounded-xl text-sm font-bold cursor-pointer shadow-md active:bg-blue-600 transition-colors w-full">
                         <i class="fas fa-upload mr-2"></i> Select CSV File
                         <input type="file" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
