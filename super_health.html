@@ -456,6 +456,11 @@
         <h1>Super Health Insurance</h1>
     </div>
 
+    <!-- ADDED: Dynamic Greeting -->
+    <div style="text-align: center; padding-top: 15px;">
+        <h3 id="welcomeGreeting" style="margin: 0; color: #333;">Welcome back!</h3>
+    </div>
+
     <div class="content">
 
         <!-- --- QUOTE REWORK UI --- -->
@@ -652,7 +657,7 @@
 
 <script>
     // --- UPDATED GOOGLE APPS SCRIPT WEB APP URL ---
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYEGVQ8rHzOwIOlisXy-sKE02F547a91r2mchRs6Wi0VKEWom6LOI9IVfRPxHlMXn34Q/exec'; 
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhFP1exMIGCKf9HBwh6SJRaeuOYAaTLZmWwhQPUDTxpdvhESca0y7uTXOujzhk1yokhQ/exec'; 
 
     let currentQuote = null;
     let pendingAction = null; 
@@ -1807,6 +1812,12 @@
         // Automatically fetch User Name from local storage stored by Sales Buddy
         let salesUser = localStorage.getItem('salesBuddyUserName') || "Sales Buddy User";
         document.getElementById('salesBuddyName').value = salesUser;
+
+        // Optional: Only show the greeting if it's not hidden by the iframe styling
+        const greetingEl = document.getElementById('welcomeGreeting');
+        if (greetingEl) {
+            greetingEl.innerText = `Welcome back, ${salesUser}!`;
+        }
 
         setPolicyType('individual');
         handleVariantChange();
