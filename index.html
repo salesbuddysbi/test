@@ -121,7 +121,6 @@
         <div class="px-3 md:px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
             <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
-                <!-- Applied text gradient to logo -->
                 <span class="font-extrabold text-sbi-gradient text-lg md:text-xl leading-none tracking-tight">Sales Buddy</span>
                 <span class="font-bold text-gray-400 text-9px uppercase tracking-02em mt-0.5">One Touch Point</span>
             </div>
@@ -130,7 +129,6 @@
                 <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-simba active:bg-orange-600 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
                     <i class="fas fa-sign-in-alt"></i> SIMBA
                 </a>
-                <!-- Applied background gradient to Endorse button -->
                 <a href="https://www.sbigeneral.in/endorsement" target="_blank" rel="noopener noreferrer" class="bg-sbi-gradient text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-transform active:scale-95 tracking-wide">
                     <i class="fas fa-edit"></i> Endorse
                 </a>
@@ -155,7 +153,7 @@
                     <input type="text" id="userNameInput" placeholder="e.g. John Doe" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-sbiPurple focus:ring-1 focus:ring-sbiPurple transition-all text-center">
                 </div>
                 
-                <!-- Disclaimer - Font Size 9px using custom class -->
+                <!-- Disclaimer -->
                 <div class="text-left bg-purple-50 p-3 rounded-lg border border-purple-100 mb-5">
                     <p class="text-9px font-semibold text-sbiPurple leading-normal text-center">
                         <i class="fas fa-info-circle mr-1"></i> <strong>Important:</strong> The name provided will be locked for the entire day and cannot be modified. This exact name will automatically appear on all Quotes generated today, so please ensure it is entered accurately.
@@ -164,7 +162,7 @@
 
                 <p id="nameError" class="text-xs text-red-500 hidden mb-4 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid name (minimum 3 alphabetical characters; no numbers or special symbols).</p>
                 
-                <!-- Applied background gradient to main Enter button -->
+                <!-- Main CTA -->
                 <button onclick="saveAndEnter()" class="w-full bg-sbi-gradient text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:scale-98 transition-transform flex justify-center items-center gap-2">
                     Enter Dashboard <i class="fas fa-arrow-right"></i>
                 </button>
@@ -413,6 +411,11 @@
                 document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
                 document.getElementById('welcomeScreenView').classList.remove('hidden');
                 document.getElementById('main-nav').classList.add('hidden'); // Hide Top Nav
+                
+                // Auto-fill the previously saved name so the user doesn't have to retype it daily
+                if (savedName) {
+                    document.getElementById("userNameInput").value = savedName;
+                }
             }
         }
 
