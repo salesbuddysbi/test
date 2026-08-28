@@ -50,6 +50,18 @@
         .border-l-sbiPurple { border-left-color: var(--sbiPurple); }
         .border-l-sbiBlue { border-left-color: var(--sbiBlue); }
 
+        /* SBI Brand Gradient Classes */
+        .bg-sbi-gradient {
+            background: linear-gradient(135deg, var(--sbiPurple) 0%, var(--sbiBlue) 100%);
+        }
+        
+        .text-sbi-gradient {
+            background: linear-gradient(135deg, var(--sbiPurple) 0%, var(--sbiBlue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         /* Extended Color Overrides */
         .text-orange-500 { color: #f97316; }
         .bg-orange-50 { background-color: #fff7ed; }
@@ -69,7 +81,7 @@
         .min-h-100dvh { min-height: 100vh; min-height: 100dvh; }
         
         .text-8px { font-size: 8px; }
-        .text-9px { font-size: 9px; line-height: 1.4; } /* Adjusted line-height for better readability */
+        .text-9px { font-size: 9px; line-height: 1.4; } 
         .text-10px { font-size: 10px; }
         .text-15px { font-size: 15px; }
         .text-26px { font-size: 26px; }
@@ -109,7 +121,8 @@
         <div class="px-3 md:px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
             <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
-                <span class="font-extrabold text-sbiPurple text-lg md:text-xl leading-none tracking-tight">Sales Buddy</span>
+                <!-- Applied text gradient to logo -->
+                <span class="font-extrabold text-sbi-gradient text-lg md:text-xl leading-none tracking-tight">Sales Buddy</span>
                 <span class="font-bold text-gray-400 text-9px uppercase tracking-02em mt-0.5">One Touch Point</span>
             </div>
             
@@ -117,7 +130,8 @@
                 <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-simba active:bg-orange-600 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
                     <i class="fas fa-sign-in-alt"></i> SIMBA
                 </a>
-                <a href="https://www.sbigeneral.in/endorsement" target="_blank" rel="noopener noreferrer" class="bg-sbiPurple active:bg-purple-800 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
+                <!-- Applied background gradient to Endorse button -->
+                <a href="https://www.sbigeneral.in/endorsement" target="_blank" rel="noopener noreferrer" class="bg-sbi-gradient text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-transform active:scale-95 tracking-wide">
                     <i class="fas fa-edit"></i> Endorse
                 </a>
             </div>
@@ -150,7 +164,8 @@
 
                 <p id="nameError" class="text-xs text-red-500 hidden mb-4 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid name (minimum 3 alphabetical characters; no numbers or special symbols).</p>
                 
-                <button onclick="saveAndEnter()" class="w-full bg-sbiPurple text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:bg-purple-800 transition-colors flex justify-center items-center gap-2">
+                <!-- Applied background gradient to main Enter button -->
+                <button onclick="saveAndEnter()" class="w-full bg-sbi-gradient text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:scale-98 transition-transform flex justify-center items-center gap-2">
                     Enter Dashboard <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
