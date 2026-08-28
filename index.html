@@ -129,22 +129,38 @@
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
         <!-- 0. WELCOME / LOGIN VIEW (Mandatory Screen) -->
-        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center min-h-[80vh] px-5 w-full max-w-3xl mx-auto transition-opacity duration-300 absolute top-0 left-0 right-0 bottom-0 bg-sbiLight z-40 -mt-16 pt-16">
-            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 w-full text-center max-w-md">
+        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center min-h-screen px-5 w-full mx-auto transition-opacity duration-300 fixed inset-0 z-50 bg-sbiDark" style="background-image: url('./image.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            
+            <!-- Dark Overlay for readability -->
+            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+            
+            <!-- Login Card -->
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl border border-gray-100 w-full text-center max-w-sm relative z-10">
+                
                 <div class="w-16 h-16 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-3xl mx-auto mb-5 border-2 border-purple-100">
                     <i class="fas fa-user-circle"></i>
                 </div>
-                <h1 class="text-2xl font-extrabold text-sbiDark tracking-tight mb-2">Welcome to Sales Buddy</h1>
-                <p class="text-sm text-gray-500 mb-6 leading-relaxed">Please enter your proper full name to access the dashboard. Numbers or special characters are not allowed.</p>
+                
+                <h1 class="text-2xl font-extrabold text-sbiDark tracking-tight mb-1">Welcome to Sales Buddy</h1>
+                <p class="text-sm text-gray-500 mb-6 leading-relaxed">To proceed, please personalize your workspace by providing your first name.</p>
                 
                 <div class="text-left mb-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wide ml-1">Your Name</label>
-                    <input type="text" id="userNameInput" placeholder="e.g. John Doe" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-sbiPurple focus:ring-1 focus:ring-sbiPurple transition-all text-center">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wide ml-1">First Name</label>
+                    <input type="text" id="userNameInput" placeholder="Enter your first name" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-sbiPurple focus:ring-1 focus:ring-sbiPurple transition-all text-center">
                 </div>
-                <p id="nameError" class="text-xs text-red-500 hidden mb-4 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid name (alphabets only, min. 3 letters).</p>
                 
-                <button onclick="saveAndEnter()" class="w-full mt-2 bg-sbiPurple text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:bg-purple-800 transition-colors flex justify-center items-center gap-2">
-                    Enter Dashboard <i class="fas fa-arrow-right"></i>
+                <p id="nameError" class="text-xs text-red-500 hidden mb-3 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid first name (minimum 3 alphabetical characters).</p>
+                
+                <!-- Disclaimer Note -->
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-5 text-left flex gap-2 items-start">
+                    <i class="fas fa-info-circle text-sbiBlue mt-0.5"></i>
+                    <p class="text-[10px] text-gray-600 font-medium leading-tight">
+                        <span class="font-bold text-sbiBlue">Important:</span> This name will be locked for the day and automatically applied to all quotes generated during this session.
+                    </p>
+                </div>
+                
+                <button onclick="saveAndEnter()" class="w-full bg-sbiPurple text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:bg-purple-800 transition-colors flex justify-center items-center gap-2">
+                    Access Dashboard <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
