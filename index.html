@@ -84,6 +84,21 @@
             .md-max-h-240px { max-height: 240px; }
         }
 
+        /* Responsive Background Fix for Welcome Screen */
+        .welcome-backdrop {
+            background-image: url('./image.png');
+            background-color: #DDEEFA; /* Light blue matching the edges of the banner */
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+        @media (max-width: 768px) {
+            .welcome-backdrop {
+                /* Shifts image so the main subject remains perfectly visible on mobile/tablet */
+                background-position: 15% top; 
+            }
+        }
+
         /* Interactions */
         .active-scale-98:active { transform: scale(0.98); }
 
@@ -129,13 +144,10 @@
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
         <!-- 0. WELCOME / LOGIN VIEW (Mandatory Screen) -->
-        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center min-h-screen px-5 w-full mx-auto transition-opacity duration-300 fixed inset-0 z-50 bg-sbiDark" style="background-image: url('./image.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-            
-            <!-- Dark Overlay for readability -->
-            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center px-5 w-full h-full mx-auto transition-opacity duration-300 fixed inset-0 z-50 welcome-backdrop">
             
             <!-- Login Card -->
-            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl border border-gray-100 w-full text-center max-w-sm relative z-10">
+            <div class="bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-2xl border border-white/50 w-full text-center max-w-sm relative z-10">
                 
                 <div class="w-16 h-16 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-3xl mx-auto mb-5 border-2 border-purple-100">
                     <i class="fas fa-user-circle"></i>
@@ -152,7 +164,7 @@
                 <p id="nameError" class="text-xs text-red-500 hidden mb-3 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid first name (minimum 3 alphabetical characters).</p>
                 
                 <!-- Disclaimer Note -->
-                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-5 text-left flex gap-2 items-start">
+                <div class="bg-blue-50/80 border border-blue-100 rounded-lg p-3 mb-5 text-left flex gap-2 items-start">
                     <i class="fas fa-info-circle text-sbiBlue mt-0.5"></i>
                     <p class="text-[10px] text-gray-600 font-medium leading-tight">
                         <span class="font-bold text-sbiBlue">Important:</span> This name will be locked for the day and automatically applied to all quotes generated during this session.
