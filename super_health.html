@@ -404,9 +404,7 @@
             transition: all 0.2s;
         }
 
-        .btn-cancel:hover {
-            background-color: #e2e8f0;
-        }
+        .btn-cancel:hover { background-color: #e2e8f0; }
 
         .btn-submit {
             flex: 1.6;
@@ -429,9 +427,7 @@
             transform: translateY(-1px);
         }
 
-        .btn-submit svg {
-            margin-right: 8px;
-        }
+        .btn-submit svg { margin-right: 8px; }
 
         /* --- SPINNER CSS --- */
         .spinner {
@@ -481,10 +477,11 @@
                 <input type="text" id="customerName" placeholder="e.g. Rahul Sharma">
             </div>
 
-            <!-- HIDDEN LOCATION FIELDS -->
+            <!-- HIDDEN LOCATION & SALES BUDDY USER FIELDS -->
             <input type="hidden" id="state" value="">
             <input type="hidden" id="district" value="">
             <input type="hidden" id="city" value="">
+            <input type="hidden" id="salesBuddyName" value="Unknown User">
 
             <div class="form-group">
                 <label>Plan Variant</label>
@@ -654,8 +651,8 @@
 </div>
 
 <script>
-    // --- INTEGRATED WEB APP URL ---
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqphZwwBXBDNFGjRWC0QQB9KnaTjdL7NO9jLmn7jgfNAhKZCQ9dzVGZucAkoevFtU_/exec'; 
+    // --- UPDATED GOOGLE APPS SCRIPT WEB APP URL ---
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYEGVQ8rHzOwIOlisXy-sKE02F547a91r2mchRs6Wi0VKEWom6LOI9IVfRPxHlMXn34Q/exec'; 
 
     let currentQuote = null;
     let pendingAction = null; 
@@ -683,7 +680,7 @@
         return 'SH' + Math.floor(100000 + Math.random() * 900000);
     }
 
-    // SAVING FUNCTION
+    // SAVING FUNCTION WITH SALES BUDDY CAPTURE
     async function saveQuoteToExcel(quoteId) {
         const wellnessMembersChecked = Array.from(document.querySelectorAll('.wellness-member-check:checked')).map(cb => cb.value).join(',');
         const isDomesticChecked = document.getElementById('opt_domestic').checked;
@@ -717,7 +714,8 @@
             premium3Yr: p3,
             state: document.getElementById('state').value,
             district: document.getElementById('district').value,
-            city: document.getElementById('city').value
+            city: document.getElementById('city').value,
+            salesBuddyName: document.getElementById('salesBuddyName').value // Capturing Sales Buddy User
         };
 
         const currentPayloadStr = JSON.stringify(payload);
@@ -736,7 +734,7 @@
             });
             
             lastSavedPayloadStr = currentPayloadStr; 
-            console.log("Scenario saved to backend.");
+            console.log("Scenario saved to backend successfully.");
         } catch (e) {
             console.error("Failed to save quote to Sheets", e);
         }
@@ -779,7 +777,6 @@
 
                 document.getElementById('customerName').value = data.CustomerName || '';
                 
-                // Repopulate hidden location fields if present in data
                 document.getElementById('state').value = data.State || document.getElementById('state').value;
                 document.getElementById('district').value = data.District || document.getElementById('district').value;
                 document.getElementById('city').value = data.City || document.getElementById('city').value;
@@ -1506,7 +1503,7 @@
         document.getElementById('displayQuoteId').innerText = currentQuote.quoteId;
         document.getElementById('quoteIdContainer').style.display = 'block';
         
-        // This line triggers the data saving to Google Sheets
+        // Triggers saving to Google Sheets
         saveQuoteToExcel(currentQuote.quoteId); 
     }
 
@@ -1807,6 +1804,10 @@
     }
 
     window.onload = function() {
+        // Automatically fetch User Name from local storage stored by Sales Buddy
+        let salesUser = localStorage.getItem('salesBuddyUserName') || "Sales Buddy User";
+        document.getElementById('salesBuddyName').value = salesUser;
+
         setPolicyType('individual');
         handleVariantChange();
         bindDOBAndAge();
