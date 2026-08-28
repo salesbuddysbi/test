@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- STATIC, BULLETPROOF CSS CDN (Cannot be blocked by firewalls) -->
+    <!-- STATIC, BULLETPROOF CSS CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 
     <!-- CSV Parser & PDF Generators -->
@@ -104,22 +104,19 @@
 </head>
 <body class="bg-sbiLight text-sbiDark font-sans antialiased overflow-x-hidden selection:bg-sbiBlue selection:text-white flex flex-col min-h-100dvh">
 
-    <!-- APP HEADER -->
-    <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center">
+    <!-- APP HEADER (Hidden during Welcome Screen) -->
+    <nav id="main-nav" class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm border-b border-gray-100 h-16 flex items-center hidden">
         <div class="px-3 md:px-4 w-full max-w-3xl mx-auto flex justify-between items-center">
             
-            <!-- Logo Section -->
             <div class="flex flex-col justify-center cursor-pointer" onclick="navigateTo('homeView')">
                 <span class="font-extrabold text-sbiPurple text-lg md:text-xl leading-none tracking-tight">Sales Buddy</span>
                 <span class="font-bold text-gray-400 text-9px uppercase tracking-02em mt-0.5">One Touch Point</span>
             </div>
             
-            <!-- Quick Actions Section -->
             <div class="flex items-center gap-1.5 md:gap-2">
                 <a href="https://dip.sbigeneral.in/Login/LoginSBI" target="_blank" class="bg-simba active:bg-orange-600 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
                     <i class="fas fa-sign-in-alt"></i> SIMBA
                 </a>
-                <!-- New Endorsement Button Added Here with target="_blank" -->
                 <a href="https://www.sbigeneral.in/endorsement" target="_blank" rel="noopener noreferrer" class="bg-sbiPurple active:bg-purple-800 text-white px-3.5 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold shadow flex items-center gap-1.5 md:gap-2 transition-colors tracking-wide">
                     <i class="fas fa-edit"></i> Endorse
                 </a>
@@ -131,13 +128,34 @@
     <!-- MAIN APP CONTAINER -->
     <main id="app-container" class="flex-grow flex flex-col pt-16">
         
+        <!-- 0. WELCOME / LOGIN VIEW (Mandatory Screen) -->
+        <div id="welcomeScreenView" class="app-view flex flex-col items-center justify-center min-h-[80vh] px-5 w-full max-w-3xl mx-auto transition-opacity duration-300 absolute top-0 left-0 right-0 bottom-0 bg-sbiLight z-40 -mt-16 pt-16">
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 w-full text-center max-w-md">
+                <div class="w-16 h-16 bg-purple-50 text-sbiPurple rounded-full flex items-center justify-center text-3xl mx-auto mb-5 border-2 border-purple-100">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold text-sbiDark tracking-tight mb-2">Welcome to Sales Buddy</h1>
+                <p class="text-sm text-gray-500 mb-6 leading-relaxed">Please enter your proper full name to access the dashboard. Numbers or special characters are not allowed.</p>
+                
+                <div class="text-left mb-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wide ml-1">Your Name</label>
+                    <input type="text" id="userNameInput" placeholder="e.g. John Doe" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-sbiPurple focus:ring-1 focus:ring-sbiPurple transition-all text-center">
+                </div>
+                <p id="nameError" class="text-xs text-red-500 hidden mb-4 font-medium"><i class="fas fa-exclamation-circle"></i> Please enter a valid name (alphabets only, min. 3 letters).</p>
+                
+                <button onclick="saveAndEnter()" class="w-full mt-2 bg-sbiPurple text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md active:bg-purple-800 transition-colors flex justify-center items-center gap-2">
+                    Enter Dashboard <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
         <!-- 1. DASHBOARD (HOME VIEW) -->
-        <div id="homeView" class="app-view flex flex-col flex-grow transition-opacity duration-300 w-full max-w-3xl mx-auto">
+        <div id="homeView" class="app-view hidden flex flex-col flex-grow transition-opacity duration-300 w-full max-w-3xl mx-auto">
 
             <div class="px-5 flex-grow mt-6">
                 
                 <div class="mb-6">
-                    <h1 class="text-26px font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
+                    <h1 id="greeting-title" class="text-26px font-extrabold text-sbiDark tracking-tight">Welcome back!</h1>
                     <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Wishing you a wonderful day! Please choose an option below to continue.</p>
                 </div>
 
@@ -349,13 +367,84 @@
     </main>
 
     <script>
+        // --- MANDATORY GREETING & VALIDATION LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            checkUserAuth();
+        });
+
+        function checkUserAuth() {
+            const today = new Date().toDateString();
+            const savedName = localStorage.getItem("salesBuddyUserName");
+            const savedDate = localStorage.getItem("salesBuddyVisitDate");
+
+            if (savedName && savedDate === today) {
+                // User is verified for today - Show Dashboard
+                document.getElementById("greeting-title").innerText = "Welcome back, " + savedName + "!";
+                
+                // Hide Welcome Screen, Show Home View & Nav Bar
+                document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
+                document.getElementById('homeView').classList.remove('hidden');
+                document.getElementById('main-nav').classList.remove('hidden');
+                
+            } else {
+                // Not verified - Force Welcome Screen
+                document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
+                document.getElementById('welcomeScreenView').classList.remove('hidden');
+                document.getElementById('main-nav').classList.add('hidden'); // Hide Top Nav
+            }
+        }
+
+        function saveAndEnter() {
+            const nameInput = document.getElementById("userNameInput").value.trim();
+            const errorText = document.getElementById("nameError");
+            
+            // REGEX EXPLANATION: 
+            // ^ = start, [A-Za-z\s] = allow upper/lowercase letters and spaces
+            // {3,} = minimum of 3 characters, $ = end of string
+            const nameValidationRegex = /^[A-Za-z\s]{3,}$/;
+
+            if (nameValidationRegex.test(nameInput)) {
+                // Name is valid
+                errorText.classList.add('hidden');
+                const today = new Date().toDateString();
+                
+                localStorage.setItem("salesBuddyUserName", nameInput);
+                localStorage.setItem("salesBuddyVisitDate", today);
+                
+                // Switch out of welcome screen
+                checkUserAuth();
+            } else {
+                // Name is invalid (numbers, special chars, or too short)
+                errorText.classList.remove('hidden');
+                
+                // Add a little shake animation for user feedback
+                const inputField = document.getElementById("userNameInput");
+                inputField.classList.add('border-red-500');
+                setTimeout(() => inputField.classList.remove('border-red-500'), 1000);
+            }
+        }
+
+        // --- EXISTING APP LOGIC BELOW ---
         const shareOnWhatsApp = (text) => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         let currentCalcBackTarget = 'homeView';
 
         function navigateTo(viewId) {
+            // SECURITY CHECK: Do not allow navigation to homeView if they haven't bypassed the welcome screen today
+            if (viewId === 'homeView') {
+                const today = new Date().toDateString();
+                if (localStorage.getItem("salesBuddyVisitDate") !== today) {
+                    checkUserAuth(); // This forces them back to the welcome screen
+                    return; 
+                }
+            }
+
             document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
-            if(viewId !== 'calculatorView') { document.getElementById('calcFrame').src = ''; document.body.classList.remove('overflow-hidden'); }
+            
+            if(viewId !== 'calculatorView') { 
+                document.getElementById('calcFrame').src = ''; 
+                document.body.classList.remove('overflow-hidden'); 
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
