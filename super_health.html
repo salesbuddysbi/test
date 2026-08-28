@@ -433,7 +433,7 @@
             margin-right: 8px;
         }
 
-        /* --- SPINNER CSS (For Rework Fetching) --- */
+        /* --- SPINNER CSS --- */
         .spinner {
             display: none;
             width: 16px;
@@ -480,6 +480,11 @@
                 <label>Customer Name (Optional)</label>
                 <input type="text" id="customerName" placeholder="e.g. Rahul Sharma">
             </div>
+
+            <!-- HIDDEN LOCATION FIELDS -->
+            <input type="hidden" id="state" value="">
+            <input type="hidden" id="district" value="">
+            <input type="hidden" id="city" value="">
 
             <div class="form-group">
                 <label>Plan Variant</label>
@@ -573,7 +578,6 @@
         </form>
 
         <div id="resultArea">
-            <!-- --- QUOTE ID DISPLAY --- -->
             <div id="quoteIdContainer" style="text-align: center; margin-bottom: 15px; display: none;">
                 <span style="background: #fff3cd; color: #856404; padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 1px solid #ffeeba;">
                     Quote ID: <span id="displayQuoteId"></span>
@@ -625,7 +629,6 @@
     </div>
 </div>
 
-<!-- NEW STANDARDIZED MODAL -->
 <div id="salesModal" class="modal-overlay">
     <div class="modal-wrapper">
         <div class="modal-icon-container" id="modalTopIcon"></div>
@@ -651,14 +654,30 @@
 </div>
 
 <script>
-    // --- GOOGLE APPS SCRIPT INTEGRATION ---
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyzJSXiDoNjftOAH2LFduQ8hgOaV0sjREvbW22TvXb97ZX28NuckYuDblD-_aQH243/exec'; 
+    // --- INTEGRATED WEB APP URL ---
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqphZwwBXBDNFGjRWC0QQB9KnaTjdL7NO9jLmn7jgfNAhKZCQ9dzVGZucAkoevFtU_/exec'; 
 
     let currentQuote = null;
     let pendingAction = null; 
     let lastCalcSignature = null;
     let activeQuoteId = null;
     let lastSavedPayloadStr = null; 
+
+    // --- AUTO LOCATION CAPTURE ---
+    async function captureUserLocation() {
+        try {
+            const response = await fetch('https://get.geojs.io/v1/ip/geo.json');
+            const data = await response.json();
+            
+            document.getElementById('state').value = data.region || 'Unknown';
+            document.getElementById('city').value = data.city || 'Unknown';
+            document.getElementById('district').value = data.city || 'Unknown'; 
+            
+            console.log("Location silently captured for analytics.");
+        } catch (error) {
+            console.error("Background location capture failed:", error);
+        }
+    }
 
     function generateQuoteId() {
         return 'SH' + Math.floor(100000 + Math.random() * 900000);
@@ -695,13 +714,16 @@
             optWalk: document.getElementById('opt_walk').checked,
             premium1Yr: p1,
             premium2Yr: p2,
-            premium3Yr: p3
+            premium3Yr: p3,
+            state: document.getElementById('state').value,
+            district: document.getElementById('district').value,
+            city: document.getElementById('city').value
         };
 
         const currentPayloadStr = JSON.stringify(payload);
 
         if (currentPayloadStr === lastSavedPayloadStr) {
-            console.log("No changes detected. Skipping save to avoid duplicate processing.");
+            console.log("No changes detected. Skipping save.");
             return; 
         }
 
@@ -756,6 +778,12 @@
                 document.getElementById('errorBox').style.display = 'none';
 
                 document.getElementById('customerName').value = data.CustomerName || '';
+                
+                // Repopulate hidden location fields if present in data
+                document.getElementById('state').value = data.State || document.getElementById('state').value;
+                document.getElementById('district').value = data.District || document.getElementById('district').value;
+                document.getElementById('city').value = data.City || document.getElementById('city').value;
+
                 document.getElementById('variant').value = data.Variant;
                 handleVariantChange(); 
                 
@@ -1477,6 +1505,8 @@
 
         document.getElementById('displayQuoteId').innerText = currentQuote.quoteId;
         document.getElementById('quoteIdContainer').style.display = 'block';
+        
+        // This line triggers the data saving to Google Sheets
         saveQuoteToExcel(currentQuote.quoteId); 
     }
 
@@ -1780,6 +1810,7 @@
         setPolicyType('individual');
         handleVariantChange();
         bindDOBAndAge();
+        captureUserLocation(); 
     };
 
 </script>
