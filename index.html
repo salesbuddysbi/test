@@ -239,7 +239,7 @@
 
             <div class="px-5 flex-grow mt-3.5">
                 
-                <!-- Branded SBI Gradient Greeting (Sub-statement removed as requested) -->
+                <!-- Branded SBI Gradient Greeting -->
                 <div class="mb-3">
                     <h1 id="greeting-title" class="text-24px font-extrabold text-sbi-gradient tracking-tight leading-tight">Welcome!</h1>
                 </div>
@@ -363,7 +363,8 @@
                     <div>
                         <label for="searchCategory" class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5 block">Search Category</label>
                         <select id="searchCategory" onchange="toggleCategoryFields()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-semibold outline-none focus:border-sbiPurple text-sbiPurple transition-colors shadow-sm">
-                            <option value="pan_india">🌐 Pan India (Search All)</option>
+                            <option value="pan_india">🌐 Pan India (Name / City / Pincode)</option>
+                            <option value="pincode">📮 Pincode Wise</option>
                             <option value="state">📍 State Wise</option>
                             <option value="district">🏢 District Wise</option>
                             <option value="city">🏙️ City Wise</option>
@@ -371,7 +372,11 @@
                     </div>
 
                     <div id="wrapper_text" class="transition-all">
-                        <input type="text" id="hospSearchText" placeholder="Enter Hospital Name, City, or Pincode..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-sbiBlue transition-colors">
+                        <input type="text" id="hospSearchText" placeholder="Enter Hospital Name, City, or Pincode..." onkeydown="if(event.key==='Enter') executeSearch()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-sbiBlue transition-colors">
+                    </div>
+
+                    <div id="wrapper_pincode" class="hidden transition-all">
+                        <input type="text" id="pincodeSearchInput" inputmode="numeric" maxlength="6" placeholder="Enter 6-Digit Pincode (e.g. 682001)..." onkeydown="if(event.key==='Enter') executeSearch()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-semibold tracking-wider outline-none focus:border-sbiBlue transition-colors">
                     </div>
 
                     <div id="wrapper_state" class="hidden transition-all">
@@ -407,14 +412,14 @@
                     </button>
                 </div>
 
-                <!-- Results Area -->
+                <!-- Results Area (Displays ALL matched hospitals) -->
                 <div id="resultsWrapper" class="flex-grow relative overflow-hidden flex flex-col hidden">
                     <p class="text-xs text-gray-500 mb-2 font-medium flex justify-between items-center">
                         <span>Found: <span id="hospCount" class="font-bold text-sbiDark">0</span> matches</span>
-                        <span id="previewNote" class="text-9px uppercase text-sbiBlue font-bold bg-blue-50 px-2 py-0.5 rounded">Preview Mode</span>
+                        <span id="previewNote" class="text-9px uppercase text-sbiPurple font-bold bg-purple-50 px-2 py-0.5 rounded">Showing All Results</span>
                     </p>
                     <div id="hospitalsContainer" class="flex-grow overflow-y-auto pb-6 flex flex-col gap-3">
-                        <!-- Cards injected via JS -->
+                        <!-- All matching cards injected via JS -->
                     </div>
                 </div>
 
@@ -908,15 +913,27 @@
             });
         }
 
+        function getFieldByHeader(row, candidates) {
+            const keys = Object.keys(row || {});
+            for (let i = 0; i < candidates.length; i++) {
+                const target = candidates[i].toLowerCase();
+                const match = keys.find(k => k.trim().toLowerCase() === target);
+                if (match && row[match] !== undefined && row[match] !== null) {
+                    return String(row[match]).trim();
+                }
+            }
+            return '';
+        }
+
         function processHospitalData(data) {
             allHospitals = data.map(row => ({
-                Name: row['Hospital Name'] || '',
-                Address: row['Address'] || '',
-                District: row['District '] || row['District'] || '',
-                City: row['City'] || '',
-                State: row['State'] || '',
-                Pincode: row['Pincode'] || ''
-            }));
+                Name: getFieldByHeader(row, ['Hospital Name', 'Hospital_Name', 'Name', 'Provider Name']),
+                Address: getFieldByHeader(row, ['Address', 'Hospital Address', 'Location']),
+                District: getFieldByHeader(row, ['District', 'District Name']),
+                City: getFieldByHeader(row, ['City', 'City Name', 'Town']),
+                State: getFieldByHeader(row, ['State', 'State Name']),
+                Pincode: getFieldByHeader(row, ['Pincode', 'Pin Code', 'Pin', 'Postal Code', 'Zip'])
+            })).filter(h => h.Name || h.Pincode || h.City);
             
             document.getElementById('cashlessStateContainer').classList.add('hidden');
             document.getElementById('cashlessSearchContainer').classList.remove('hidden');
@@ -929,12 +946,15 @@
             const cat = document.getElementById('searchCategory').value;
             
             document.getElementById('wrapper_text').classList.add('hidden');
+            document.getElementById('wrapper_pincode').classList.add('hidden');
             document.getElementById('wrapper_state').classList.add('hidden');
             document.getElementById('wrapper_district').classList.add('hidden');
             document.getElementById('wrapper_city').classList.add('hidden');
 
             if(cat === 'pan_india') {
                 document.getElementById('wrapper_text').classList.remove('hidden');
+            } else if(cat === 'pincode') {
+                document.getElementById('wrapper_pincode').classList.remove('hidden');
             } else if(cat === 'state') {
                 document.getElementById('wrapper_state').classList.remove('hidden');
             } else if(cat === 'district') {
@@ -982,11 +1002,13 @@
         function getSearchSummary() {
             const cat = document.getElementById('searchCategory').value;
             const term = document.getElementById('hospSearchText').value.trim();
+            const pinTerm = document.getElementById('pincodeSearchInput').value.trim();
             const state = document.getElementById('stateSelect').value;
             const dist = document.getElementById('districtSelect').value;
             const city = document.getElementById('citySelect').value;
 
             if (cat === 'pan_india') return term ? `Pan India (Keyword: "${term}")` : "Pan India (All)";
+            if (cat === 'pincode') return `Pincode: ${pinTerm}`;
             if (cat === 'state') return `State: ${state}`;
             if (cat === 'district') return `District: ${dist} (${state})`;
             if (cat === 'city') return `City: ${city} (${state})`;
@@ -995,19 +1017,31 @@
 
         function executeSearch() {
             const cat = document.getElementById('searchCategory').value;
-            const term = document.getElementById('hospSearchText').value.toLowerCase();
+            const term = document.getElementById('hospSearchText').value.trim().toLowerCase();
+            const pinTerm = document.getElementById('pincodeSearchInput').value.trim();
             const state = document.getElementById('stateSelect').value;
             const dist = document.getElementById('districtSelect').value;
             const city = document.getElementById('citySelect').value;
 
+            if (cat === 'pincode' && !pinTerm) return showToast("Please enter a Pincode to search.");
             if (cat === 'state' && !state) return showToast("Please select a State to search.");
             if (cat === 'district' && (!state || !dist)) return showToast("Please select both State and District.");
             if (cat === 'city' && (!state || !dist || !city)) return showToast("Please select State, District, and City.");
 
             filteredHospitals = allHospitals.filter(h => {
+                const hPinClean = String(h.Pincode || '').replace(/\s+/g, '');
                 if (cat === 'pan_india') {
                     if (!term) return true;
-                    return h.Name.toLowerCase().includes(term) || h.Pincode.includes(term) || h.City.toLowerCase().includes(term);
+                    const termNoSpace = term.replace(/\s+/g, '');
+                    return h.Name.toLowerCase().includes(term) ||
+                           h.Address.toLowerCase().includes(term) ||
+                           h.City.toLowerCase().includes(term) ||
+                           h.District.toLowerCase().includes(term) ||
+                           hPinClean.includes(termNoSpace);
+                }
+                if (cat === 'pincode') {
+                    const cleanSearchPin = pinTerm.replace(/\s+/g, '');
+                    return hPinClean.includes(cleanSearchPin) || h.Address.toLowerCase().includes(cleanSearchPin);
                 }
                 if (cat === 'state') return h.State === state;
                 if (cat === 'district') return h.State === state && h.District === dist;
@@ -1031,28 +1065,25 @@
             }
 
             document.getElementById('actionButtons').classList.remove('hidden');
-            const renderLimit = Math.min(filteredHospitals.length, 50);
-            document.getElementById('previewNote').classList.toggle('hidden', filteredHospitals.length <= 50);
+            document.getElementById('previewNote').classList.remove('hidden');
 
-            let html = '';
-            for(let i=0; i<renderLimit; i++) {
+            // Render ALL matched hospitals without any 50-card cap
+            const cardsHtml = new Array(filteredHospitals.length);
+            for(let i = 0; i < filteredHospitals.length; i++) {
                 const h = filteredHospitals[i];
-                html += `
+                cardsHtml[i] = `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-1 border-l-4 border-l-sbiPurple">
                         <h4 class="font-bold text-sbiDark text-sm leading-tight">${h.Name}</h4>
                         <p class="text-xs text-gray-500 leading-snug"><i class="fas fa-map-marker-alt text-gray-300 w-3"></i> ${h.Address}</p>
                         <div class="flex flex-wrap gap-2 mt-2">
                             <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-10px font-medium uppercase">${h.City}</span>
-                            <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-10px font-medium uppercase">${h.State} - ${h.Pincode}</span>
+                            ${h.District && h.District !== h.City ? `<span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-10px font-medium uppercase">${h.District}</span>` : ''}
+                            <span class="bg-purple-50 text-sbiPurple px-2 py-0.5 rounded text-10px font-bold uppercase">${h.State}${h.Pincode ? ' - ' + h.Pincode : ''}</span>
                         </div>
                     </div>`;
             }
             
-            if(filteredHospitals.length > 50) {
-                html += `<div class="text-center py-3 text-xs text-sbiBlue font-bold bg-blue-50 rounded-lg mt-2"><i class="fas fa-info-circle"></i> Showing 50 preview cards.<br>Download or Share PDF for the complete list of ${filteredHospitals.length} hospitals.</div>`;
-            }
-            
-            container.innerHTML = html;
+            container.innerHTML = cardsHtml.join('');
         }
 
         function getPDFDocument() {
